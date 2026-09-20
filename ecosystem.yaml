@@ -1,4 +1,4 @@
-schema_version: "1.0"
+schema_version: "1.1"
 ecosystem:
   id: inquiry-publishing-stack
   name: Inquiry Publishing Stack
@@ -6,34 +6,62 @@ ecosystem:
     homepage: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
     repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
   agent_entrypoint: docs/ECOSYSTEM.md
+  agent_retrieval_contract: docs/AGENT_RETRIEVAL_CONTRACT.md
+  llms_entrypoint: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/llms.txt
   language_policy: human-readable pages are single-language with a Chinese/English switch
   baseline:
+    default_profile: full-research-publication
     ahicp: full
     ppf: full
     vault_interface: compatible-public-interface
     continuous_web: required-for-published-projects
+    source_visibility: private-by-default-for-original-work
+    web_visibility: restricted-by-default-for-unpublished-work
     cloudflare_access: required-for-private-or-transitional-publications
+    deviations: require-explicit-human-selection
   components:
     ahicp:
       repository: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
       homepage: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+      ecosystem: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/ecosystem.yaml
       role: human-led AI-assisted inquiry and creation governance
     ppf:
       repository: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
       homepage: https://chongliuphil.github.io/Personal-Publishing-Framework/
+      ecosystem: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/ecosystem.yaml
       role: source-centered publishing lifecycle and continuous web
     vault_interface:
       repository: https://github.com/ChongLiuPhil/Vault-interface
+      homepage: https://chongliuphil.github.io/Vault-interface/
+      ecosystem: https://github.com/ChongLiuPhil/Vault-interface/blob/main/ecosystem.yaml
       role: provider-neutral public metadata contract
     starter:
       repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
       homepage: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+      ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
       role: composition, adoption, and upgrade layer
   privacy:
     original_unpublished_content: private-by-default
     private_control_plane: never copied into public repositories
-    public_repositories: methods, schemas, templates, and validators only
+    public_repositories: methods, schemas, templates, validators, and approved public documentation only
+    secrets: never stored in repositories or chat
+  publication_defaults:
+    continuous_web: enabled-when-project-is-published
+    unpublished_web_visibility: restricted
+    reader_access:
+      mode: authenticated
+      implementation: cloudflare-access
+      policy_ref: shared-reader-access
+      secret_material: provider-side-only
+    public_cutover: explicit-human-authorization-required
   retrieval:
+    reconstruct_ecosystem_from_any_public_entrypoint: true
     follow_agent_entrypoint: true
     follow_component_links: true
+    fresh_read_pinned_manifests_before_configuration: true
     fetch_private_state: only-after-explicit-human-authorization
+    public_links_do_not_grant_private_access: true
+  cloudflare:
+    operational_guide: docs/CONTINUOUS_WEB_CLOUDFLARE.md
+    agent_must_give_numbered_human_steps_when_required: true
+    agent_must_state_verification_and_rollback: true
