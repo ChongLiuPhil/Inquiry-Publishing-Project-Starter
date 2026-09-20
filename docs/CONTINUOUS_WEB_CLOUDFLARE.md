@@ -1,5 +1,7 @@
 # Continuous Web and Cloudflare operational guide
 
+For the shortest human handoff, read [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md). For browser-capable execution, use [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md). The machine-readable non-secret plan is [../templates/cloudflare-access-plan.yaml](../templates/cloudflare-access-plan.yaml).
+
 This guide is a reusable operational contract, not a claim that every project has already been deployed.
 
 ## 1. Separate the four layers
