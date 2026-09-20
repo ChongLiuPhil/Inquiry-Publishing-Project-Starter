@@ -4,6 +4,8 @@
 
 Starter 是机器/配置入口；第一次理解整个体系时，不要求先掌握 Starter 的技术配置。
 
+**机器第一入口：** [公共 Agent landing](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/) · [machine descriptor](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/entry.json)
+
 这是 AHICP、PPF 与 Vault Interface 的**组合、采用和升级层**，不是第四套规范。
 
 **公共项目主页：** [AHICP](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [Vault Interface](https://chongliuphil.github.io/Vault-interface/) · [Starter](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/)
