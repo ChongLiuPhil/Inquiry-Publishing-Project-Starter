@@ -1,0 +1,16 @@
+schema_version: 1
+publish: false
+project_id: replace-with-project-id
+language:
+  default: auto
+  fallback: en
+  supported: [en, zh]
+  detect_from_browser: true
+title: {zh: "", en: ""}
+status: {zh: "", en: ""}
+summary: {zh: "", en: ""}
+areas: []
+featured: false
+links: []
+publication_notes: >
+  Public-facing metadata only. Keep publish=false until explicit human authorization.

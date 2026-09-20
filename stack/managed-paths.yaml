@@ -1,0 +1,31 @@
+schema: starter-managed-paths/v1
+
+upstream_managed:
+  - scripts/ensure_quarto.sh
+  - scripts/cloudflare_build.sh
+  - scripts/verify_public_site.py
+  - .github/workflows/cloudflare-contract-ci.yml
+
+merge_managed:
+  - Makefile
+  - project-stack.yaml
+  - project.yaml
+  - website.yaml
+  - publishing.yaml
+  - cloudflare-builds.yaml
+  - wrangler.jsonc
+  - START_HERE.md
+  - START_HERE.zh-CN.md
+  - AGENTS.md
+  - AGENTS.zh-CN.md
+
+project_owned:
+  - core/CONTENT_CORE*
+  - core/FORM_CORE*
+  - core/DECISION_LOG*
+  - docs/working-memory/**
+  - manuscript/**
+  - references.bib
+  - index.qmd
+
+rule: Project-owned paths MUST NOT be overwritten automatically during a stack upgrade.

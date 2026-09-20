@@ -1,0 +1,5 @@
+profile: research-book
+components: [vault-interface, ahicp, ppf]
+publishing: optional
+recommended_ahicp_profile: research-standard
+recommended_ppf_profile: quarto-book

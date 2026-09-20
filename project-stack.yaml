@@ -1,0 +1,26 @@
+schema: inquiry-publishing-stack/v1
+project:
+  id: replace-with-project-id
+profile: full-research-publication
+
+components:
+  governance:
+    framework: ahicp
+    source: ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+    profile: research-standard
+    adopted_commit: a3545814e6cabc1d987c04fc4ab157b5d1e5d6ff
+  publishing:
+    framework: ppf
+    source: ChongLiuPhil/Personal-Publishing-Framework
+    profile: quarto-book-cloudflare
+    adopted_commit: 76a30b50703296d0b50d6775223699855501cc88
+  portfolio_interface:
+    framework: vault-interface
+    source: ChongLiuPhil/Vault-interface
+    version: 1.0.0-draft
+    adopted_commit: b7db7e32719f24fdb369294304a946e7ff65328e
+
+starter:
+  source: ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  profile: full-research-publication
+  adopted_commit: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION

@@ -1,0 +1,4 @@
+profile: publishing-only
+components: [vault-interface, ppf]
+publishing: true
+recommended_ppf_profile: quarto-book-cloudflare

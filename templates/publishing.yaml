@@ -1,0 +1,35 @@
+schema: ppf/v0.1
+project:
+  id: replace-with-project-id
+  type: book
+  title: Replace with Project Title
+source:
+  canonical: git
+  branch: main
+  visibility: private
+publication:
+  web:
+    format: html
+    mode: continuous
+    enabled: true
+    authorization_state: not-authorized
+    visibility: restricted
+    access: {mode: none, implementation: null, policy_ref: null}
+deployment:
+  web:
+    provider: cloudflare-workers
+    integration_mode: workers-builds-git
+    build_contract: cloudflare-builds.yaml
+    canonical_publish_gate: make web-publish-check
+    enabled: false
+    status: staged
+    output_directory: _book
+    production_url: null
+    provider_url: null
+    canonical_identity: {type: null, url: null}
+release:
+  require_explicit_release: true
+  continuous_web_is_release: false
+archive:
+  preserve_source: true
+  preserve_release_artifacts: true
