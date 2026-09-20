@@ -1,5 +1,6 @@
 profile: research-book
-components: [vault-interface, ahicp, ppf]
+required_components: [vault-interface, ahicp]
+optional_components: [ppf]
 publishing: optional
 recommended_ahicp_profile: research-standard
-recommended_ppf_profile: quarto-book
+recommended_ppf_profile: quarto-book-cloudflare

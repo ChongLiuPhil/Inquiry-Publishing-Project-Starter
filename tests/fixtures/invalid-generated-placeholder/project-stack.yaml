@@ -1,30 +1,20 @@
 schema: inquiry-publishing-stack/v2
-project:
-  id: replace-with-project-id
-profile: full-research-publication
+project: {id: invalid-placeholder}
+profile: research-only
 components:
   governance:
     framework: ahicp
     source: ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
     adoption_state: active
-    profile: research-standard
     template_source_commit: 9cf59f9bf90248274f912bdb9e95253d8557a74a
     project_adopted_commit: 9cf59f9bf90248274f912bdb9e95253d8557a74a
-  publishing:
-    framework: ppf
-    source: ChongLiuPhil/Personal-Publishing-Framework
-    adoption_state: active
-    profile: quarto-book-cloudflare
-    template_source_commit: 4dcc23efb165cabc8c259103409c86708c355451
-    project_adopted_commit: 4dcc23efb165cabc8c259103409c86708c355451
   portfolio_interface:
     framework: vault-interface
     source: ChongLiuPhil/Vault-interface
     adoption_state: active
-    version: 1.0.0-draft
     template_source_commit: b7db7e32719f24fdb369294304a946e7ff65328e
     project_adopted_commit: b7db7e32719f24fdb369294304a946e7ff65328e
 starter:
   source: ChongLiuPhil/Inquiry-Publishing-Project-Starter
-  profile: full-research-publication
+  profile: research-only
   adopted_commit: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION

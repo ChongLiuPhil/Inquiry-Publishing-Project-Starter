@@ -1,22 +1,25 @@
 schema: inquiry-publishing-stack/v2
-project:
-  id: replace-with-project-id
+project: {id: epistemology-textbook}
 profile: full-research-publication
 components:
   governance:
     framework: ahicp
     source: ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
     adoption_state: active
-    profile: research-standard
+    profile: legacy-functional-mapping
     template_source_commit: 9cf59f9bf90248274f912bdb9e95253d8557a74a
-    project_adopted_commit: 9cf59f9bf90248274f912bdb9e95253d8557a74a
+    project_adopted_commit: null
+    project_native:
+      framework: harc-lite
+      profile: HARC-lite-book
+      adopted_commit: e741c43c5cd158c43910e3832c7d757226717a97
   publishing:
     framework: ppf
     source: ChongLiuPhil/Personal-Publishing-Framework
     adoption_state: active
     profile: quarto-book-cloudflare
     template_source_commit: 4dcc23efb165cabc8c259103409c86708c355451
-    project_adopted_commit: 4dcc23efb165cabc8c259103409c86708c355451
+    project_adopted_commit: 21a5360727167bad6f399477ded073431645fa1d
   portfolio_interface:
     framework: vault-interface
     source: ChongLiuPhil/Vault-interface
@@ -27,4 +30,4 @@ components:
 starter:
   source: ChongLiuPhil/Inquiry-Publishing-Project-Starter
   profile: full-research-publication
-  adopted_commit: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION
+  adopted_commit: badc5ba956e6ee5884003fc8da9397efa6169dd8
