@@ -35,6 +35,7 @@ A profile describes composition, not project value.
 python -m pip install -r requirements-validation.txt
 make stack-check
 make stack-test
+make upstream-check
 make adoption-plan
 ```
 
@@ -63,3 +64,6 @@ See [AI adoption and upgrade workflow](docs/AI_ADOPTION_WORKFLOW.md).
 ## GitHub Template Repository
 
 This repository is configured as a GitHub Template Repository. New projects can start with **Use this template**, then record the real Starter source revision and complete composition through the adoption plan.
+
+
+`make upstream-check` fresh-reads the pinned upstream manifests over GitHub and verifies that the declared AHICP/PPF/Vault Interface profiles and versions actually exist at those revisions. This is intentionally a live integration check rather than a copied profile catalog.

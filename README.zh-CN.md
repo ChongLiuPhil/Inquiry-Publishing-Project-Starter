@@ -34,6 +34,7 @@ Profile 是组件组合，不是价值等级。
 python -m pip install -r requirements-validation.txt
 make stack-check
 make stack-test
+make upstream-check
 make adoption-plan
 ```
 
@@ -58,3 +59,6 @@ GitHub Template 生成的新仓库有自己的新历史，所以**下游项目 H
 ## GitHub Template Repository
 
 本仓库已经作为 GitHub Template Repository 使用。新项目可以从 **Use this template** 开始，再记录真实 Starter source revision 并按 adoption plan 完成组合。
+
+
+`make upstream-check` 会通过 GitHub fresh-read 固定 revision 的上游 manifest，直接确认 AHICP/PPF/Vault Interface 的 profile/version 在该 revision 中真实存在。Starter 不复制一份 profile 清单作为第二真值源。

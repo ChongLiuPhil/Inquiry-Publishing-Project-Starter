@@ -16,3 +16,4 @@ jobs:
       - run: python -m pip install -r requirements-validation.txt
       - run: make stack-check
       - run: make stack-test
+      - run: make upstream-check
