@@ -11,6 +11,15 @@ This repository is the composition entrypoint for four logically independent com
 
 These components remain logically independent. Cross-linking them creates discoverability and a shared adoption path; it does not transfer normative authority from one component to another.
 
+## Human entry vs machine entry
+
+The ecosystem intentionally separates two entry roles:
+
+- **Human conceptual entry — AHICP:** use the [AHICP Human Guide](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.md) and public homepage to explain the system to people, including users with no technical background.
+- **Machine/configuration entry — Starter:** use this repository's `ecosystem.yaml`, profiles, stack files, and Agent Retrieval Contract for project composition, adoption, upgrade, deployment, and automated reconstruction.
+
+Starter should not duplicate the entire human introduction, and AHICP Human Guide should not become a substitute for the machine contract.
+
 ## Default configuration baseline
 
 The default for a newly configured project is:
