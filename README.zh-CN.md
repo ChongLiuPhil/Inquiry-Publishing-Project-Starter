@@ -62,3 +62,13 @@ GitHub Template 生成的新仓库有自己的新历史，所以**下游项目 H
 
 
 `make upstream-check` 会通过 GitHub fresh-read 固定 revision 的上游 manifest，直接确认 AHICP/PPF/Vault Interface 的 profile/version 在该 revision 中真实存在。Starter 不复制一份 profile 清单作为第二真值源。
+
+## 许可
+
+本仓库采用**非商业双重许可模式**，目的是支持个人学习、教育、研究、公益以及其他非商业复用，同时保留商业授权权利。
+
+- 软件、脚本、Schema、自动化、机器可读配置和可执行模板：**PolyForm Noncommercial License 1.0.0**；
+- 说明文档、规范、图示、教育材料与方法论内容：**CC BY-NC-SA 4.0**；
+- 商业使用需要另行取得商业许可。
+
+仓库级权威许可边界见 [LICENSE.md](LICENSE.md) 与 [COMMERCIAL-LICENSING.md](COMMERCIAL-LICENSING.md)。
