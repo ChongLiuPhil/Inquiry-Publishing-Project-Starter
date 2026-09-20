@@ -67,3 +67,13 @@ This repository is configured as a GitHub Template Repository. New projects can 
 
 
 `make upstream-check` fresh-reads the pinned upstream manifests over GitHub and verifies that the declared AHICP/PPF/Vault Interface profiles and versions actually exist at those revisions. This is intentionally a live integration check rather than a copied profile catalog.
+
+## Licensing
+
+This repository uses a **noncommercial split-license model** intended to support personal learning, education, research, public-benefit work, and other noncommercial reuse.
+
+- Software, scripts, schemas, automation, machine-readable configuration, and executable templates: **PolyForm Noncommercial License 1.0.0**.
+- Prose documentation, specifications, diagrams, educational content, and methodological materials: **CC BY-NC-SA 4.0**.
+- Commercial use requires a separate commercial license.
+
+See [LICENSE.md](LICENSE.md) and [COMMERCIAL-LICENSING.md](COMMERCIAL-LICENSING.md) for the authoritative repository-level licensing boundary.
