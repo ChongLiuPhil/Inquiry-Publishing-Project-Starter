@@ -43,3 +43,8 @@ python tools/stack.py doctor
 ## 人类边界
 
 项目目的、实质性研究判断、publication authorization、最终发布批准与账号授权仍由人类决定。Token、密码、private key 或其他 secret 不进入 Git 或聊天。
+
+
+## 版本角色
+
+对成熟项目，Starter 明确区分“模板来源版本”和“项目已批准的规范采用版本”。模板工具可以升级，而项目的人类批准语义不会因此被静默改写。详见 `docs/UPGRADE_POLICY.zh-CN.md`。
