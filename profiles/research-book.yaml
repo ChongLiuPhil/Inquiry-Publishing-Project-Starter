@@ -1,4 +1,7 @@
 profile: research-book
+default_for_new_projects: false
+deviation_from_default_baseline: true
+requires_explicit_human_selection: true
 required_components: [vault-interface, ahicp]
 optional_components: [ppf]
 publishing: optional

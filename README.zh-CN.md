@@ -2,7 +2,11 @@
 
 这是 AHICP、PPF 与 Vault Interface 的**组合、采用和升级层**，不是第四套规范。
 
-**体系与 Agent 入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
+**公共项目主页：** [AHICP](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [Vault Interface](https://chongliuphil.github.io/Vault-interface/) · [Starter](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/)
+
+**体系与 Agent 入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
+
+**新项目默认姿态：** 完整 AHICP + 完整 PPF + Vault Interface。原创或未发布源文件默认 private；Continuous Web 可以同时准备，但在得到人类明确公开发布授权前默认 restricted + authenticated。精简 profile 必须由人明确选择。
 
 ## 权威边界
 
@@ -23,10 +27,10 @@ v2 明确区分三件不能混在一起的事：
 
 ## Profiles
 
-- `research-only`：Vault Interface + AHICP
-- `publishing-only`：Vault Interface + PPF
-- `research-book`：Vault Interface + AHICP；PPF 为可选组件
-- `full-research-publication`：三者全部 active
+- `full-research-publication`：三者全部 active，**新项目默认**
+- `research-only`：Vault Interface + AHICP，必须显式选择精简 profile
+- `publishing-only`：Vault Interface + PPF，必须显式选择精简 profile
+- `research-book`：Vault Interface + AHICP；PPF 为可选组件，必须显式选择精简 profile
 
 Profile 是组件组合，不是价值等级。
 
