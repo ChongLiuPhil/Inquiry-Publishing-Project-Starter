@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inquiry Publishing Stack · Machine Entry</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1d292d;background:#edf2f3}
+*{box-sizing:border-box}body{margin:0;line-height:1.65}.shell{max-width:980px;margin:auto;padding:32px 18px 64px}
+.hero,.block{background:#fff;border:1px solid #d3dde0;border-radius:20px;padding:30px;margin:18px 0}.hero{background:#183f49;color:#fff;border-color:#183f49}
+h1{font-size:clamp(2.3rem,6vw,4rem);line-height:1.05;margin:.2em 0}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;opacity:.75}
+h2{color:#183f49}.resource{display:grid;grid-template-columns:220px 1fr;gap:12px;padding:12px 0;border-top:1px solid #e0e7e9}.resource:first-child{border-top:0}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}pre{overflow:auto;background:#102f37;color:#edf8f6;padding:18px;border-radius:12px}
+a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;background:#dcebe6;color:#173f35;padding:5px 10px;font-weight:750;margin-right:7px}
+.warn{border-left:5px solid #9b6f2e;background:#fbf5ea;padding:14px 18px;border-radius:0 12px 12px 0}
+@media(max-width:650px){.resource{grid-template-columns:1fr}.hero,.block{padding:22px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">Machine / configuration entry</div>
+<h1>Inquiry Publishing Stack</h1>
+<p>This is the stable public landing page for AI agents that need to configure, reconstruct, adopt, upgrade, publish, or operate a project across AHICP, PPF, Vault Interface, and Starter.</p>
+<p><span class="badge">Human conceptual entry: AHICP</span><span class="badge">Machine entry: Starter</span></p>
+</section>
+
+<section class="block">
+<h2>Required bootstrap</h2>
+<pre>1. Read the canonical Starter ecosystem.
+2. Read the Agent Retrieval Contract.
+3. Resolve all four component roles and public entrypoints.
+4. For a downstream project, read project-stack.yaml, the selected profile, and lock state.
+5. Fresh-read pinned AHICP/PPF manifests before configuration or upgrade.
+6. Retrieve private state only after explicit human authorization.
+7. Default original/unpublished source to private.
+8. Default unpublished/transitional Web to restricted authenticated access.
+9. Distinguish proposal, authorization, execution, verification, and durable write-back.
+10. Ask the human to act only at reserved judgment/approval/sign-in/secret-entry gates, with exact numbered instructions.</pre>
+</section>
+
+<section class="block">
+<h2>Canonical resources</h2>
+<div class="resource"><strong>Machine-readable ecosystem</strong><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml">ecosystem.yaml</a></div>
+<div class="resource"><strong>Agent Retrieval Contract</strong><a href="../AGENT_RETRIEVAL_CONTRACT.md">English contract</a></div>
+<div class="resource"><strong>Agent 调取契约</strong><a href="../AGENT_RETRIEVAL_CONTRACT.zh-CN.md">中文契约</a></div>
+<div class="resource"><strong>Machine discovery</strong><a href="../llms.txt">llms.txt</a></div>
+<div class="resource"><strong>Bootstrap text</strong><a href="bootstrap.txt">bootstrap.txt</a></div>
+<div class="resource"><strong>中文 bootstrap</strong><a href="bootstrap.zh-CN.txt">bootstrap.zh-CN.txt</a></div>
+<div class="resource"><strong>Machine descriptor</strong><a href="entry.json">entry.json</a></div>
+<div class="resource"><strong>Cloudflare operations</strong><a href="../CONTINUOUS_WEB_CLOUDFLARE.md">operational guide</a></div>
+</section>
+
+<section class="block">
+<h2>Default project baseline</h2>
+<pre>full AHICP
++ full PPF
++ Vault Interface
++ project-owned content
+
+source repository: private by default
+unpublished/transitional Web: restricted + authenticated
+public cutover: explicit human authorization required</pre>
+</section>
+
+<section class="block">
+<h2>Authorization boundary</h2>
+<div class="warn">Public links are retrieval instructions only. They never authorize private repository access, provider-account access, credential retrieval, unpublished-source access, publication, or external-state writes.</div>
+<p>Never request passwords, API tokens, private keys, recovery codes, or other secrets in chat. When a human must act in a provider UI, give exact numbered steps, the secret boundary, completion evidence, verification, and rollback.</p>
+</section>
+
+<section class="block">
+<h2>Human-facing explanation</h2>
+<p>If the user first needs to understand why this system exists, redirect them to the <a href="https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/">AHICP Human Entry</a>. Do not force a non-technical user to read this page before they can understand the system.</p>
+</section>
+</main>
+</body>
+</html>
