@@ -66,3 +66,8 @@ python tools/stack.py adoption-plan --json
 ```
 
 即可得到当前 profile 下每个组件的权威仓库、固定 revision、template root / manifest path，以及文件 ownership policy。AI Agent 应依据该计划 fresh-read 上游，再通过 branch / PR 实施；不要直接从 README 猜模板内容。
+
+
+## GitHub Template Repository 设置
+
+本仓库设计为 GitHub Template Repository。该属性属于 GitHub 仓库设置，不存储在 Git tree 中；仓库所有者应在 GitHub Settings 中启用 **Template repository**。开启后，新项目可以直接使用 **Use this template**，再按 adoption plan 完成占位符替换与上游组合。
