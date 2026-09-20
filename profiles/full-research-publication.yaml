@@ -1,6 +1,10 @@
 profile: full-research-publication
+default_for_new_projects: true
 required_components: [vault-interface, ahicp, ppf]
 optional_components: []
 publishing: true
 recommended_ahicp_profile: research-standard
 recommended_ppf_profile: quarto-book-cloudflare
+privacy_default: private-source
+web_visibility_default: restricted
+deviations_require_explicit_human_selection: true
