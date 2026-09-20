@@ -1,0 +1,20 @@
+schema: inquiry-publishing-stack/v2
+project: {id: invalid-placeholder}
+profile: research-only
+components:
+  governance:
+    framework: ahicp
+    source: ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+    adoption_state: active
+    template_source_commit: 9cf59f9bf90248274f912bdb9e95253d8557a74a
+    project_adopted_commit: 9cf59f9bf90248274f912bdb9e95253d8557a74a
+  portfolio_interface:
+    framework: vault-interface
+    source: ChongLiuPhil/Vault-interface
+    adoption_state: active
+    template_source_commit: b7db7e32719f24fdb369294304a946e7ff65328e
+    project_adopted_commit: b7db7e32719f24fdb369294304a946e7ff65328e
+starter:
+  source: ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  profile: research-only
+  adopted_commit: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION

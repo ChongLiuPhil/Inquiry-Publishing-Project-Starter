@@ -1,15 +1,7 @@
 schema: inquiry-publishing-stack/v2
-project:
-  id: replace-with-project-id
-profile: full-research-publication
+project: {id: fixture-publishing-only}
+profile: publishing-only
 components:
-  governance:
-    framework: ahicp
-    source: ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
-    adoption_state: active
-    profile: research-standard
-    template_source_commit: 02d0b3c02ca23073c760b6e0f761a468e0235a1c
-    project_adopted_commit: 02d0b3c02ca23073c760b6e0f761a468e0235a1c
   publishing:
     framework: ppf
     source: ChongLiuPhil/Personal-Publishing-Framework
@@ -26,5 +18,5 @@ components:
     project_adopted_commit: 592c6e2e938f995b7b3e7df07a72f7f1e2c50c5a
 starter:
   source: ChongLiuPhil/Inquiry-Publishing-Project-Starter
-  profile: full-research-publication
-  adopted_commit: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION
+  profile: publishing-only
+  adopted_commit: badc5ba956e6ee5884003fc8da9397efa6169dd8

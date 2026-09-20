@@ -1,4 +1,5 @@
 profile: research-only
-components: [vault-interface, ahicp]
+required_components: [vault-interface, ahicp]
+optional_components: []
 publishing: false
 recommended_ahicp_profile: research-standard

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/schema/project-stack-lock.schema.json",
-  "title": "Inquiry Publishing Project Stack Lock",
+  "title": "Inquiry Publishing Project Stack Lock v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11,7 +11,7 @@
   ],
   "properties": {
     "schema": {
-      "const": "inquiry-publishing-stack-lock/v1"
+      "const": "inquiry-publishing-stack-lock/v2"
     },
     "generated": {
       "type": "boolean"
@@ -27,13 +27,13 @@
       ],
       "properties": {
         "ahicp": {
-          "$ref": "#/$defs/sha"
+          "$ref": "#/$defs/nullableSha"
         },
         "ppf": {
-          "$ref": "#/$defs/sha"
+          "$ref": "#/$defs/nullableSha"
         },
         "vault_interface": {
-          "$ref": "#/$defs/sha"
+          "$ref": "#/$defs/nullableSha"
         },
         "starter": {
           "oneOf": [
@@ -48,10 +48,45 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "generated": {
+            "const": true
+          }
+        },
+        "required": [
+          "generated"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resolved": {
+            "properties": {
+              "starter": {
+                "$ref": "#/$defs/sha"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "sha": {
       "type": "string",
       "pattern": "^[0-9a-f]{40}$"
+    },
+    "nullableSha": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 }

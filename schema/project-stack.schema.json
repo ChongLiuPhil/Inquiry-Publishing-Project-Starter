@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/schema/project-stack.schema.json",
-  "title": "Inquiry Publishing Project Stack",
+  "title": "Inquiry Publishing Project Stack v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -13,7 +13,7 @@
   ],
   "properties": {
     "schema": {
-      "const": "inquiry-publishing-stack/v1"
+      "const": "inquiry-publishing-stack/v2"
     },
     "project": {
       "type": "object",
@@ -60,13 +60,43 @@
       "type": "string",
       "pattern": "^[0-9a-f]{40}$"
     },
+    "nullableSha": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectNative": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "framework",
+        "adopted_commit"
+      ],
+      "properties": {
+        "framework": {
+          "type": "string",
+          "minLength": 1
+        },
+        "profile": {
+          "type": "string"
+        },
+        "adopted_commit": {
+          "$ref": "#/$defs/sha"
+        }
+      }
+    },
     "component": {
       "type": "object",
       "additionalProperties": true,
       "required": [
         "framework",
         "source",
-        "adopted_commit"
+        "adoption_state"
       ],
       "properties": {
         "framework": {
@@ -77,16 +107,81 @@
           "type": "string",
           "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
         },
-        "adopted_commit": {
-          "$ref": "#/$defs/sha"
+        "adoption_state": {
+          "enum": [
+            "active",
+            "deferred",
+            "not-applicable"
+          ]
+        },
+        "template_source_commit": {
+          "$ref": "#/$defs/nullableSha"
+        },
+        "project_adopted_commit": {
+          "$ref": "#/$defs/nullableSha"
         },
         "profile": {
           "type": "string"
         },
         "version": {
           "type": "string"
+        },
+        "adoption_mode": {
+          "type": "string"
+        },
+        "project_native": {
+          "$ref": "#/$defs/projectNative"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "adoption_state": {
+                "const": "active"
+              }
+            },
+            "required": [
+              "adoption_state"
+            ]
+          },
+          "then": {
+            "required": [
+              "template_source_commit"
+            ],
+            "properties": {
+              "template_source_commit": {
+                "$ref": "#/$defs/sha"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "adoption_state": {
+                "enum": [
+                  "deferred",
+                  "not-applicable"
+                ]
+              }
+            },
+            "required": [
+              "adoption_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "template_source_commit": {
+                "type": "null"
+              },
+              "project_adopted_commit": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
     },
     "starter": {
       "type": "object",
