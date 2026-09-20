@@ -3,6 +3,8 @@
 
 [中文](README.zh-CN.md)
 
+**Human first entrypoint:** [AHICP Human Guide](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.md) · [Chinese canonical](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.zh-CN.md)
+
 **Project links:** [Public homepage](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [GitHub repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter)
 
 **Related public projects:** [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF homepage](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [Vault Interface homepage](https://chongliuphil.github.io/Vault-interface/)
