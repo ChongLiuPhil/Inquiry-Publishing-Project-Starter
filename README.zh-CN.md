@@ -6,6 +6,12 @@
 
 现有三层各自保持权威：
 
+- AHICP: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+- PPF: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
+- Vault Interface: https://github.com/ChongLiuPhil/Vault-interface
+
+职责上：
+
 - AHICP：人类主导、AI 辅助的探究与创作治理；
 - PPF：source → build → publish → release → archive；
 - Vault Interface：公开、中性的 `project.yaml` / `website.yaml` 接口。
