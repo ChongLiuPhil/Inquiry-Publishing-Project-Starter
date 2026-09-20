@@ -5,9 +5,9 @@
 
 **Project links:** [Public homepage](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [GitHub repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter)
 
-**Related public projects:** [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF homepage](https://chongliuphil.github.io/Personal-Publishing-Framework/)
+**Related public projects:** [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF homepage](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [Vault Interface homepage](https://chongliuphil.github.io/Vault-interface/)
 
-**Ecosystem and agent entrypoint:** [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Cloudflare guide`](docs/CONTINUOUS_WEB_CLOUDFLARE.md)
+**Ecosystem and agent entrypoint:** [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent retrieval contract`](docs/AGENT_RETRIEVAL_CONTRACT.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare guide`](docs/CONTINUOUS_WEB_CLOUDFLARE.md)
 
 
 This repository is the **composition, adoption, and upgrade layer** for three independent upstream systems:
@@ -19,6 +19,8 @@ This repository is the **composition, adoption, and upgrade layer** for three in
 
 
 The Starter is **not a fourth normative framework**. Upstream repositories remain authoritative.
+
+**Default new-project posture:** full AHICP + full PPF + Vault Interface. Original or unpublished source is private by default; Continuous Web may still be prepared, but remains restricted and authenticated until explicit human public-release authorization. Reduced profiles require explicit human selection.
 
 
 ## Stack v2
@@ -38,10 +40,10 @@ This allows legacy functional mapping and optional/deferred publication without 
 ## Profiles
 
 
-- `research-only`: Vault Interface + AHICP
-- `publishing-only`: Vault Interface + PPF
-- `research-book`: Vault Interface + AHICP, with PPF optional
-- `full-research-publication`: all three active
+- `full-research-publication`: all three active — **default for new projects**
+- `research-only`: Vault Interface + AHICP — explicit reduced-profile selection required
+- `publishing-only`: Vault Interface + PPF — explicit reduced-profile selection required
+- `research-book`: Vault Interface + AHICP, with PPF optional — explicit reduced-profile selection required
 
 
 A profile describes composition, not project value.
