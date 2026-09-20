@@ -11,6 +11,15 @@
 
 四者保持逻辑独立。互相链接建立的是可发现性与共同采用路径，不会把某个组件的规范权威转移给另一个组件。
 
+## 人类入口与机器入口
+
+整个体系有意区分两个入口角色：
+
+- **人类概念入口 — AHICP：** 使用 [AHICP《普通人指南》](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.zh-CN.md) 与公共主页向人解释整套体系，包括完全没有技术背景的用户。
+- **机器/配置入口 — Starter：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files 与 Agent Retrieval Contract 执行项目组合、采用、升级、部署和自动状态恢复。
+
+Starter 不复制整份人类总介绍；AHICP Human Guide 也不替代机器契约。
+
 ## 默认配置基线
 
 新配置项目的默认状态是：
