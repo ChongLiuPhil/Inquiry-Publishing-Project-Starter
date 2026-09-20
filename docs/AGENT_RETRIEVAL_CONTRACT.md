@@ -1,5 +1,13 @@
 # Agent Retrieval Contract
 
+## 0. Canonical machine entry
+
+The stable public machine/configuration landing page is:
+
+https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+
+An AI agent may be handed only that URL. It must then retrieve the canonical ecosystem and this contract, reconstruct all four components, and continue according to the rules below. The public landing page is a discovery surface; the GitHub-tracked ecosystem and contracts remain authoritative.
+
 This document is the canonical cross-repository retrieval contract for the Inquiry Publishing Stack.
 
 It does not merge AHICP, PPF, Vault Interface, or the Starter into one normative system. It defines how an AI agent reconstructs their relationship before configuring, upgrading, publishing, or operating a project.
