@@ -43,3 +43,20 @@ python tools/stack.py doctor
 ## 人类边界
 
 项目目的、实质性研究判断、publication authorization、最终发布批准与账号授权仍由人类决定。Token、密码、private key 或其他 secret 不进入 Git 或聊天。
+
+
+## 机器可读采用计划
+
+运行：
+
+```bash
+make adoption-plan
+```
+
+或：
+
+```bash
+python tools/stack.py adoption-plan --json
+```
+
+即可得到当前 profile 下每个组件的权威仓库、固定 revision、template root / manifest path，以及文件 ownership policy。AI Agent 应依据该计划 fresh-read 上游，再通过 branch / PR 实施；不要直接从 README 猜模板内容。

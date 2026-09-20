@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/schema/project-stack-lock.schema.json",
+  "title": "Inquiry Publishing Project Stack Lock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "generated",
+    "resolved"
+  ],
+  "properties": {
+    "schema": {
+      "const": "inquiry-publishing-stack-lock/v1"
+    },
+    "generated": {
+      "type": "boolean"
+    },
+    "resolved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ahicp",
+        "ppf",
+        "vault_interface",
+        "starter"
+      ],
+      "properties": {
+        "ahicp": {
+          "$ref": "#/$defs/sha"
+        },
+        "ppf": {
+          "$ref": "#/$defs/sha"
+        },
+        "vault_interface": {
+          "$ref": "#/$defs/sha"
+        },
+        "starter": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha"
+            },
+            {
+              "const": "TEMPLATE_SOURCE_COMMIT_AT_ADOPTION"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    }
+  }
+}

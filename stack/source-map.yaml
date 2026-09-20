@@ -1,0 +1,23 @@
+schema: starter-source-map/v1
+sources:
+  ahicp:
+    repository: ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+    template_root: templates/research-project
+    manifest_path: templates/template-manifest.yaml
+    adoption_mode: functional-map-or-compose
+  ppf:
+    repository: ChongLiuPhil/Personal-Publishing-Framework
+    template_root: templates/quarto-book
+    manifest_path: templates/quarto-book/template-manifest.yaml
+    adoption_mode: compose-publication-layer
+  vault-interface:
+    repository: ChongLiuPhil/Vault-interface
+    template_root: templates
+    manifest_path: interface-manifest.yaml
+    adoption_mode: copy-portable-interface-contracts
+
+principles:
+  - upstream-repositories-remain-authoritative
+  - revisions-come-from-project-stack
+  - fresh-read-before-write
+  - project-owned-paths-are-never-auto-overwritten
