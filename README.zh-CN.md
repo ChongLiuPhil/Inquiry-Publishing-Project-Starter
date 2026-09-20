@@ -6,6 +6,12 @@
 
 现有三层各自保持权威：
 
+- AHICP: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+- PPF: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
+- Vault Interface: https://github.com/ChongLiuPhil/Vault-interface
+
+职责上：
+
 - AHICP：人类主导、AI 辅助的探究与创作治理；
 - PPF：source → build → publish → release → archive；
 - Vault Interface：公开、中性的 `project.yaml` / `website.yaml` 接口。
@@ -43,3 +49,25 @@ python tools/stack.py doctor
 ## 人类边界
 
 项目目的、实质性研究判断、publication authorization、最终发布批准与账号授权仍由人类决定。Token、密码、private key 或其他 secret 不进入 Git 或聊天。
+
+
+## 机器可读采用计划
+
+运行：
+
+```bash
+make adoption-plan
+```
+
+或：
+
+```bash
+python tools/stack.py adoption-plan --json
+```
+
+即可得到当前 profile 下每个组件的权威仓库、固定 revision、template root / manifest path，以及文件 ownership policy。AI Agent 应依据该计划 fresh-read 上游，再通过 branch / PR 实施；不要直接从 README 猜模板内容。
+
+
+## GitHub Template Repository 设置
+
+本仓库设计为 GitHub Template Repository。该属性属于 GitHub 仓库设置，不存储在 Git tree 中；仓库所有者应在 GitHub Settings 中启用 **Template repository**。开启后，新项目可以直接使用 **Use this template**，再按 adoption plan 完成占位符替换与上游组合。

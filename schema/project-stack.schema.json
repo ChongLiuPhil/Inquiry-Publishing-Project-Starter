@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/schema/project-stack.schema.json",
+  "title": "Inquiry Publishing Project Stack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "project",
+    "profile",
+    "components",
+    "starter"
+  ],
+  "properties": {
+    "schema": {
+      "const": "inquiry-publishing-stack/v1"
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        }
+      }
+    },
+    "profile": {
+      "enum": [
+        "research-only",
+        "publishing-only",
+        "research-book",
+        "full-research-publication"
+      ]
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "governance": {
+          "$ref": "#/$defs/component"
+        },
+        "publishing": {
+          "$ref": "#/$defs/component"
+        },
+        "portfolio_interface": {
+          "$ref": "#/$defs/component"
+        }
+      }
+    },
+    "starter": {
+      "$ref": "#/$defs/starter"
+    }
+  },
+  "$defs": {
+    "sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "framework",
+        "source",
+        "adopted_commit"
+      ],
+      "properties": {
+        "framework": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "adopted_commit": {
+          "$ref": "#/$defs/sha"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "starter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "profile",
+        "adopted_commit"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "adopted_commit": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha"
+            },
+            {
+              "const": "TEMPLATE_SOURCE_COMMIT_AT_ADOPTION"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
