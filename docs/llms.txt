@@ -1,0 +1,24 @@
+# Inquiry Publishing Stack
+
+Canonical ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/ECOSYSTEM.md
+Machine-readable ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
+Agent retrieval contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md
+Cloudflare operational guide: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CONTINUOUS_WEB_CLOUDFLARE.md
+
+Current component: Inquiry Publishing Project Starter
+Role: composition, adoption, profile, and upgrade layer. It is not a fourth normative framework.
+
+Public component homepages:
+- AHICP: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+- PPF: https://chongliuphil.github.io/Personal-Publishing-Framework/
+- Vault Interface: https://chongliuphil.github.io/Vault-interface/
+- Starter: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+
+Default new-project baseline:
+full AHICP + full PPF + Vault Interface + project-owned content.
+
+Privacy default:
+original or unpublished project source is private. Continuous Web may be enabled with restricted reader access. Do not retrieve private state without explicit human authorization. Never request or store passwords, API tokens, private keys, recovery codes, or other secrets in chat or Git.
+
+Agent instruction:
+From any component entrypoint, reconstruct the full ecosystem before cross-component configuration. Fresh-read the downstream stack and pinned upstream manifests. For Cloudflare actions, provide numbered operator steps, verification criteria, and rollback instructions.
