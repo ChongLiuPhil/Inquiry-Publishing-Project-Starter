@@ -3,9 +3,13 @@
 
 [中文](README.zh-CN.md)
 
+**Human first entrypoint:** [AHICP Human Guide](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.md) · [Chinese canonical](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.zh-CN.md)
+
 **Project links:** [Public homepage](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [GitHub repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter)
 
 **Related public projects:** [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF homepage](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [Vault Interface homepage](https://chongliuphil.github.io/Vault-interface/)
+
+**Machine entrypoint:** [Public agent landing](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/) · [machine descriptor](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/entry.json)
 
 **Ecosystem and agent entrypoint:** [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent retrieval contract`](docs/AGENT_RETRIEVAL_CONTRACT.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare guide`](docs/CONTINUOUS_WEB_CLOUDFLARE.md)
 

@@ -1,5 +1,13 @@
 # Agent 调取契约
 
+## 0. Canonical 机器入口
+
+稳定的公共 machine/configuration landing page 是：
+
+https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+
+人类可以只把这个 URL 交给 AI Agent。Agent 随后必须自行读取 canonical ecosystem 与本调取契约，恢复四组件关系，并按下文规则继续。公共 landing page 只负责可发现性；GitHub 中受版本控制的 ecosystem 与契约仍然具有权威性。
+
 本文是 Inquiry Publishing Stack 的跨仓库规范调取契约。
 
 它不会把 AHICP、PPF、Vault Interface 与 Starter 合并成一套规范，而是规定 AI agent 在配置、升级、发布或操作项目之前，如何恢复四者之间的关系。

@@ -1,0 +1,29 @@
+{
+  "schema": "inquiry-publishing-stack/machine-entry/v1",
+  "role": "composition-and-configuration-entry",
+  "public_landing": "https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/",
+  "human_entry": "https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/",
+  "canonical": {
+    "ecosystem": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml",
+    "agent_retrieval_contract_en": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md",
+    "agent_retrieval_contract_zh_cn": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md",
+    "llms": "https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/llms.txt"
+  },
+  "default_baseline": [
+    "full-ahicp",
+    "full-ppf",
+    "vault-interface",
+    "project-owned-content"
+  ],
+  "defaults": {
+    "original_source_visibility": "private",
+    "unpublished_web_visibility": "restricted",
+    "reader_access": "authenticated",
+    "public_cutover": "explicit-human-authorization"
+  },
+  "authorization": {
+    "public_links_grant_private_access": false,
+    "secrets_in_chat": false,
+    "external_writes_require_authorization": true
+  }
+}

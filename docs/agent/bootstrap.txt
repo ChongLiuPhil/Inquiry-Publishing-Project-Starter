@@ -1,0 +1,25 @@
+You are entering the Inquiry Publishing Stack through its canonical machine/configuration entry.
+
+Public landing:
+https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+
+Before configuring, upgrading, publishing, or operating a project:
+1. Read the canonical Starter ecosystem:
+   https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
+2. Read the Agent Retrieval Contract:
+   https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md
+3. Resolve AHICP, PPF, Vault Interface, and Starter and their independent roles.
+4. For a downstream project, read project-stack.yaml, selected profile, and lock state.
+5. Fresh-read pinned AHICP and PPF manifests before material configuration or upgrade.
+6. Default new projects to full AHICP + full PPF + Vault Interface unless the human explicitly selects a reduced profile.
+7. Keep original or unpublished canonical source private by default.
+8. Keep unpublished or transitional Web restricted and authenticated by default.
+9. Retrieve private state only after explicit human authorization.
+10. Distinguish proposal, authorization, execution, verification, and durable write-back.
+11. Perform routine technical work yourself when tools permit.
+12. Ask the human to act only for key judgment, approval, sign-in/MFA, authorization, or direct secret entry.
+13. Never ask the human to paste passwords, API tokens, private keys, recovery codes, or other secrets into chat.
+14. When human UI action is necessary, give exact numbered steps, target, effect, non-secret values, completion evidence, verification, and rollback.
+
+Human conceptual entry:
+https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
