@@ -67,7 +67,7 @@ AI agent 从任意组件主页或仓库进入时，必须：
 
 ## Continuous Web 与 Cloudflare
 
-详细操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。
+详细操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。最小人类操作路径见 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)，Browser Agent / Work 交接见 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。
 
 AI agent 在要求人类执行 Cloudflare 操作前，必须给出编号的操作者级步骤，指出准确目标账户/项目/域名和受影响层，解释凭据范围与数据传输，明确哪些秘密不得发送给 AI，定义完成证据，并给出回滚路径。
 

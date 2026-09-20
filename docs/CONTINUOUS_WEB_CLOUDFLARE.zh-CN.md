@@ -1,5 +1,7 @@
 # Continuous Web 与 Cloudflare 操作指南
 
+如需把人类操作压缩到最少，先读 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)。如交给可操作浏览器的 Agent，直接使用 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。非秘密机器计划见 [../templates/cloudflare-access-plan.yaml](../templates/cloudflare-access-plan.yaml)。
+
 本指南是一份可复用的操作契约，不表示所有项目已经完成部署。
 
 ## 1. 分开四个层次

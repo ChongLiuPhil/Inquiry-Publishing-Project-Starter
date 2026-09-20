@@ -7,6 +7,8 @@ Before configuring, adopting, upgrading, publishing, or operating a project, rea
 3. docs/AGENT_RETRIEVAL_CONTRACT.md
 4. docs/AI_ADOPTION_WORKFLOW.md
 5. docs/CONTINUOUS_WEB_CLOUDFLARE.md whenever Continuous Web or Cloudflare is in scope
+6. docs/CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md when a human/account-owner action is required
+7. docs/CLOUDFLARE_WORK_AGENT_HANDOFF.md when a browser-capable agent is executing provider UI work
 
 The default new-project baseline is **full AHICP + full PPF + Vault Interface + project-owned content**. Use the full-research-publication profile unless the human explicitly selects a reduced profile. Do not silently omit a component because the project appears simple.
 
