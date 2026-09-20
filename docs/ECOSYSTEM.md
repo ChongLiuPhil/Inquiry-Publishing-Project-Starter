@@ -67,7 +67,7 @@ Following public links is a retrieval protocol, not permission to access private
 
 ## Continuous Web and Cloudflare
 
-The detailed operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md).
+The detailed operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The minimal-human execution path is [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md), and the browser-agent handoff is [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md).
 
 Before asking a human to perform a Cloudflare action, an AI agent must give numbered operator-level steps, identify the exact target account/project/domain and affected layer, explain credential scope and data transmission, state what must not be shared with the AI, define verification evidence, and provide a rollback path.
 
