@@ -52,3 +52,8 @@ Existing reliable project files should be functionally mapped before creating du
 `project-stack.yaml` declares adopted upstream revisions. `project-stack.lock.yaml` freezes the resolved stack after adoption. Run `python tools/freeze_stack_lock.py` after the project is initialized or upgraded.
 
 See [AI adoption and upgrade workflow](docs/AI_ADOPTION_WORKFLOW.md).
+
+
+## GitHub Template Repository setting
+
+This repository is designed to be a GitHub Template Repository. That flag is repository-level GitHub state rather than Git-tracked content, so the repository owner should enable **Template repository** in GitHub Settings. New projects can then start with **Use this template** and complete placeholder replacement and upstream composition through the adoption plan.
