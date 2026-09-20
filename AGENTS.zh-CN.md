@@ -7,6 +7,8 @@
 3. docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md
 4. docs/AI_ADOPTION_WORKFLOW.zh-CN.md
 5. 涉及 Continuous Web 或 Cloudflare 时读取 docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md
+6. 需要人类/账户所有者动作时读取 docs/CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md
+7. 由 Browser Agent / Work 执行 provider UI 时读取 docs/CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md
 
 新项目默认基线是 **完整 AHICP + 完整 PPF + Vault Interface + 项目自身内容**。默认使用 full-research-publication；只有在人类明确选择时才使用精简 profile。不得因为项目看起来简单而静默省略组件。
 
