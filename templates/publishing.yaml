@@ -14,7 +14,10 @@ publication:
     enabled: true
     authorization_state: not-authorized
     visibility: restricted
-    access: {mode: none, implementation: null, policy_ref: null}
+    access:
+      mode: authenticated
+      implementation: cloudflare-access
+      policy_ref: shared-reader-access
 deployment:
   web:
     provider: cloudflare-workers
