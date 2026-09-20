@@ -7,6 +7,8 @@
 
 **Related public projects:** [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF homepage](https://chongliuphil.github.io/Personal-Publishing-Framework/)
 
+**Ecosystem and agent entrypoint:** [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Cloudflare guide`](docs/CONTINUOUS_WEB_CLOUDFLARE.md)
+
 
 This repository is the **composition, adoption, and upgrade layer** for three independent upstream systems:
 

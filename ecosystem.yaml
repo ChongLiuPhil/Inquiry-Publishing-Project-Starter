@@ -1,0 +1,39 @@
+schema_version: "1.0"
+ecosystem:
+  id: inquiry-publishing-stack
+  name: Inquiry Publishing Stack
+  canonical_entrypoint:
+    homepage: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+    repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  agent_entrypoint: docs/ECOSYSTEM.md
+  language_policy: human-readable pages are single-language with a Chinese/English switch
+  baseline:
+    ahicp: full
+    ppf: full
+    vault_interface: compatible-public-interface
+    continuous_web: required-for-published-projects
+    cloudflare_access: required-for-private-or-transitional-publications
+  components:
+    ahicp:
+      repository: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+      homepage: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+      role: human-led AI-assisted inquiry and creation governance
+    ppf:
+      repository: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
+      homepage: https://chongliuphil.github.io/Personal-Publishing-Framework/
+      role: source-centered publishing lifecycle and continuous web
+    vault_interface:
+      repository: https://github.com/ChongLiuPhil/Vault-interface
+      role: provider-neutral public metadata contract
+    starter:
+      repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
+      homepage: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+      role: composition, adoption, and upgrade layer
+  privacy:
+    original_unpublished_content: private-by-default
+    private_control_plane: never copied into public repositories
+    public_repositories: methods, schemas, templates, and validators only
+  retrieval:
+    follow_agent_entrypoint: true
+    follow_component_links: true
+    fetch_private_state: only-after-explicit-human-authorization

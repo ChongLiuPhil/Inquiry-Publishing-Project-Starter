@@ -2,6 +2,8 @@
 
 这是 AHICP、PPF 与 Vault Interface 的**组合、采用和升级层**，不是第四套规范。
 
+**体系与 Agent 入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
+
 ## 权威边界
 
 - AHICP：人类主导、AI 辅助的探究与创作治理；
