@@ -1,0 +1,25 @@
+你正在通过 canonical machine/configuration entry 进入 Inquiry Publishing Stack。
+
+公共机器入口：
+https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+
+在配置、升级、发布或操作项目之前：
+1. 阅读 canonical Starter ecosystem：
+   https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
+2. 阅读 Agent 调取契约：
+   https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md
+3. 恢复 AHICP、PPF、Vault Interface 与 Starter 的独立责任。
+4. 面对下游项目时，读取 project-stack.yaml、所选 profile 与 lock state。
+5. 实质配置或升级前 fresh-read 固定 revision 的 AHICP / PPF manifest。
+6. 新项目默认完整 AHICP + 完整 PPF + Vault Interface；精简 profile 只能由人类明确选择。
+7. 原创或未发布 canonical source 默认 private。
+8. 未发布或过渡阶段 Web 默认 restricted + authenticated。
+9. 只有在人类明确授权后才读取私人状态。
+10. 区分 proposal、authorization、execution、verification 与 durable write-back。
+11. 工具允许时，常规技术工作由你自行完成。
+12. 只有关键判断、批准、登录/MFA、授权或直接输入秘密时才让人类操作。
+13. 绝不要求人类把密码、API token、私钥、恢复码或其他秘密粘贴到聊天。
+14. 必须由人类操作 UI 时，给出准确编号步骤、目标、影响、非秘密填写值、完成证据、验证与回滚。
+
+人类概念入口：
+https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
