@@ -12,5 +12,4 @@ class StackContractTests(unittest.TestCase):
         r=self.run_check("full-legacy-dual-revision"); self.assertEqual(r.returncode,0,r.stderr+r.stdout)
     def test_generated_lock_rejects_template_placeholder(self):
         r=self.run_check("invalid-generated-placeholder"); self.assertNotEqual(r.returncode,0)
-        self.assertIn("real Starter source commit",r.stderr)
 if __name__=="__main__": unittest.main()

@@ -4,28 +4,37 @@
 
 This repository is the **composition, adoption, and upgrade layer** for three independent upstream systems:
 
-- [AI-Assisted Human Inquiry and Creation Protocol (AHICP)](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) — human-led, AI-assisted inquiry and creation governance;
-- [Personal Publishing Framework (PPF)](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) — source/build/publish/release/archive lifecycle;
-- [Vault Interface](https://github.com/ChongLiuPhil/Vault-interface) — public, portable `project.yaml` and `website.yaml` metadata contracts.
+- [AI-Assisted Human Inquiry and Creation Protocol (AHICP)](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol)
+- [Personal Publishing Framework (PPF)](https://github.com/ChongLiuPhil/Personal-Publishing-Framework)
+- [Vault Interface](https://github.com/ChongLiuPhil/Vault-interface)
 
-The Starter is **not a fourth normative framework**. The upstream repositories remain authoritative.
+The Starter is **not a fourth normative framework**. Upstream repositories remain authoritative.
+
+## Stack v2
+
+Stack v2 distinguishes three facts that must not be collapsed:
+
+- `template_source_commit`: the pinned upstream template/manifest revision used for composition and upgrade mechanics;
+- `project_adopted_commit`: the semantic framework revision actually adopted by the project, when applicable;
+- `adoption_state`: `active`, `deferred`, or `not-applicable`.
+
+This allows legacy functional mapping and optional/deferred publication without inventing adoption history.
 
 ## Profiles
 
-- `research-only`
-- `publishing-only`
-- `research-book`
-- `full-research-publication`
+- `research-only`: Vault Interface + AHICP
+- `publishing-only`: Vault Interface + PPF
+- `research-book`: Vault Interface + AHICP, with PPF optional
+- `full-research-publication`: all three active
 
-A profile describes composition complexity, not project value.
+A profile describes composition, not project value.
 
 ## Machine-readable adoption
-
-Run:
 
 ```bash
 python -m pip install -r requirements-validation.txt
 make stack-check
+make stack-test
 make adoption-plan
 ```
 
@@ -35,25 +44,22 @@ For machine-oriented output:
 python tools/stack.py adoption-plan --json
 ```
 
-The plan reports each component's authoritative repository, pinned revision, template root/manifest, and the file-ownership policy.
+The adoption plan reports active/deferred component state, authoritative repository, pinned template revision, and the exact upstream manifest that owns upgrade classification.
 
 ## Upgrade safety
 
-`stack/managed-paths.yaml` separates:
+Starter does **not** copy AHICP or PPF ownership lists. For each active component, an agent must fresh-read the component manifest at its pinned `template_source_commit`. That upstream manifest is authoritative for `upstream-managed`, `merge-managed`, and `project-owned` paths.
 
-- **upstream-managed** paths that may be updated from a pinned upstream revision;
-- **merge-managed** paths that require a base/current/new three-way comparison;
-- **project-owned** paths that must never be overwritten automatically.
-
-Existing reliable project files should be functionally mapped before creating duplicate sources of truth. Human approvals, research decisions, publication authorization, canonical identity, and provider actual state are preserved unless the human explicitly changes them.
+Existing reliable files should be functionally mapped before duplicate truth sources are created. Human approvals, research decisions, publication authorization, canonical identity, and provider actual state are preserved unless the human explicitly changes them.
 
 ## Durable provenance
 
-`project-stack.yaml` declares adopted upstream revisions. `project-stack.lock.yaml` freezes the resolved stack after adoption. Run `python tools/freeze_stack_lock.py` after the project is initialized or upgraded.
+`project-stack.yaml` declares component state and source revisions. `project-stack.lock.yaml` freezes resolved template revisions.
+
+Before freezing a generated project, replace `starter.adopted_commit: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION` with the **actual Starter source commit** used to generate/adopt the project. `freeze_stack_lock.py` intentionally fails while the placeholder remains; it never substitutes the downstream project's own HEAD.
 
 See [AI adoption and upgrade workflow](docs/AI_ADOPTION_WORKFLOW.md).
 
+## GitHub Template Repository
 
-## GitHub Template Repository setting
-
-This repository is designed to be a GitHub Template Repository. That flag is repository-level GitHub state rather than Git-tracked content, so the repository owner should enable **Template repository** in GitHub Settings. New projects can then start with **Use this template** and complete placeholder replacement and upstream composition through the adoption plan.
+This repository is configured as a GitHub Template Repository. New projects can start with **Use this template**, then record the real Starter source revision and complete composition through the adoption plan.
