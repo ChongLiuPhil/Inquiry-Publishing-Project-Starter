@@ -1,0 +1,66 @@
+schema: starter/cloudflare-access-plan/v1
+policy_ref: shared-reader-access
+purpose: restricted-reader-access-for-original-or-unpublished-web
+
+policy:
+  name: shared-reader-access
+  action: allow
+  session_duration: 24h
+  reusable: true
+  audience:
+    selector: explicit-emails
+    values_source: private-provider-state
+  require:
+    login_method: one-time-pin
+
+authentication:
+  preferred: one-time-pin
+  fallback: cloudflare-identity-provider
+  static_shared_password:
+    native_cloudflare_access_selector: false
+    status: legacy-compatibility-only
+    secret_location: provider-side-only
+
+application:
+  type: self-hosted
+  hostname: null
+  protect_entire_hostname: true
+  session_duration: 24h
+  attach_policy_ref: shared-reader-access
+
+automation:
+  access_api:
+    supported: true
+    token_permissions:
+      - "Access: Apps and Policies Write"
+  identity_provider_api:
+    needed_only_if_otp_or_idp_must_be-created: true
+    token_permissions:
+      - "Access: Organizations, Identity Providers, and Groups Write"
+  workers_builds_api:
+    supported_after-one-time-github-app-authorization: true
+    token_type: user-scoped
+    token_permissions:
+      - "Workers Builds Configuration: Edit"
+      - "Workers Scripts: Read"
+
+human_reservations:
+  - sign-in-and-mfa
+  - first-cloudflare-github-app-authorization
+  - first-api-token-creation
+  - reader-identity-selection
+  - enter-any-legacy-shared-secret-directly-in-provider-ui
+  - final-public-release-authorization
+
+secret_rules:
+  never_store_in_git: true
+  never_paste_into_chat: true
+  never_put-in-policy_ref: true
+  verify_only-non-secret-result-state: true
+
+verification:
+  - unauthenticated-request-is-challenged-or-denied
+  - authorized-reader-can-open-site
+  - direct-asset-and-feed-urls-do-not-bypass-access
+  - preview-and-production-hostnames-match-intended-policy
+  - repository-remains-private-unless-explicitly-authorized
