@@ -3,7 +3,7 @@
 
 [中文](README.zh-CN.md)
 
-**Human first entrypoint:** [AHICP Human Guide](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.md) · [Chinese canonical](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.zh-CN.md)
+**New to the full stack?** Start with the [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/), which explains the system from the user’s point of view and provides a bootstrap instruction for AI setup.
 
 **Project links:** [Public homepage](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [GitHub repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter)
 
@@ -22,15 +22,15 @@ This repository is the **composition, adoption, and upgrade layer** for three in
 - [Vault Interface](https://github.com/ChongLiuPhil/Vault-interface)
 
 
-The Starter is **not a fourth normative framework**. Upstream repositories remain authoritative.
+Starter is **not a fourth framework**. AHICP, PPF, and Vault Interface remain authoritative for their own specifications; Starter records how a project composes and adopts them.
 
-**Default new-project posture:** full AHICP + full PPF + Vault Interface. Original or unpublished source is private by default; Continuous Web may still be prepared, but remains restricted and authenticated until explicit human public-release authorization. Reduced profiles require explicit human selection.
+**Default for new projects:** full AHICP + full PPF + Vault Interface. Original or unpublished source is private by default; Continuous Web may still be prepared, but remains restricted and authenticated until explicit human public-release authorization. Reduced profiles require explicit human selection.
 
 
 ## Stack v2
 
 
-Stack v2 distinguishes three facts that must not be collapsed:
+Stack v2 keeps three easily confused facts separate:
 
 
 - `template_source_commit`: the pinned upstream template/manifest revision used for composition and upgrade mechanics;
@@ -38,7 +38,7 @@ Stack v2 distinguishes three facts that must not be collapsed:
 - `adoption_state`: `active`, `deferred`, or `not-applicable`.
 
 
-This allows legacy functional mapping and optional/deferred publication without inventing adoption history.
+This lets existing projects reuse reliable structures, defer components when appropriate, and distinguish the template used for an upgrade from the framework revision the project actually accepted.
 
 
 ## Profiles
