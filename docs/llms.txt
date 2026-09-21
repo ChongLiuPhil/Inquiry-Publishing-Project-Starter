@@ -15,6 +15,8 @@ https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/eco
 Canonical ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/ECOSYSTEM.md
 Machine-readable ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
 Agent retrieval contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md
+Cloudflare public-delivery migration: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
+Cloudflare migration state: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml
 Cloudflare operational guide: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CONTINUOUS_WEB_CLOUDFLARE.md
 
 Current component: Inquiry Publishing Project Starter
@@ -34,3 +36,6 @@ original or unpublished project source is private. Continuous Web may be enabled
 
 Agent instruction:
 From any component entrypoint, reconstruct the full ecosystem before cross-component configuration. Fresh-read the downstream stack and pinned upstream manifests. For Cloudflare actions, provide numbered operator steps, verification criteria, and rollback instructions.
+
+Public delivery policy:
+Cloudflare Pages is preferred for the four public framework sites. GitHub remains canonical source. Current GitHub Pages URLs remain authoritative until a verified Cloudflare/custom-domain cutover.
