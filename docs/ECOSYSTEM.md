@@ -74,6 +74,14 @@ When an AI agent enters through any component homepage or repository, it must:
 
 Following public links is a retrieval protocol, not permission to access private repositories or private deployment systems.
 
+## Public delivery provider
+
+For the four public framework sites, **Cloudflare Pages is the preferred delivery provider** and GitHub remains the canonical source/version-control provider. The current public URLs still use GitHub Pages and remain authoritative until Cloudflare staging, the target domain, the machine entry, and cross-project links have been verified.
+
+Use [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md) and the machine-readable [cloudflare-public-delivery.yaml](../templates/cloudflare-public-delivery.yaml) for the coordinated migration and cutover. A `*.pages.dev` URL is acceptable for staging, but a custom domain is preferred for the stable public identity.
+
+Do not replace ecosystem public URLs merely because a Cloudflare project has been created. URL cutover is a separate verified operation with rollback.
+
 ## Continuous Web and Cloudflare
 
 The detailed operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The minimal-human execution path is [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md), and the browser-agent handoff is [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md).
