@@ -27,6 +27,15 @@ ecosystem:
   agent_retrieval_contract: docs/AGENT_RETRIEVAL_CONTRACT.md
   llms_entrypoint: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/llms.txt
   language_policy: human-readable pages are single-language with a Chinese/English switch
+  public_delivery:
+    canonical_source_provider: github
+    current_provider: github-pages
+    preferred_provider: cloudflare-pages
+    migration_state: prepared-provider-authorization-required
+    migration_plan: templates/cloudflare-public-delivery.yaml
+    migration_guide: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
+    stable_url_policy: custom-domain-preferred
+    cutover_rule: keep-current-public-urls-until-verified-cloudflare-deployment
   baseline:
     default_profile: full-research-publication
     ahicp: full
@@ -80,6 +89,8 @@ ecosystem:
     fetch_private_state: only-after-explicit-human-authorization
     public_links_do_not_grant_private_access: true
   cloudflare:
+    public_delivery_migration: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
+    public_delivery_plan: templates/cloudflare-public-delivery.yaml
     operational_guide: docs/CONTINUOUS_WEB_CLOUDFLARE.md
     agent_must_give_numbered_human_steps_when_required: true
     agent_must_state_verification_and_rollback: true

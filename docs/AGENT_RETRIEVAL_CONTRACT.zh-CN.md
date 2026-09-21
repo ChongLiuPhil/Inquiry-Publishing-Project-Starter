@@ -85,7 +85,22 @@ Agent 可能从以下任意入口进入：
 
 如果无法恢复这些事实，应把它视为配置缺陷，而不是自行猜测。
 
-## 6. Cloudflare 需要人工操作时的交接标准
+## 6. 公共网页迁移规则
+
+对于四个公共框架网站，Cloudflare Pages 是首选交付平台，GitHub 继续作为权威源文件、版本历史和 CI 平台。
+
+在机器可读迁移计划标记“已验证切换”以前：
+
+- 现有 GitHub Pages URL 仍然是当前正式公共入口；
+- `*.pages.dev` 只是 staging，不是体系的稳定公共身份；
+- 不能因为 Cloudflare project 已创建，就提前改写公共入口 URL；
+- 稳定公共身份优先使用已经验证的自定义域名；
+- 必须读取 `templates/cloudflare-public-delivery.yaml` 确认迁移状态；
+- 协调切换必须遵循 `docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md`。
+
+只要迁移还没有达到 verified-cutover 状态，任何新的公共 URL 都应视为 provisional provider state，而不是正式入口。
+
+## 7. Cloudflare 需要人工操作时的交接标准
 
 当某项 Cloudflare 操作无法通过已经授权的工具直接完成时，Agent 不得只说“配置 Cloudflare”或“启用 Access”，而应提供完整的编号操作步骤，包括：
 
@@ -99,7 +114,7 @@ Agent 可能从以下任意入口进入：
 
 如果 Cloudflare 当前 UI 与已有 runbook 不同，Agent 必须检查当前 UI 或官方文档，不能凭记忆猜路径。
 
-## 7. 四个权威公共入口
+## 8. 四个权威公共入口
 
 - AHICP: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
 - PPF: https://chongliuphil.github.io/Personal-Publishing-Framework/

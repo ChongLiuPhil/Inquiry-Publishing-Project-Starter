@@ -54,11 +54,39 @@ def main() -> int:
         if not (ROOT / relative).exists():
             raise SystemExit(f"missing public machine-entry artifact: {relative}")
 
+    migration_plan_path = ROOT / "templates/cloudflare-public-delivery.yaml"
+    migration_guide_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md"
+    migration_guide_zh_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md"
+    for required_path in (migration_plan_path, migration_guide_path, migration_guide_zh_path):
+        if not required_path.exists():
+            raise SystemExit(f"missing Cloudflare public-delivery migration artifact: {required_path.relative_to(ROOT)}")
+
+    migration_plan = yaml.safe_load(migration_plan_path.read_text(encoding="utf-8"))
+    if migration_plan.get("preferred_public_delivery_provider") != "cloudflare-pages":
+        raise SystemExit("Cloudflare Pages must be the preferred public delivery provider")
+    if migration_plan.get("current_public_delivery_provider") != "github-pages":
+        raise SystemExit("GitHub Pages must remain current until verified Cloudflare cutover")
+    if migration_plan.get("cutover_rule") != "switch-public-entrypoints-only-after-verified-cloudflare-deployment":
+        raise SystemExit("public URL cutover must require verified Cloudflare deployment")
+    if migration_plan.get("build_defaults", {}).get("output_dir") != "docs":
+        raise SystemExit("framework-site Cloudflare Pages output directory must be docs")
+
+    public_delivery = ecosystem.get("public_delivery")
+    if not isinstance(public_delivery, dict):
+        raise SystemExit("Starter ecosystem is missing public_delivery")
+    if public_delivery.get("current_provider") != "github-pages" or public_delivery.get("preferred_provider") != "cloudflare-pages":
+        raise SystemExit("Starter ecosystem has inconsistent public delivery provider state")
+
     descriptor = json.loads((ROOT / "docs/agent/entry.json").read_text(encoding="utf-8"))
     if descriptor.get("public_landing") != MACHINE_ENTRY:
         raise SystemExit("agent entry descriptor has the wrong public landing")
     if descriptor.get("human_entry") != HUMAN_ENTRY:
         raise SystemExit("agent entry descriptor has the wrong human entry")
+    descriptor_delivery = descriptor.get("public_delivery")
+    if not isinstance(descriptor_delivery, dict) or descriptor_delivery.get("preferred_provider") != "cloudflare-pages":
+        raise SystemExit("agent entry descriptor must expose Cloudflare Pages as preferred delivery")
+    if descriptor_delivery.get("current_provider") != "github-pages":
+        raise SystemExit("agent entry descriptor must keep GitHub Pages current before cutover")
 
     agent_page = (ROOT / "docs/agent/index.html").read_text(encoding="utf-8")
     for marker in ("Agent Retrieval Contract", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
