@@ -1,28 +1,28 @@
-# Inquiry Publishing Stack：体系与 Agent 入口
+# Inquiry Publishing Stack：体系与 AI 配置入口
 
 本仓库是四个逻辑独立组件的组合入口：
 
 | 组件 | 责任 | 公共入口 |
 | --- | --- | --- |
-| AHICP | 人类主导、AI 辅助的探究与创作治理 | [主页](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [仓库](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
+| AHICP | 探究、证据、决定、项目记忆与 AI 协作 | [主页](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [仓库](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
 | PPF | 以源文件为中心的出版、发布、归档和 Continuous Web | [主页](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [仓库](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) |
 | Vault Interface | 与提供商无关的公共元数据 Schema 与验证器 | [主页](https://chongliuphil.github.io/Vault-interface/) · [仓库](https://github.com/ChongLiuPhil/Vault-interface) |
-| Starter | 组合、采用、profile 与升级 | [主页](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [仓库](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
+| Starter | 组合、采用、配置方案与升级 | [主页](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [仓库](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
 
 四者保持逻辑独立。互相链接建立的是可发现性与共同采用路径，不会把某个组件的规范权威转移给另一个组件。
 
-## 人类入口与机器入口
+## 了解体系与配置项目是两件不同的事
 
 整个体系有意区分两个入口角色：
 
-- **人类概念入口 — AHICP：** 使用 [AHICP《普通人指南》](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.zh-CN.md) 与公共主页向人解释整套体系，包括完全没有技术背景的用户。
-- **机器/配置入口 — Starter：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files 与 Agent Retrieval Contract 执行项目组合、采用、升级、部署和自动状态恢复。
+- **先从 AHICP 了解体系：** [AHICP 公共主页](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) 提供完整使用指南，解释这套体系解决什么问题以及怎样开始。
+- **让 AI 从 Starter 开始配置：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files 与 Agent Retrieval Contract 执行项目组合、采用、升级、部署和状态恢复。
 
-Starter 不复制整份人类总介绍；AHICP Human Guide 也不替代机器契约。
+AHICP 负责解释方法和使用方式；Starter 保留精确的机器配置契约，两者互相链接但不互相替代。
 
 ## 默认配置基线
 
-新配置项目的默认状态是：
+新项目默认配置是：
 
 ~~~text
 AHICP（完整）
@@ -33,7 +33,7 @@ AHICP（完整）
 
 项目通过 project-stack.yaml 记录真实采用状态，不复制出与上游规范竞争的第二真值源。
 
-full-research-publication 是新项目默认 profile。精简 profile 仍然保留，但 AI agent 只有在人类明确选择时才能使用；不能因为项目看起来简单而静默省略 AHICP 或 PPF。
+`full-research-publication` 是新项目默认 profile。精简 profile 仍然保留，但 AI Agent 只有在使用者明确选择时才能使用；不能因为项目看起来简单就自动省略 AHICP 或 PPF。
 
 Vault Interface 是适配层，不替代 AHICP 或 PPF。
 
@@ -48,9 +48,9 @@ Vault Interface 是适配层，不替代 AHICP 或 PPF。
 - 从 restricted 转为 public 需要人类明确授权，而且不意味着源仓库必须改成 public。
 - 私人控制平面只能通过获得授权的项目配置被引用，不复制进公共 Starter。
 
-## 人类与 AI 可发现性
+## 公共页面与 AI 调取
 
-四个公共组件都应展示相同的四个公共主页，并指向同一个 canonical ecosystem contract。
+四个公共组件都应能互相发现，并指向同一个权威 ecosystem 契约。
 
 机器调取入口：
 
