@@ -70,6 +70,16 @@ def main() -> int:
         raise SystemExit("Starter homepage does not expose the public machine entry")
     if '<main id="zh" class="lang active">' not in root_page:
         raise SystemExit("Starter homepage must keep Chinese visible as a no-JavaScript fallback")
+    required_homepage_markers = [
+        "template_source_commit",
+        "project_adopted_commit",
+        "adoption_state",
+        "为什么它不是第四套规范",
+    ]
+    for marker in required_homepage_markers:
+        if marker not in root_page:
+            raise SystemExit(f"Starter homepage is missing required architecture marker: {marker}")
+
     scripts = re.findall(r"<script>(.*?)</script>", root_page, flags=re.DOTALL)
     if not scripts:
         raise SystemExit("Starter homepage has no inline script to validate")
