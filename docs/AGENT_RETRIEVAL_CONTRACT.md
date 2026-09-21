@@ -85,7 +85,22 @@ Before material configuration or upgrade work, the agent should be able to state
 
 If those facts cannot be reconstructed, treat the situation as a configuration defect rather than guessing.
 
-## 6. Cloudflare human-handoff standard
+## 6. Public-delivery migration rule
+
+For the four public framework sites, Cloudflare Pages is the preferred delivery provider and GitHub remains the canonical source/version-control provider.
+
+Until the migration plan reports a verified cutover:
+
+- the existing GitHub Pages URLs remain the current public entrypoints;
+- a `*.pages.dev` URL is staging, not the stable ecosystem identity;
+- an agent must not rewrite public entry URLs merely because a Cloudflare project exists;
+- the preferred stable identity is a verified custom domain;
+- the migration state must be read from `templates/cloudflare-public-delivery.yaml`;
+- the coordinated cutover must follow `docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md`.
+
+If the migration has not reached the verified-cutover state, treat any proposed new public URL as provisional provider state.
+
+## 7. Cloudflare human-handoff standard
 
 When a Cloudflare action cannot be completed through an already authorized tool, the agent must not say only “configure Cloudflare” or “enable Access.” It must give numbered, operator-level instructions that include:
 
@@ -99,7 +114,7 @@ When a Cloudflare action cannot be completed through an already authorized tool,
 
 If the live provider UI differs from a recorded runbook, the agent must inspect current provider documentation or UI rather than inventing a path.
 
-## 7. Canonical public entrypoints
+## 8. Canonical public entrypoints
 
 - AHICP: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
 - PPF: https://chongliuphil.github.io/Personal-Publishing-Framework/

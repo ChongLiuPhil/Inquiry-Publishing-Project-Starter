@@ -74,6 +74,14 @@ AI agent 从任意组件主页或仓库进入时，必须：
 
 沿公共链接调取是一套阅读协议，不构成私人仓库或部署系统访问权限。
 
+## 公共网页的交付平台
+
+对于这四个已经公开的框架网站，**Cloudflare Pages 是首选网页交付平台**，GitHub 继续作为权威源文件、版本历史和 CI 平台。当前正式公共 URL 仍然是 GitHub Pages；只有 Cloudflare staging、目标域名、机器入口和跨项目链接都验证成功后，才切换正式 URL。
+
+协调迁移与切换遵循 [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md) 和机器可读的 [cloudflare-public-delivery.yaml](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml)。`*.pages.dev` 可以用于 staging，但稳定公共身份优先使用自定义域名。
+
+仅仅创建了 Cloudflare project 并不等于可以修改 ecosystem 公共 URL。URL 切换必须单独验证，并且保留回滚路径。
+
 ## Continuous Web 与 Cloudflare
 
 详细操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。最小人类操作路径见 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)，Browser Agent / Work 交接见 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。
