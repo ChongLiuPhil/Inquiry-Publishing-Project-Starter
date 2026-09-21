@@ -1,0 +1,95 @@
+schema: starter/cloudflare-public-delivery/v1
+status: migration-prepared-provider-authorization-required
+preferred_public_delivery_provider: cloudflare-pages
+canonical_source_provider: github
+current_public_delivery_provider: github-pages
+cutover_state: not-started
+cutover_rule: switch-public-entrypoints-only-after-verified-cloudflare-deployment
+stable_url_policy:
+  custom_domain_preferred: true
+  pages_dev_allowed_for_staging: true
+  pages_dev_as_permanent_identity: false
+  selected_custom_domain: null
+
+build_defaults:
+  production_branch: main
+  root_dir: .
+  build_command: "exit 0"
+  output_dir: docs
+  framework_preset: none
+
+preview_defaults:
+  enabled: true
+  visibility: restricted
+  authentication: cloudflare-access
+  public_preview_allowed: false
+
+production_defaults:
+  framework_sites_visibility: public
+  source_repository_visibility: public
+  deployment_provider: cloudflare-pages
+
+sites:
+  ahicp:
+    repository: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+    current_url: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+    cloudflare_project: null
+    cloudflare_staging_url: null
+    custom_domain: null
+    output_dir: docs
+    role: human-entry
+  ppf:
+    repository: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
+    current_url: https://chongliuphil.github.io/Personal-Publishing-Framework/
+    cloudflare_project: null
+    cloudflare_staging_url: null
+    custom_domain: null
+    output_dir: docs
+    role: publishing-lifecycle-site
+  vault_interface:
+    repository: https://github.com/ChongLiuPhil/Vault-interface
+    current_url: https://chongliuphil.github.io/Vault-interface/
+    cloudflare_project: null
+    cloudflare_staging_url: null
+    custom_domain: null
+    output_dir: docs
+    role: public-metadata-site
+  starter:
+    repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
+    current_url: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+    current_machine_entry: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+    cloudflare_project: null
+    cloudflare_staging_url: null
+    custom_domain: null
+    output_dir: docs
+    role: composition-and-machine-entry-site
+
+human_reserved_gates:
+  - cloudflare-sign-in-and-mfa
+  - one-time-cloudflare-github-app-authorization
+  - custom-domain-selection-if-not-already-decided
+  - dns-or-zone-authorization-if-required
+  - final-public-url-cutover-authorization
+
+automation_after_authorization:
+  - create-or-configure-cloudflare-pages-projects
+  - verify-main-branch-production-builds
+  - verify-preview-deployments
+  - apply-preview-access-policy
+  - verify-static-assets-and-agent-entry
+  - record-non-secret-provider-state
+  - prepare-atomic-public-url-cutover
+
+cutover_verification:
+  - each-cloudflare-production-site-serves-expected-main-revision
+  - starter-agent-entry-and-entry-json-resolve-on-target-domain
+  - llms-txt-resolves-on-target-domain
+  - cross-project-links-resolve
+  - preview-deployments-are-restricted
+  - no-secrets-in-git-chat-or-build-logs
+  - rollback-to-current-github-pages-urls-is-documented
+
+rollback:
+  pre-cutover: keep-github-pages-as-current-public-entry
+  post-cutover: restore-previous-public-entrypoints-and-dns
+  delete-cloudflare-projects: false
