@@ -1,6 +1,9 @@
 from pathlib import Path
 import json
+import re
+import subprocess
 import sys
+import tempfile
 
 import yaml
 
@@ -65,8 +68,22 @@ def main() -> int:
     root_page = (ROOT / "docs/index.html").read_text(encoding="utf-8")
     if MACHINE_ENTRY not in root_page:
         raise SystemExit("Starter homepage does not expose the public machine entry")
+    if '<main id="zh" class="lang active">' not in root_page:
+        raise SystemExit("Starter homepage must keep Chinese visible as a no-JavaScript fallback")
+    scripts = re.findall(r"<script>(.*?)</script>", root_page, flags=re.DOTALL)
+    if not scripts:
+        raise SystemExit("Starter homepage has no inline script to validate")
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".js", delete=False) as handle:
+        handle.write("\n".join(scripts))
+        script_path = handle.name
+    try:
+        check = subprocess.run(["node", "--check", script_path], capture_output=True, text=True, check=False)
+    except FileNotFoundError as exc:
+        raise SystemExit("Node.js is required to validate Starter homepage JavaScript") from exc
+    if check.returncode != 0:
+        raise SystemExit("Starter homepage JavaScript syntax error:\n" + check.stderr)
 
-    print("ecosystem + machine-entry validation passed")
+    print("ecosystem + machine-entry + homepage validation passed")
     return 0
 
 
