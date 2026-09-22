@@ -27,7 +27,7 @@
 
 ## 3. 已完成与证据边界
 
-- Starter PR #23 head `6a2509de72c5b176f28846442f20fe3266b69d12`；2026-09-22 GitHub Actions 的 Ecosystem validation、Stack CI、Unified public site 三项均 SUCCESS。PR 仍 OPEN，合并前需重新核对 main 未前进。
+- Starter PR #23 当前 head `45d75c7f21c9575a1173695b8eef25fb96089d10`；GitHub Actions run `35781861562`（Ecosystem validation）、`35781861460`（Stack CI）、`35781861486`（Unified public site）均 SUCCESS。PR 仍 OPEN，合并前需重新核对 main 未前进及当前 checks。
 - 本地固定 SHA 完整构建及输出/来源验证通过；浏览器测试 24 项通过（8 路由 × 桌面、移动、禁 JS），包含双语切换和指南加载。Wrangler 4.136.1 dry-run 对实际完整 `_site` 成功。
 - 本地测试运行环境 Python 3.9；CI 和 Workers Build 目标为 Python 3.12.12，真实 Worker 构建仍需核验日志。
 
