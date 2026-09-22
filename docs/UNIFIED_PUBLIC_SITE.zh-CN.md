@@ -28,7 +28,7 @@ python tools/build_public_site.py
 
 ## 当前状态与候选状态
 
-当前正式 Human Entry、Machine Entry、四组件 URL 仍是 GitHub Pages。候选描述符保留当前 `public_landing` 与 `human_entry`，另以 `delivery_candidate` 声明相对路径；不能把相对候选路径或提供商地址 写成正式身份。首页中的可复制启动指令继续使用当前正式机器入口。
+当前正式人类入口和机器入口在单独批准切换前仍为 GitHub Pages。候选描述符保留 `public_landing` 与 `human_entry`，另以 `delivery_candidate` 声明相对路径。只有经过验证并获正式切换批准后，Workers 地址才可成为正式身份。
 
 候选输出带迁移提示和 `noindex`。**noindex 不等于访问认证。** 构建器目前故意仅支持 candidate/holding，不支持无授权 production 模式；最终切换必须通过单独的、明确授权的协调变更，更新公共 URL、候选提示、索引规则与相关验证器。
 

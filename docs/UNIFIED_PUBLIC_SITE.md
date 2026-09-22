@@ -28,7 +28,7 @@ Upstream updates do not silently enter the site: the maintainer/agent fresh-read
 
 ## Current versus candidate state
 
-The current human entry, machine entry and four component URLs remain GitHub Pages. The candidate descriptor preserves current `public_landing` and `human_entry`, while `delivery_candidate` exposes relative paths. Neither candidate paths nor provider addresses automatically become canonical identity. Copyable human-start instructions continue to use the current official machine URL.
+The The current official human and machine entries remain GitHub Pages until cutover is separately approved. The candidate descriptor preserves `public_landing` and `human_entry` while `delivery_candidate` exposes relative paths. The Workers address may become canonical only after verification and explicit cutover approval.
 
 Candidate output includes migration notices and `noindex`. **Noindex is not authentication.** The builder intentionally supports only candidate/holding modes, not unauthorized production. Final cutover needs a separately authorized coordinated change to public URLs, candidate notices, indexing rules and related validators.
 

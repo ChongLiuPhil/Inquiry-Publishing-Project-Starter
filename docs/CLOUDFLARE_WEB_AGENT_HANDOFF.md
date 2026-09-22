@@ -8,6 +8,8 @@ Use one Worker, `inquirystack`, on the existing `philohub` account subdomain. An
 
 Only Starter needs Git integration. Other public upstream files are fetched at `site/sources.lock.json` pins without credentials. Do not conflate website source locks with downstream adoption locks. Source baseline: Starter `117e9981c4d712110800f5d94bb875164fb41689`, PPF `5fca3e99df588c338eca45915478a07a9cadc099`; query the actual PR head and subsequent main revision.
 
+Starter PR head `6a2509de72c5b176f28846442f20fe3266b69d12` passed Ecosystem validation, Stack CI and Unified public site GitHub Actions on 2026-09-22; it remains open. Re-check main before merge. The pinned full-site build and output/provenance validation passed locally; browser verification passed 24 route/viewport combinations (desktop, mobile, JavaScript disabled) including language switching and guide loading. Wrangler 4.136.1 dry-run succeeded with the full generated `_site`. The local Python was 3.9; CI and Workers Builds target 3.12.12, which must be confirmed from actual logs.
+
 A direct-API holding deployment was verified on 2026-09-22 at 09:56 UTC: expected HTTP 503 and Setup pending, no-store/noindex. Holding version `88bb1d9a-acf7-4e52-8cd6-d9dfef3e9f3c`, deployment `a91fbe67-1bd1-4130-bbf4-31bc3dd9f817`. Re-read live state. This is not a Git-triggered or complete-content deployment. Access was not enabled; no protected preview or approved-reader runtime test passed.
 
 ## Continue entirely in the cloud

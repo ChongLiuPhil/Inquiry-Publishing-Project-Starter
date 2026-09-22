@@ -20,7 +20,7 @@ architecture:
   expected_active_worker_count: 1
 stable_url_policy:
   custom_domain_preferred: false
-  pages_dev_allowed_for_staging: true
+  workers_dev_allowed: true
   selected_custom_domain: null
   provider_native_permanent_identity_allowed_after_explicit_cutover: true
   custom_domain_optional: true
