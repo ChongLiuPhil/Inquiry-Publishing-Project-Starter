@@ -27,7 +27,7 @@
 
 ## 3. 已完成与证据边界
 
-- Starter PR #23 当前 head `45d75c7f21c9575a1173695b8eef25fb96089d10`；GitHub Actions run `35781861562`（Ecosystem validation）、`35781861460`（Stack CI）、`35781861486`（Unified public site）均 SUCCESS。PR 仍 OPEN，合并前需重新核对 main 未前进及当前 checks。
+- Starter PR #23 当前 head `4afaae6eac41a118c95e99e6bf1efa35578e8474`；GitHub Actions run `35782060578`（Ecosystem validation）、`35782060584`（Stack CI）、`35782060575`（Unified public site）均 SUCCESS。PR 仍 OPEN，合并前需重新核对 main 未前进及当前 checks。
 - 本地固定 SHA 完整构建及输出/来源验证通过；浏览器测试 24 项通过（8 路由 × 桌面、移动、禁 JS），包含双语切换和指南加载。Wrangler 4.136.1 dry-run 对实际完整 `_site` 成功。
 - 本地测试运行环境 Python 3.9；CI 和 Workers Build 目标为 Python 3.12.12，真实 Worker 构建仍需核验日志。
 
@@ -38,7 +38,7 @@
 - 原 Pages 项目 `inquiry-publishing-stack` 保留，曾成功部署 holding；不能把 Pages 成功推断为 Workers Builds 成功。
 - 只有 Starter 的 Pages Git clone 曾验证成功，未核实 GitHub App 全部授权范围，不宣称最小权限。
 - Access 当时返回未启用；Workers Builds API 可读且当时未耗尽构建分钟。用户账户前缀后已变为 `philohub`，本 Agent 没有执行账户改名。
-- 当前没有完整 Workers 内容部署、Git 触发验证、受保护预览验收或通用生命周期实现完成证据。
+- PPF PR #31（https://github.com/ChongLiuPhil/Personal-Publishing-Framework/pull/31）head `7b26191819645208a84a4bbc55d88f9087e1c032`；Reference Template CI run `35787073209` 与 Ecosystem validation run `35787073534` 均 SUCCESS，PR 仍 OPEN。该 PR 已提交生命周期 CLI、共享密码 Worker gate、项目模板、文档和测试，但尚未合并。当前仍无完整 Workers 内容部署、原生 Builds Git 触发验证或受保护预览验收。当前 `inquirystack` holding deployment/version 及 Builds 零 triggers 已于 2026-09-23 重新通过 Cloudflare API 核实。
 
 ## 4. 云端接续步骤
 
@@ -52,21 +52,19 @@
 8. 主站公开无需 Access 初始化。要完成受限预览时，才处理 Access 团队名称和预览读者批准；配置 `preview_worker` 并审查更高优先级 hostname 例外，验证真实版本预览。未完成就继续关闭，不伪报 PASS。预览上传不得替换主部署。
 9. 保存非秘密部署、版本、验证与回滚证据到 GitHub 的执行报告；敏感控制面状态在私人提供商状态中保存。PR、CI 和 provider 各自证据独立记录。
 
-## 5. 原批准计划仍待实现的标准化工作
+## 5. 已提交与仍待完成的标准化工作
 
-以下是待办，不是本 PR 已实现能力。它们均能通过 GitHub 编辑、PR、Actions 与云端工具完成，不依赖原电脑：
-
-- 扩展现有机制而非另造规范：Starter 负责配置和编排；PPF 集中实现 `doctor / plan / apply / verify / rollback`。
+PPF PR #31 已提交生命周期 CLI `doctor / plan / apply / verify / rollback`、从项目模板读取部署配置、Workers Builds 与三种阅读模式的契约、共享密码服务端 gate、运行记录/受验证版本回滚机制及自动化测试。Starter 继续承担入口、锁和薄编排。以上属于开放 PR 中的代码，尚未合并；其中 `apply` 使用配置好的 Wrangler 命令，并不自动创建或协调 Workers Builds GitHub 连接/触发器。
 - 从现有项目配置推导 repo、branch、build、output 和版本；综合站 `_site`，Quarto `_book`，保留原构建检查。
 - 真实查询后按差异执行，幂等不重复创建 Worker/连接/trigger/policy；中途失败可从已验证步骤恢复；权限、额度、构建失败和漂移准确报错，不能自动放宽访问或付费。
 - 优先已授权 API/MCP；独立脚本只用安全环境凭据，禁止输出秘密。提供原生 Workers Builds 默认 profile，保留强化 external CI profile。
 - 三种阅读模式：获准 public、Access 邮箱名单（默认 OTP/24h）、可选项目共享密码。保留已有项目模式，新项目默认受限邮箱，未批读者停 holding；共享认证服务不等于共享读者名单。
 - 密码模式用可复用 Worker 服务端模块，密码与签名密钥只入 Cloudflare Secrets；`run_worker_first` 覆盖 HTML/附件/JSON/资源/预览；恒时比较、签名有效期安全 Cookie、退出、尝试限速；任一秘密轮换使旧会话失效；禁公共缓存，秘密缺失/配置错误/认证异常/额度不足均 fail closed，不回退静态直出。明确边缘限速作用范围及 Worker 请求额度。
 - 补齐双语操作契约、最小项目示例、模式验证器与测试；覆盖错误身份/密码、过期会话、轮换、直接附件、备用地址、缓存绕过、权限/额度/构建失败和恢复。测试通过不能替代真实 Access 身份和线上部署验证。
-- 通过 PPF PR 交付实现，再给 Starter 增加固定实现 revision 的薄编排入口；不要以本次标准更新自动升级全部采用锁或网站内容锁。
+- 当前 PPF PR #31 尚未合并；Starter PR #23 未固定引用该 PPF revision。合并顺序及锁定采用需后续按 PR/基线核验。Workers Builds API 连接/触发器的自动幂等协调仍未实现，实际 GitHub App 授权必须由用户在 Cloudflare 页面完成；原生 user build token 及其安全录入亦未配置。
 
 ## 6. 完成与回滚
 
-本轮最新目标：可复用标准工具完成，当前公开主站验收通过，预览受保护后再启用。用户改变的是当前主站阅读模式，未授权正式公共身份改写或旧站停用。若预览身份仍待人批准，应准确列为唯一对应阻塞，继续完成独立工作。
+当前公开阅读已获用户授权，但生产 Worker 仍在 holding，尚未完成公开站内容部署/验收；最终正式 URL 切换仍需单独批准。预览保持关闭，直到 Access 保护及获批读者验证完成。
 
 失败时暂停相关自动触发，恢复已验证 holding 或上一版本，复核响应；不删除项目、不强推、不改变其他项目。已知 holding 版本须先查询确认仍可用。仓库回滚使用 revert PR；不要自动恢复会泄漏内容的旧访问配置。
