@@ -87,16 +87,16 @@ Agent 可能从以下任意入口进入：
 
 ## 6. 公共网页迁移规则
 
-对于四个公共框架网站，Cloudflare Pages 是首选交付平台，GitHub 继续作为权威源文件、版本历史和 CI 平台。
+对于四个公共框架网站，Cloudflare Workers 是首选交付平台，GitHub 继续作为权威源文件、版本历史和 CI 平台。
 
-2026-09-22 批准的新架构把四个仓库组合为**一个网站、一个 Pages 项目**，而不是四个 provider 项目。在同一个未来域名下，`/` 是以 AHICP 为内容基础的人类入口，`/agent/` 是 Starter 的机器入口；四个规范权威仍保持独立。必须读取 `docs/UNIFIED_PUBLIC_SITE.zh-CN.md` 与 v2 迁移计划。目标路径不等于正式 URL；`site/sources.lock.json` 只固定网站来源，不替代下游采用锁。这个架构决定不授权 provider 访问、域名选择、DNS 或最终 public cutover。
+2026-09-22 批准的新架构把四个仓库组合为**一个网站、一个活动 Worker**，而不是四个 provider 项目。在同一个未来域名下，`/` 是以 AHICP 为内容基础的人类入口，`/agent/` 是 Starter 的机器入口；四个规范权威仍保持独立。必须读取 `docs/UNIFIED_PUBLIC_SITE.zh-CN.md` 与 v3 迁移计划。目标路径不等于正式 URL；`site/sources.lock.json` 只固定网站来源，不替代下游采用锁。这个架构决定不授权 provider 访问、域名选择、DNS 或最终 public cutover。
 
 在机器可读迁移计划标记“已验证切换”以前：
 
 - 现有 GitHub Pages URL 仍然是当前正式公共入口；
-- `*.pages.dev` 只是 staging，不是体系的稳定公共身份；
+- 当前 `inquirystack.philohub.workers.dev` 主站已获准公开阅读，正式身份尚未切换；
 - 不能因为 Cloudflare project 已创建，就提前改写公共入口 URL；
-- 稳定公共身份优先使用已经验证的自定义域名；
+- 免费提供商地址可以经验证和明确批准成为正式身份，自定义域名可选；
 - 必须读取 `templates/cloudflare-public-delivery.yaml` 确认迁移状态；
 - 协调切换必须遵循 `docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md`。
 

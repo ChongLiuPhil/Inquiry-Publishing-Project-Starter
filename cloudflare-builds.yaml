@@ -1,0 +1,49 @@
+schema_version: 1
+mode: workers-builds-git
+git:
+  provider: github
+  repository: ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  production_branch: main
+  non_production_branch_builds: false
+  root_directory: /
+commands:
+  build: npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py
+  deploy: npm run cloudflare:deploy
+  preview_deploy: npm run cloudflare:preview
+  holding_build: npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py --holding
+toolchain:
+  node: '22.22.0'
+  python: '3.12.12'
+  wrangler: '4.136.1'
+worker:
+  name: inquirystack
+  config: wrangler.jsonc
+  static_assets_directory: ./_site
+publication:
+  main_visibility: public
+  main_anonymous_reading_authorized: true
+  canonical_url_cutover_authorized: false
+  preview_visibility: restricted
+  preview_urls_enabled: false
+  enable_preview_only_after: access-policy-and-anonymous-denial-verified
+connection:
+  cloudflare_account: verify-live
+  github_app: starter-clone-previously-verified-via-pages
+  repository_connection: unverified-for-workers-builds
+  worker_target: holding-created
+  production_trigger: unverified
+  preview_trigger: not-configured
+  build_token: unverified
+security:
+  production_profile: workers_builds_native
+  credentials_in_repository: prohibited
+  github_app_repository_scope: selected-repositories-only
+  native_build_token_type: user-token
+  native_build_token_least_privilege: false
+  paid_upgrade: human-authorization-required
+validation:
+  repository_contract_ci: run-on-this-revision
+  first_workers_git_build: not-run
+  full_site_runtime: not-run
+  protected_preview: not-run
+  canonical_cutover: blocked

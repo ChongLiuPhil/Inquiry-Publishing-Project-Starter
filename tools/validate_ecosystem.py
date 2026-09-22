@@ -62,19 +62,19 @@ def main() -> int:
             raise SystemExit(f"missing Cloudflare public-delivery migration artifact: {required_path.relative_to(ROOT)}")
 
     migration_plan = yaml.safe_load(migration_plan_path.read_text(encoding="utf-8"))
-    if migration_plan.get("preferred_public_delivery_provider") != "cloudflare-pages":
-        raise SystemExit("Cloudflare Pages must be the preferred public delivery provider")
+    if migration_plan.get("preferred_public_delivery_provider") != "cloudflare-workers":
+        raise SystemExit("Cloudflare Workers must be the preferred public delivery provider")
     if migration_plan.get("current_public_delivery_provider") != "github-pages":
         raise SystemExit("GitHub Pages must remain current until verified Cloudflare cutover")
     if migration_plan.get("cutover_rule") != "switch-public-entrypoints-only-after-verified-cloudflare-deployment":
         raise SystemExit("public URL cutover must require verified Cloudflare deployment")
     if migration_plan.get("build_defaults", {}).get("output_dir") != "_site":
-        raise SystemExit("unified Cloudflare Pages output directory must be _site")
-    if migration_plan.get("schema") != "starter/cloudflare-public-delivery/v2":
-        raise SystemExit("single-site migration requires the v2 plan")
+        raise SystemExit("unified Cloudflare Workers output directory must be _site")
+    if migration_plan.get("schema") != "starter/cloudflare-public-delivery/v3":
+        raise SystemExit("single-site migration requires the v3 plan")
     architecture = migration_plan.get("architecture", {})
-    if architecture.get("topology") != "single-site-multi-repository" or architecture.get("expected_pages_project_count") != 1:
-        raise SystemExit("the approved topology is one website and one Pages project")
+    if architecture.get("topology") != "single-site-multi-repository" or architecture.get("expected_active_worker_count") != 1:
+        raise SystemExit("the approved topology is one website and one active Worker")
     if architecture.get("public_cutover_authorized") is not False or migration_plan.get("cutover_state") != "not-started":
         raise SystemExit("this preparation change must not authorize public cutover")
     if migration_plan.get("site", {}).get("provider_state_verified") is not False:
@@ -85,7 +85,7 @@ def main() -> int:
     public_delivery = ecosystem.get("public_delivery")
     if not isinstance(public_delivery, dict):
         raise SystemExit("Starter ecosystem is missing public_delivery")
-    if public_delivery.get("current_provider") != "github-pages" or public_delivery.get("preferred_provider") != "cloudflare-pages":
+    if public_delivery.get("current_provider") != "github-pages" or public_delivery.get("preferred_provider") != "cloudflare-workers":
         raise SystemExit("Starter ecosystem has inconsistent public delivery provider state")
 
     descriptor = json.loads((ROOT / "docs/agent/entry.json").read_text(encoding="utf-8"))
@@ -94,8 +94,8 @@ def main() -> int:
     if descriptor.get("human_entry") != HUMAN_ENTRY:
         raise SystemExit("agent entry descriptor has the wrong human entry")
     descriptor_delivery = descriptor.get("public_delivery")
-    if not isinstance(descriptor_delivery, dict) or descriptor_delivery.get("preferred_provider") != "cloudflare-pages":
-        raise SystemExit("agent entry descriptor must expose Cloudflare Pages as preferred delivery")
+    if not isinstance(descriptor_delivery, dict) or descriptor_delivery.get("preferred_provider") != "cloudflare-workers":
+        raise SystemExit("agent entry descriptor must expose Cloudflare Workers as preferred delivery")
     if descriptor_delivery.get("current_provider") != "github-pages":
         raise SystemExit("agent entry descriptor must keep GitHub Pages current before cutover")
 

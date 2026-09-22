@@ -30,14 +30,14 @@ ecosystem:
   public_delivery:
     canonical_source_provider: github
     current_provider: github-pages
-    preferred_provider: cloudflare-pages
-    migration_state: prepared-provider-authorization-required
+    preferred_provider: cloudflare-workers
+    migration_state: workers-holding-created-full-site-unverified
     migration_plan: templates/cloudflare-public-delivery.yaml
     migration_guide: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
-    stable_url_policy: custom-domain-preferred
+    stable_url_policy: free-provider-native-allowed-after-explicit-cutover
     cutover_rule: keep-current-public-urls-until-verified-cloudflare-deployment
     target_topology: single-site-multi-repository
-    target_pages_project_count: 1
+    target_active_worker_count: 1
     source_lock: site/sources.lock.json
   baseline:
     default_profile: full-research-publication
