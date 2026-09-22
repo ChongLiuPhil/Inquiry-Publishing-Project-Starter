@@ -1,0 +1,41 @@
+# Unified public delivery: decision and implementation
+
+## Approved architecture decision (2026-09-22)
+
+The human explicitly approved four independent GitHub repositories composed into one website, delivered by one Cloudflare Pages project, with one stable custom domain still to be selected. The human entry is `/`; the machine entry is `/agent/`. Authorization covers reversible repository implementation, PRs, validation and durable write-back, not domain selection, account consent, DNS changes or final public cutover.
+
+This supersedes the former four-Pages-project topology, not the independent normative authorities. AHICP remains the main human-conceptual content authority; Starter owns machine retrieval, composition and upgrades. PPF and Vault Interface retain their own authority. Downstream projects do not inherit this framework website's visibility or provider choice.
+
+## Content and routes
+
+`/` is derived directly from the complete human introduction at the pinned AHICP revision. Its substantive explanations, language switch and Chinese no-JavaScript fallback are preserved; shared navigation and candidate notices are added. `/ahicp/` retains a component entry; `/ppf/`, `/vault-interface/` and `/starter/` compose the complete upstream public homepages. `/start/` provides a brief start path. `/agent/`, its descriptor, bilingual bootstrap files and `/llms.txt` are independently retrievable without browser interaction.
+
+The website is a delivery layer, not a fourth specification or independently editable normative copy. Documents outside the explicit public-output allowlist link to upstream GitHub. Never copy entire `docs/` trees, Working Memory, manuscripts or private projects into the site.
+
+## Reproducible build
+
+```sh
+python tools/build_public_site.py
+```
+
+Output: `_site/`. The build does not replace the legacy `docs/` homepage, deploy, edit GitHub About, or change DNS.
+
+`site/sources.lock.json` pins full commit SHAs for three remote public upstreams. Starter uses the actual build checkout and records its real SHA, avoiding a self-referential repository lock. This lock controls website composition, not `project-stack.yaml`, `template_source_commit` or `project_adopted_commit`.
+
+Only explicitly allowed repositories and files are read, using credential-free HTTPS for remote sources. `build-info.json` records all four source revisions, input/output SHA-256 hashes, the lock digest and whether tracked working-tree changes exist. Retrieval or validation failure fails the build; no stale-cache or floating-main fallback substitutes for a pin.
+
+Upstream updates do not silently enter the site: the maintainer/agent fresh-reads relevant manifests, reviews source differences, updates the lock through a PR, runs all tests, then deploys the verified composition. No additional scheduled task or cross-repository write permission is configured by this approval.
+
+## Current versus candidate state
+
+The current human entry, machine entry and four component URLs remain GitHub Pages. The candidate descriptor preserves current `public_landing` and `human_entry`, while `delivery_candidate` exposes relative paths. Neither candidate paths nor `pages.dev` become canonical identity. Copyable human-start instructions continue to use the current official machine URL.
+
+Candidate output includes migration notices and `noindex`. **Noindex is not authentication.** The builder intentionally supports only candidate/holding modes, not unauthorized production. Final cutover needs a separately authorized coordinated change to public URLs, candidate notices, indexing rules and related validators.
+
+## Validation and recovery
+
+`Unified public site` CI runs offline regression tests, a real pinned-upstream build, link/script/provenance checks, and desktop/mobile/no-JavaScript browser checks. It retains candidate artifacts and screenshots. It has no Cloudflare credentials or deployment step. CI PASS does not establish provider Access PASS.
+
+The first Cloudflare deployment uses `python tools/build_public_site.py --holding`. Verify Access for both the exact project `pages.dev` hostname and wildcard preview hostnames before switching to the full candidate build. See the [migration guide](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md).
+
+Roll back repository changes through an ordinary revert PR, never a force push. Before cutover, keep every current GitHub Pages URL. Restore the holding page or a previously verified candidate deployment as needed; do not delete Cloudflare projects or revoke App permissions used by unrelated projects.

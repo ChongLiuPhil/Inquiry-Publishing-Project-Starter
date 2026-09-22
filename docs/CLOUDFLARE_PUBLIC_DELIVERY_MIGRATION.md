@@ -1,134 +1,61 @@
-# Cloudflare public-delivery migration
+# Cloudflare unified public-delivery migration
 
-**Status:** repository-side migration prepared; provider authorization is still required.
+**State: repository preparation; provider actual state unverified; no public cutover.**
 
-## Goal
+On 2026-09-22 the human approved one unified website and one Pages project instead of four Pages projects. The four GitHub repositories retain independent specifications, history, PRs and CI. See [UNIFIED_PUBLIC_SITE.md](UNIFIED_PUBLIC_SITE.md) and the [machine-readable plan](../templates/cloudflare-public-delivery.yaml).
 
-Move the four public framework sites from GitHub Pages to **Cloudflare Pages** while keeping GitHub as the canonical source, review, versioning, and CI provider.
+## One website, two entry roles
 
-The four sites are:
+On one custom domain still to be selected, `/` is the AHICP-led human entry and `/agent/` is the Starter machine entry. Component sections are `/ahicp/`, `/ppf/`, `/vault-interface/` and `/starter/`; `/start/` explains how to begin. These are approved target paths, not existing canonical URLs.
 
-- AHICP public introduction / Human Entry;
-- PPF public site;
-- Vault Interface public site;
-- Starter public site, including the stable `/agent/` machine entry.
+GitHub remains canonical source. Keep the four GitHub Pages URLs, human/machine entries and About Websites unchanged. Pages is appropriate for this static framework site; downstream PPF projects still choose Pages, Workers or another provider according to runtime needs.
 
-This migration does **not** change the normative ownership of AHICP, PPF, Vault Interface, or Starter.
+## Build settings
 
-## Why Cloudflare Pages
+Connect only `ChongLiuPhil/Inquiry-Publishing-Project-Starter`. Three other public upstreams are fetched without credentials at locked SHAs; this build does not require expanding the GitHub App's repository scope.
 
-These four sites are static content served from each repository's `docs/` directory. Cloudflare Pages is therefore the preferred delivery target:
-
-- GitHub-connected automatic production deployments;
-- preview deployments for branches and pull requests;
-- Cloudflare Access for restricted previews;
-- custom domains for a provider-independent public identity;
-- no Worker runtime requirement for the current static sites.
-
-Use Workers only when runtime logic is actually required. Do not move a static framework site to Workers merely because Workers are available.
-
-## Current state vs target state
-
-Current:
-
-~~~text
-GitHub repository
-  -> GitHub Pages
-  -> chongliuphil.github.io/... public URL
-~~~
-
-Target:
-
-~~~text
-GitHub repository (canonical source)
-  -> Cloudflare Pages (delivery)
-  -> custom domain (stable public identity)
-~~~
-
-GitHub Pages remains the current public entry until the Cloudflare deployment is verified. A `*.pages.dev` URL may be used for staging, but should not become the permanent ecosystem identity when a custom domain can be used.
-
-The machine-readable plan is [`templates/cloudflare-public-delivery.yaml`](../templates/cloudflare-public-delivery.yaml).
-
-## Default Pages build settings
-
-For all four current framework sites:
-
-~~~text
+```text
 Production branch: main
 Root directory: .
-Build command: exit 0
-Build output directory: docs
 Framework preset: none
-~~~
+Initial build command: python tools/build_public_site.py --holding
+Full candidate build command: python tools/build_public_site.py
+Build output directory: _site
+PYTHON_VERSION: 3.12
+NODE_VERSION: 22
+```
 
-Cloudflare's static-site documentation supports a no-framework deployment and an explicit no-op build command. The deployed content is the repository's existing `docs/` directory.
+The previous `exit 0` + `docs` settings do not compose the unified site. Deploy only the empty holding page before Access is verified. A Dashboard Production label for main does not mean an ecosystem public cutover.
 
-## Preview policy
+## Minimal human gates and agent resumption
 
-Preview deployments are useful, but should not become accidental public publication surfaces.
+1. Open `https://dash.cloudflare.com/`, sign in, complete MFA directly, and select the actual target account. Never send passwords, MFA codes, tokens, cookies, private keys or recovery codes in chat.
+2. Inspect **Workers & Pages** for an existing corresponding Pages project; do not duplicate or delete projects. For a new connection use **Create application → Pages → Connect to Git / Import an existing Git repository**. This is Pages, not a Worker's Deploy command flow. Recheck official documentation/live UI if labels differ.
+3. At the GitHub App authorization page select `ChongLiuPhil`; add only Starter for this task. Do not remove grants used by other actual projects. Completion means Cloudflare can see Starter. After account-owner authorization, an agent with genuinely callable authenticated tools should resume routine configuration. A human browser login does not automatically create an agent control-plane session.
+4. Configure/create **one** Pages project using the initial settings above. No project name has been selected or assumed available. Keep automatic production/preview deployments off while configuring Access; deploy only the holding page. Non-secret feedback consists of project name, actual `pages.dev` URL and deployment status; no token is needed in chat.
+5. **Settings → General → Enable access policy** covers the preview default policy only. Follow the official Known issues exact-hostname procedure to protect `project.pages.dev`, while retaining/recreating protection for `*.project.pages.dev`; verify both in Zero Trust Applications. Approve reader identities directly in Cloudflare, without Everyone allow rules. Wildcard preview protection does not secure the main hostname; noindex is not authentication.
+6. Verify anonymous/incognito requests cannot read the exact hostname or a real preview, while an approved identity can. Check direct files, JSON, bootstrap, static assets and alternate hostnames. If no preview exists, leave that check pending, not PASS.
+7. After Access verification, the agent changes to the full candidate build command and performs a restricted deployment. Check the Starter and three pinned revisions in `/build-info.json`, all sections, language switching, no-JavaScript fallback, guide loading and machine resources. Persist only non-secret project identifiers, URLs, revisions and observed results. Access IDs, reader identities and other private control-plane state remain in authorized private provider state.
+8. Only then does the human select a custom domain and authorize necessary DNS/zone work. Domain validation and final public cutover are separate gates: do not automatically remove Access, change public URLs or disable GitHub Pages.
 
-Default:
+## Final public cutover (not authorized)
 
-~~~text
-preview deployments: enabled
-preview visibility: restricted
-access layer: Cloudflare Access
-production framework sites: public
-~~~
+The builder intentionally supports holding/candidate behavior only. Canonical/public fields retain existing entries; relative candidate paths are separate. After explicit final approval, prepare a coordinated PR set covering four-repository ecosystem metadata, About Websites, public README links, llms, machine descriptor, retrieval contract, cross-links and old-URL mappings. Update candidate notices, indexing policy and corresponding validators. GitHub source repository URLs do not change.
 
-This is separate from the downstream-project default. A private or unpublished downstream project still defaults to restricted/authenticated production Web until explicit public-release authorization.
+Four repositories cannot form a truly atomic cross-repository Git transaction. Record the cutover checklist and each repository revision, retain old entries during a compatibility window and verify each update; do not describe coordination as an indivisible atomic operation.
 
-## Human-reserved bootstrap
+## Verification and rollback
 
-Because there is no authenticated Cloudflare control-plane connection in the current agent environment, the account owner must perform the provider bootstrap:
+Passing GitHub build/browser CI verifies candidate artifacts, not Cloudflare deployment, TLS, DNS or Access.
 
-1. Sign in to Cloudflare and complete MFA.
-2. Authorize the Cloudflare Workers & Pages GitHub App for these four repositories. Prefer selected repositories only.
-3. For each repository, create/import a Cloudflare Pages project using the build settings above.
-4. Record the resulting project name and `*.pages.dev` staging URL.
-5. Decide the stable custom-domain layout. Do not change ecosystem public URLs yet.
-6. If the domain/zone is not already in Cloudflare, complete the required DNS/zone authorization.
-7. Return the non-secret project names and staging/custom-domain URLs to the agent. Never provide API tokens, passwords, private keys, recovery codes, or other secrets in chat.
+Before cutover, keep all old GitHub Pages URLs. Restore the holding build or last verified candidate deployment and pause automatic builds when needed. Roll back repository changes through a revert PR. After cutover, restore recorded entries, About Websites and DNS from the checklist. Never delete projects or force-push history as incidental cleanup. Re-read provider actual state after operations; proposals do not establish execution.
 
-After those gates, an authorized agent should perform the remaining verification and metadata cutover when tools permit.
+## Official operational references
 
-## Verification before cutover
+Checked: 2026-09-22. Recheck live UI at execution time.
 
-Do not replace any current public entrypoint until all of the following are true:
-
-- all four Cloudflare production deployments match the intended `main` revisions;
-- each homepage loads;
-- AHICP still exposes the full Human Entry and start action;
-- Starter `/agent/`, `/agent/entry.json`, bootstrap files, and `llms.txt` resolve on the target domain;
-- cross-project links resolve;
-- preview deployments are restricted as intended;
-- no secret appears in Git, PRs, build logs, or chat;
-- rollback to the current GitHub Pages URLs is documented.
-
-## Atomic public-URL cutover
-
-Once the Cloudflare targets and custom domains are verified, update the public identity as one coordinated change:
-
-- GitHub About Website fields;
-- all four `ecosystem.yaml` files;
-- all four `docs/llms.txt` files;
-- Starter `docs/agent/entry.json`;
-- Starter Agent Retrieval Contract;
-- cross-project homepage links;
-- README references where they represent the public landing rather than the canonical GitHub source.
-
-The canonical GitHub repository URLs remain unchanged.
-
-## GitHub Pages during migration
-
-Do not disable GitHub Pages before the Cloudflare cutover is verified.
-
-Before cutover, GitHub Pages is the production fallback.
-
-After cutover, GitHub Pages may remain temporarily available for rollback or be redirected/de-emphasized later. Removing it is a separate cleanup action, not part of initial Cloudflare validation.
-
-## Rollback
-
-Before URL cutover, rollback means simply continuing to use the existing GitHub Pages public entries.
-
-After cutover, rollback means restoring the previous public URLs/DNS and ecosystem metadata. Do not delete Cloudflare projects as part of an emergency rollback; preserve them for diagnosis until the public entry has been restored.
+- https://developers.cloudflare.com/pages/configuration/git-integration/
+- https://developers.cloudflare.com/pages/configuration/preview-deployments/
+- https://developers.cloudflare.com/pages/platform/known-issues/
+- https://developers.cloudflare.com/pages/configuration/branch-build-controls/
+- https://developers.cloudflare.com/pages/configuration/build-configuration/

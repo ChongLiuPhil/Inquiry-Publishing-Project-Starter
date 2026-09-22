@@ -1,95 +1,129 @@
-schema: starter/cloudflare-public-delivery/v1
+schema: starter/cloudflare-public-delivery/v2
 status: migration-prepared-provider-authorization-required
 preferred_public_delivery_provider: cloudflare-pages
 canonical_source_provider: github
 current_public_delivery_provider: github-pages
 cutover_state: not-started
 cutover_rule: switch-public-entrypoints-only-after-verified-cloudflare-deployment
+architecture:
+  topology: single-site-multi-repository
+  expected_pages_project_count: 1
+  independent_normative_components: [ahicp, ppf, vault_interface, starter]
+  composition_repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  source_lock: site/sources.lock.json
+  decision: docs/UNIFIED_PUBLIC_SITE.md
+  human_approved_on: '2026-09-22'
+  public_cutover_authorized: false
 stable_url_policy:
   custom_domain_preferred: true
   pages_dev_allowed_for_staging: true
   pages_dev_as_permanent_identity: false
   selected_custom_domain: null
-
+site:
+  cloudflare_project: null
+  cloudflare_staging_url: null
+  custom_domain: null
+  provider_state_verified: false
+  github_app_repository_scope:
+    - ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  other_upstreams: public-unauthenticated-pinned-file-reads
 build_defaults:
   production_branch: main
   root_dir: .
-  build_command: "exit 0"
-  output_dir: docs
+  build_command: python tools/build_public_site.py
+  output_dir: _site
   framework_preset: none
-
+  environment:
+    PYTHON_VERSION: '3.12'
+    NODE_VERSION: '22'
+bootstrap:
+  initial_build_command: python tools/build_public_site.py --holding
+  initial_output_contains: holding-page-only
+  automatic_production_deployments: false
+  automatic_preview_deployments: false
+  before_full_candidate:
+    - verify-access-on-exact-project-pages-dev-hostname
+    - verify-access-on-wildcard-preview-hostname
+    - verify-anonymous-denial-and-approved-reader-access
+    - replace-holding-build-command-with-build-defaults
 preview_defaults:
   enabled: true
   visibility: restricted
   authentication: cloudflare-access
   public_preview_allowed: false
-
+staging_defaults:
+  visibility: restricted
+  authentication: cloudflare-access
+  protect_exact_pages_dev_hostname: true
+  protect_wildcard_preview_hostname: true
+  noindex_is_authentication: false
 production_defaults:
-  framework_sites_visibility: public
+  framework_sites_visibility: public-after-explicit-cutover-authorization
   source_repository_visibility: public
   deployment_provider: cloudflare-pages
-
-sites:
+  downstream_project_visibility: independent-private-restricted-defaults
+current_entries:
+  human: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+  machine: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+target_routes:
+  human: /
+  start: /start/
+  ahicp: /ahicp/
+  ppf: /ppf/
+  vault_interface: /vault-interface/
+  starter: /starter/
+  machine: /agent/
+  descriptor: /agent/entry.json
+  llms: /llms.txt
+  provenance: /build-info.json
+components:
   ahicp:
     repository: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
     current_url: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
-    cloudflare_project: null
-    cloudflare_staging_url: null
-    custom_domain: null
-    output_dir: docs
-    role: human-entry
+    target_path: /ahicp/
+    role: human-conceptual-content-authority
   ppf:
     repository: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
     current_url: https://chongliuphil.github.io/Personal-Publishing-Framework/
-    cloudflare_project: null
-    cloudflare_staging_url: null
-    custom_domain: null
-    output_dir: docs
-    role: publishing-lifecycle-site
+    target_path: /ppf/
+    role: publishing-lifecycle-authority
   vault_interface:
     repository: https://github.com/ChongLiuPhil/Vault-interface
     current_url: https://chongliuphil.github.io/Vault-interface/
-    cloudflare_project: null
-    cloudflare_staging_url: null
-    custom_domain: null
-    output_dir: docs
-    role: public-metadata-site
+    target_path: /vault-interface/
+    role: public-metadata-authority
   starter:
     repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
     current_url: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
-    current_machine_entry: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
-    cloudflare_project: null
-    cloudflare_staging_url: null
-    custom_domain: null
-    output_dir: docs
-    role: composition-and-machine-entry-site
-
+    target_path: /starter/
+    role: composition-and-machine-entry-authority
 human_reserved_gates:
   - cloudflare-sign-in-and-mfa
   - one-time-cloudflare-github-app-authorization
   - custom-domain-selection-if-not-already-decided
   - dns-or-zone-authorization-if-required
   - final-public-url-cutover-authorization
-
 automation_after_authorization:
-  - create-or-configure-cloudflare-pages-projects
-  - verify-main-branch-production-builds
-  - verify-preview-deployments
-  - apply-preview-access-policy
-  - verify-static-assets-and-agent-entry
+  - inspect-existing-provider-state-before-creating-one-pages-project
+  - configure-holding-page-and-access-before-full-candidate
+  - verify-build-checkout-and-all-pinned-source-revisions
+  - verify-preview-and-exact-hostname-access
   - record-non-secret-provider-state
-  - prepare-atomic-public-url-cutover
-
+  - prepare-coordinated-public-url-cutover
 cutover_verification:
-  - each-cloudflare-production-site-serves-expected-main-revision
-  - starter-agent-entry-and-entry-json-resolve-on-target-domain
-  - llms-txt-resolves-on-target-domain
-  - cross-project-links-resolve
-  - preview-deployments-are-restricted
-  - no-secrets-in-git-chat-or-build-logs
-  - rollback-to-current-github-pages-urls-is-documented
-
+  - unified-site-serves-expected-source-lock-and-starter-revision
+  - all-component-paths-and-human-start-flow-work
+  - agent-descriptor-bootstrap-and-llms-resolve-on-approved-domain
+  - local-links-assets-and-language-switches-pass
+  - no-javascript-chinese-fallback-and-mobile-layout-pass
+  - exact-staging-and-preview-hostnames-are-restricted
+  - custom-domain-dns-and-tls-verified-with-human-authorization
+  - no-secrets-or-private-project-content-in-output
+  - explicit-final-public-cutover-authorization-recorded
+  - old-url-mapping-and-rollback-documented
 rollback:
-  pre-cutover: keep-github-pages-as-current-public-entry
-  post-cutover: restore-previous-public-entrypoints-and-dns
+  pre-cutover: keep-all-current-github-pages-urls-and-about-websites
+  candidate: restore-holding-build-or-previous-verified-deployment
+  repository: revert-the-unified-site-pr-without-force-push
+  post-cutover: restore-recorded-public-entrypoints-and-dns
   delete-cloudflare-projects: false

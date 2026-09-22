@@ -33,6 +33,9 @@
     "migration_state": "prepared-provider-authorization-required",
     "migration_plan": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml",
     "migration_guide": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md",
-    "cutover_rule": "keep-current-public-urls-until-verified-cloudflare-deployment"
+    "cutover_rule": "keep-current-public-urls-until-verified-cloudflare-deployment",
+    "target_topology": "single-site-multi-repository",
+    "target_pages_project_count": 1,
+    "source_lock": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/site/sources.lock.json"
   }
 }
