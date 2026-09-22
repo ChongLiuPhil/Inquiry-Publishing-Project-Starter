@@ -36,6 +36,9 @@ ecosystem:
     migration_guide: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
     stable_url_policy: custom-domain-preferred
     cutover_rule: keep-current-public-urls-until-verified-cloudflare-deployment
+    target_topology: single-site-multi-repository
+    target_pages_project_count: 1
+    source_lock: site/sources.lock.json
   baseline:
     default_profile: full-research-publication
     ahicp: full

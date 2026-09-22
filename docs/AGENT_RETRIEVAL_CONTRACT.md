@@ -89,6 +89,8 @@ If those facts cannot be reconstructed, treat the situation as a configuration d
 
 For the four public framework sites, Cloudflare Pages is the preferred delivery provider and GitHub remains the canonical source/version-control provider.
 
+The architecture approved on 2026-09-22 composes the four repositories into **one website and one Pages project**, not four provider projects. On the same future domain, `/` is the AHICP-led human entry and `/agent/` is the Starter machine entry; normative authorities remain independent. Read `docs/UNIFIED_PUBLIC_SITE.md` and the v2 migration plan. Target paths are not canonical URLs. `site/sources.lock.json` pins website sources and does not replace downstream adoption locks. This decision does not authorize provider access, domain selection, DNS or final public cutover.
+
 Until the migration plan reports a verified cutover:
 
 - the existing GitHub Pages URLs remain the current public entrypoints;

@@ -39,3 +39,10 @@ From any component entrypoint, reconstruct the full ecosystem before cross-compo
 
 Public delivery policy:
 Cloudflare Pages is preferred for the four public framework sites. GitHub remains canonical source. Current GitHub Pages URLs remain authoritative until a verified Cloudflare/custom-domain cutover.
+
+Approved delivery target (2026-09-22, not actual provider state):
+One unified website, one Cloudflare Pages project, four independent GitHub authorities.
+Human target path: /; machine target path: /agent/ on the same domain, still to be selected.
+Composition source lock: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/site/sources.lock.json
+Approved architecture and boundaries: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/UNIFIED_PUBLIC_SITE.md
+Only Starter needs a Git integration grant for this build; other public upstream files are fetched at pinned SHAs without credentials.

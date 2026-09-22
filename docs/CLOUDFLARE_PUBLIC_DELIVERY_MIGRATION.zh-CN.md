@@ -1,132 +1,61 @@
-# Cloudflare 公共站点迁移
+# Cloudflare 单站公共交付迁移
 
-**状态：** 仓库侧迁移准备已建立；仍需要 Cloudflare 账户授权。
+**状态：仓库侧准备；provider actual state 未验证；未执行 public cutover。**
 
-## 目标
+2026-09-22 用户批准以一个综合网站、一个 Pages 项目取代四个 Pages 项目的旧方案。四个 GitHub 仓库继续独立维护规范、版本、PR 与 CI。完整决定见 [UNIFIED_PUBLIC_SITE.zh-CN.md](UNIFIED_PUBLIC_SITE.zh-CN.md)；机器计划见 [cloudflare-public-delivery.yaml](../templates/cloudflare-public-delivery.yaml)。
 
-把四个公共框架网站从 GitHub Pages 迁移到 **Cloudflare Pages**，同时继续把 GitHub 作为权威源文件、版本历史、审阅和 CI 平台。
+## 一个网站，两种入口角色
 
-四个站点包括：
+同一个尚待选择的自定义域名：`/` 是以 AHICP 为内容基础的人类入口；`/agent/` 是 Starter 的机器入口。组件栏目位于 `/ahicp/`、`/ppf/`、`/vault-interface/`、`/starter/`；`/start/` 提供启动说明。路径是批准的目标布局，不是已经存在的正式 URL。
 
-- AHICP 公共介绍页 / Human Entry；
-- PPF 公共主页；
-- Vault Interface 公共主页；
-- Starter 公共主页，以及稳定的 `/agent/` 机器入口。
+GitHub 仍是 canonical source。当前四个 GitHub Pages URL、Human Entry、Machine Entry 与 About Website 均保持不变。静态框架网站使用 Pages；下游 PPF 项目仍按实际运行需要选择 Pages、Workers 或其他 provider。
 
-这次迁移不会改变 AHICP、PPF、Vault Interface 和 Starter 各自的规范权威。
+## 构建设置
 
-## 为什么选择 Cloudflare Pages
+只连接 `ChongLiuPhil/Inquiry-Publishing-Project-Starter`；三个其他公开上游按锁定 SHA、不带凭据读取，不需要为本次构建扩大 GitHub App 权限。
 
-目前四个站点都是从各仓库的 `docs/` 目录直接提供静态内容，因此 Cloudflare Pages 是更合适的默认交付方式：
-
-- 可以直接连接 GitHub 自动部署生产版本；
-- 分支和 Pull Request 可以生成预览部署；
-- 预览可以通过 Cloudflare Access 限制访问；
-- 可以使用自定义域名，让公共身份不再绑定某个托管平台；
-- 当前静态站点不需要额外引入 Worker 运行时。
-
-只有真正需要运行时逻辑时才使用 Workers。不要因为 Workers 可用，就把纯静态框架网站搬到 Workers。
-
-## 当前状态与目标状态
-
-当前：
-
-~~~text
-GitHub repository
-  -> GitHub Pages
-  -> chongliuphil.github.io/... 公共 URL
-~~~
-
-目标：
-
-~~~text
-GitHub repository（权威源）
-  -> Cloudflare Pages（网页交付）
-  -> 自定义域名（稳定公共身份）
-~~~
-
-在 Cloudflare 部署完成并验证以前，GitHub Pages 继续作为当前正式公共入口。`*.pages.dev` 可以用于 staging，但在可以使用自定义域名时，不应把它作为体系的永久身份。
-
-机器可读迁移计划见 [`templates/cloudflare-public-delivery.yaml`](../templates/cloudflare-public-delivery.yaml)。
-
-## 四个站点的默认 Pages 构建设置
-
-~~~text
+```text
 Production branch: main
 Root directory: .
-Build command: exit 0
-Build output directory: docs
 Framework preset: none
-~~~
+Initial build command: python tools/build_public_site.py --holding
+Full candidate build command: python tools/build_public_site.py
+Build output directory: _site
+PYTHON_VERSION: 3.12
+NODE_VERSION: 22
+```
 
-当前四个站点都不需要框架构建步骤；Cloudflare 直接部署仓库中已有的 `docs/` 内容。
+旧的 `exit 0` + `docs` 不适用于单站组合。先部署空占位页；访问保护验证前不要部署完整候选内容。不要因 Dashboard 把 main 标记为 Production，就把它解释为生态 public cutover。
 
-## 预览策略
+## 最小人工门与 Agent 恢复点
 
-预览部署有价值，但不应该意外变成新的公开发布面。
+1. 打开 `https://dash.cloudflare.com/`，登录并直接完成 MFA，选择实际目标账户。不要把密码、MFA、token、Cookie、私钥或恢复码发到聊天。
+2. 进入 **Workers & Pages**，先检查是否已有对应 Pages 项目；不要重复创建或删除旧项目。首次连接进入 **Create application → Pages → Connect to Git / Import an existing Git repository**。这是 Pages 流程，不是 Worker 的 Deploy command 流程；UI 不同必须先核验当前官方文档/界面。
+3. 在 GitHub App 授权页选择 `ChongLiuPhil`；仅为本任务新增 Starter 仓库权限。已经给其他实际项目的授权不得擅自撤销。完成条件：Cloudflare 可以看到 Starter。人类完成账户授权后，有实际已认证工具的 Agent 应接回常规配置工作；本地浏览器登录不自动建立 Agent 控制面会话。
+4. 按上述初始设置创建/配置**一个** Pages 项目，项目名称尚未决定，不自动假定可用名称。先关闭自动 production/preview 部署，避免配置 Access 时上传完整网站；只部署 holding page。可回传的非秘密结果是项目名称、实际 `pages.dev` 地址和部署状态，不需要 token。
+5. 项目 **Settings → General → Enable access policy** 只解决 preview 默认策略。按官方 Known issues 中的 exact-hostname 流程保护 `项目名.pages.dev`，并保留/重新建立 `*.项目名.pages.dev` 保护；在 Zero Trust Applications 中核验两者都存在。读者身份直接在 Cloudflare 中批准，不创建 Everyone 允许规则。不能把 wildcard preview 策略当成主地址保护；`noindex` 也不是认证。
+6. 用匿名/无痕会话验证主地址和一个真实预览地址不能读取正文；用获准身份验证可读；检查直接文件、JSON、bootstrap、静态资源和替代 hostname。没有预览部署时，preview 检查保持待完成，不标记 PASS。
+7. Access 验证后，Agent 把构建命令改成完整候选命令，执行受限部署，核对 `/build-info.json` 的 Starter revision 和三库固定 revision，再验证所有栏目、双语切换、无 JavaScript fallback、指南加载与机器资源。只写回非秘密项目标识、URL、revision 和实际验证结果；Access ID、读者身份等私人控制面数据留在获授权的私人 provider state。
+8. 之后才由人类选择自定义域名并授权必要 DNS/zone 动作。域名验证与最终 public cutover 是不同的门：不要自动移除 Access、修改正式 URL 或关闭 GitHub Pages。
 
-默认：
+## 最终公开切换（尚未授权）
 
-~~~text
-preview deployments: enabled
-preview visibility: restricted
-access layer: Cloudflare Access
-production framework sites: public
-~~~
+构建器当前故意只有 holding/candidate 行为。候选中的 canonical/public 字段继续记录旧正式入口，相对候选路径放在独立字段。得到最终明确授权后，另做协调 PR：更新四库 ecosystem、About Website、README 公共入口、llms、machine descriptor、retrieval contract、跨站链接与旧 URL 映射；修改候选提示、索引策略及相应验证器。GitHub 源仓库地址不变。
 
-这里说的是这四个已经公开的框架网站。下游原创或未发布项目仍然遵循另一套默认：生产 Web 在明确公开授权前保持 restricted + authenticated。
+四库无法形成真正的跨仓库原子 Git 事务。应记录切换清单与每库 revision，在兼容窗口内保留旧入口，逐项核验，避免把协调切换称为不可分割的原子操作。
 
-## 必须由人完成的一次性操作
+## 验证与回滚
 
-当前 Agent 环境没有经过认证的 Cloudflare 控制平面，因此账户所有者需要完成 provider bootstrap：
+GitHub CI 构建和浏览器测试通过，只证明候选工件；不证明 Cloudflare 的部署、TLS、DNS 或 Access 已完成。
 
-1. 登录 Cloudflare，并完成 MFA。
-2. 授权 Cloudflare Workers & Pages GitHub App 访问这四个仓库。优先选择 **selected repositories only**。
-3. 为四个仓库分别创建/导入 Cloudflare Pages project，使用上面的统一构建设置。
-4. 记录每个 project name 和生成的 `*.pages.dev` staging URL。
-5. 决定稳定的自定义域名布局；这一步完成前不要修改 ecosystem 中的正式公共 URL。
-6. 如果域名/zone 尚未进入 Cloudflare，完成必要的 DNS / zone 授权。
-7. 把**非秘密**的 project name、staging URL 和 custom-domain URL 告诉 Agent。不要把 API token、密码、私钥、恢复码或其他秘密发送到聊天。
+切换前：继续使用所有旧 GitHub Pages URL；候选失败可恢复 holding build 或上一份已验证部署，并暂停自动构建。仓库变更用 revert PR 回滚。切换后：按已记录的清单恢复旧入口、About 与 DNS。不要删除 Cloudflare 项目或强推历史。每次部署后重新核验 provider actual state，而不是从 proposal 推断实际状态。
 
-这些门槛完成后，获得授权的 Agent 应在工具允许时继续完成验证和元数据切换。
+## 官方操作依据
 
-## 切换前验证
+核对日期：2026-09-22。实际 UI 仍须在操作时复核。
 
-在以下条件全部满足前，不修改任何当前公共入口：
-
-- 四个 Cloudflare production deployment 都对应预期的 `main` revision；
-- 四个主页均能正常加载；
-- AHICP 仍然完整提供 Human Entry 和最终启动动作；
-- Starter 的 `/agent/`、`/agent/entry.json`、bootstrap 文件和 `llms.txt` 在目标域名上正常解析；
-- 四个站点之间的交叉链接正常；
-- preview deployment 按预期被限制访问；
-- Git、PR、build log 和 chat 中没有秘密；
-- 已经明确如何退回当前 GitHub Pages URL。
-
-## 原子化切换公共 URL
-
-Cloudflare 目标和自定义域名完成验证以后，再通过一次协调变更同时更新：
-
-- GitHub About Website；
-- 四个 `ecosystem.yaml`；
-- 四个 `docs/llms.txt`；
-- Starter `docs/agent/entry.json`；
-- Starter Agent Retrieval Contract；
-- 四站点之间的主页链接；
-- README 中代表公共入口的 URL。
-
-GitHub 仓库作为权威源的 URL 不变。
-
-## 迁移期间怎样处理 GitHub Pages
-
-Cloudflare 切换验证完成以前，不关闭 GitHub Pages。
-
-切换前，GitHub Pages 是生产 fallback。
-
-切换后，可以暂时保留 GitHub Pages 作为回滚路径；是否关闭或做重定向属于后续清理动作，不应和第一次 Cloudflare 验证混在一起。
-
-## 回滚
-
-公共 URL 尚未切换时，回滚就是继续使用现有 GitHub Pages，不需要额外动作。
-
-公共 URL 已经切换以后，回滚就是恢复之前的公共 URL / DNS 和 ecosystem 元数据。紧急回滚时不要顺手删除 Cloudflare project，应保留现场用于诊断。
+- https://developers.cloudflare.com/pages/configuration/git-integration/
+- https://developers.cloudflare.com/pages/configuration/preview-deployments/
+- https://developers.cloudflare.com/pages/platform/known-issues/
+- https://developers.cloudflare.com/pages/configuration/branch-build-controls/
+- https://developers.cloudflare.com/pages/configuration/build-configuration/
