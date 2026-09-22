@@ -1,0 +1,12 @@
+{
+  "name": "inquiry-publishing-stack-delivery",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "cloudflare:build": "python tools/build_public_site.py",
+    "cloudflare:holding": "python tools/build_public_site.py --holding",
+    "cloudflare:deploy": "wrangler deploy",
+    "cloudflare:preview": "wrangler versions upload"
+  },
+  "devDependencies": {"wrangler": "4.136.1"}
+}

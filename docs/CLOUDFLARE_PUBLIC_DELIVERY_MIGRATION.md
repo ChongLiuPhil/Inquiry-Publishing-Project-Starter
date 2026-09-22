@@ -1,61 +1,39 @@
-# Cloudflare unified public-delivery migration
+# Unified Cloudflare Workers delivery
 
-**State: repository preparation; provider actual state unverified; no public cutover.**
+Status: holding deployed; full runtime and Workers Builds unverified; canonical URL cutover not authorized. This v3 contract supersedes the Pages-specific migration procedure, including its requirement to protect the current main site with Access.
 
-On 2026-09-22 the human approved one unified website and one Pages project instead of four Pages projects. The four GitHub repositories retain independent specifications, history, PRs and CI. See [UNIFIED_PUBLIC_SITE.md](UNIFIED_PUBLIC_SITE.md) and the [machine-readable plan](../templates/cloudflare-public-delivery.yaml).
+## Approved target
 
-## One website, two entry roles
+Four independent repositories compose one website on Worker `inquirystack`, at `https://inquirystack.philohub.workers.dev`. `/` is the human entry; `/agent/` is the machine entry. GitHub remains the canonical source. Only Starter is connected to Git; the other three public repositories are fetched without credentials at `site/sources.lock.json` revisions. Website source locks and downstream adoption locks remain separate.
 
-On one custom domain still to be selected, `/` is the AHICP-led human entry and `/agent/` is the Starter machine entry. Component sections are `/ahicp/`, `/ppf/`, `/vault-interface/` and `/starter/`; `/start/` explains how to begin. These are approved target paths, not existing canonical URLs.
+The user explicitly authorized public anonymous reading on the current main site on 2026-09-22. Do not require a main-site reader allowlist or create an Everyone Access rule. This does not authorize changing ecosystem canonical URLs, About Websites, DNS, or retiring GitHub Pages. Existing Pages holding is retained. Other projects keep their existing access modes. Free-first: no purchase or paid upgrade; a verified provider-native URL may become permanent after separate explicit canonical cutover approval.
 
-GitHub remains canonical source. Keep the four GitHub Pages URLs, human/machine entries and About Websites unchanged. Pages is appropriate for this static framework site; downstream PPF projects still choose Pages, Workers or another provider according to runtime needs.
+## Repository configuration
 
-## Build settings
+Use `cloudflare-builds.yaml`, `package-lock.json` and `wrangler.jsonc` at the intended Git revision. Root `/`, main branch `main`, assets `_site`. Build: `npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`; deploy: `npm run cloudflare:deploy`; non-production: `npm run cloudflare:preview`. Toolchain targets are Python 3.12.12, Node 22.22.0, Wrangler 4.136.1. Read actual build logs to verify versions; configuration alone is not runtime evidence.
 
-Connect only `ChongLiuPhil/Inquiry-Publishing-Project-Starter`. Three other public upstreams are fetched without credentials at locked SHAs; this build does not require expanding the GitHub App's repository scope.
+The holding alternative adds `--holding` to the Python command. Current runtime holding was a direct API bootstrap, not a Git-triggered build. Do not represent its version as a Starter checkout.
 
-```text
-Production branch: main
-Root directory: .
-Framework preset: none
-Initial build command: python tools/build_public_site.py --holding
-Full candidate build command: python tools/build_public_site.py
-Build output directory: _site
-PYTHON_VERSION: 3.12
-NODE_VERSION: 22
-```
+## Cloud execution
 
-The previous `exit 0` + `docs` settings do not compose the unified site. Deploy only the empty holding page before Access is verified. A Dashboard Production label for main does not mean an ecosystem public cutover.
+1. Read the [cloud-only handoff](CLOUDFLARE_WEB_AGENT_HANDOFF.md) and fresh-read provider state. Reuse the existing Worker and account subdomain; do not change the account-wide subdomain or create a duplicate project.
+2. Review and merge the repository PR after its checks. Do not need local files: GitHub source and Actions artifacts are sufficient. Use the PR head before merge if reviewing a pending implementation.
+3. Connect only Starter through the existing Cloudflare GitHub App. New repository grants remain human-owned. Apply the build settings above using native Workers Builds. Never reuse another project's named build credential without verifying its intended scope. Create/select a provider-managed token through the provider UI or secure credential path; no secret may enter Git, chat or logs. Native user-token credentials are not per-Worker least privilege.
+4. Keep non-production builds and preview URLs disabled initially. The account's Access bootstrap and preview audience are still unresolved. Do not expose a preview just to pass a test. When approved, configure `preview_worker` Access protection, check higher-priority hostname policies, then enable preview URLs and non-production builds together in provider settings and Wrangler configuration. A real version preview must be challenged anonymously and readable by an approved identity. The preview deploy command must upload a version without replacing main.
+5. Run the full main build, record the actual commit and provider deployment/version IDs, and verify anonymous access to `/`, `/agent/`, all component routes, language switching, mobile, no-JavaScript content, JSON, bootstrap, CSS and `/build-info.json`. Compare all four source revisions. Keep existing official URLs and candidate notices intact.
+6. Verify an actual Git push triggers the configured build and that replaying reconciliation creates no duplicate connections/triggers/policies. A manual build alone does not establish Git event integration.
+7. Record actual results separately from proposal and local/CI results. The broader reusable PPF lifecycle and password mode remain pending as listed in the handoff.
 
-## Minimal human gates and agent resumption
+## Rollback
 
-1. Open `https://dash.cloudflare.com/`, sign in, complete MFA directly, and select the actual target account. Never send passwords, MFA codes, tokens, cookies, private keys or recovery codes in chat.
-2. Inspect **Workers & Pages** for an existing corresponding Pages project; do not duplicate or delete projects. For a new connection use **Create application → Pages → Connect to Git / Import an existing Git repository**. This is Pages, not a Worker's Deploy command flow. Recheck official documentation/live UI if labels differ.
-3. At the GitHub App authorization page select `ChongLiuPhil`; add only Starter for this task. Do not remove grants used by other actual projects. Completion means Cloudflare can see Starter. After account-owner authorization, an agent with genuinely callable authenticated tools should resume routine configuration. A human browser login does not automatically create an agent control-plane session.
-4. Configure/create **one** Pages project using the initial settings above. No project name has been selected or assumed available. Keep automatic production/preview deployments off while configuring Access; deploy only the holding page. Non-secret feedback consists of project name, actual `pages.dev` URL and deployment status; no token is needed in chat.
-5. **Settings → General → Enable access policy** covers the preview default policy only. Follow the official Known issues exact-hostname procedure to protect `project.pages.dev`, while retaining/recreating protection for `*.project.pages.dev`; verify both in Zero Trust Applications. Approve reader identities directly in Cloudflare, without Everyone allow rules. Wildcard preview protection does not secure the main hostname; noindex is not authentication.
-6. Verify anonymous/incognito requests cannot read the exact hostname or a real preview, while an approved identity can. Check direct files, JSON, bootstrap, static assets and alternate hostnames. If no preview exists, leave that check pending, not PASS.
-7. After Access verification, the agent changes to the full candidate build command and performs a restricted deployment. Check the Starter and three pinned revisions in `/build-info.json`, all sections, language switching, no-JavaScript fallback, guide loading and machine resources. Persist only non-secret project identifiers, URLs, revisions and observed results. Access IDs, reader identities and other private control-plane state remain in authorized private provider state.
-8. Only then does the human select a custom domain and authorize necessary DNS/zone work. Domain validation and final public cutover are separate gates: do not automatically remove Access, change public URLs or disable GitHub Pages.
+Before a new deployment, re-read the active deployment and save its non-secret version reference. The observed known holding version is recorded in the handoff; recheck that it exists before using it. Restore a verified holding or prior version if the candidate fails, then verify the served content. Pause automatic triggers if necessary. Never force a rollback past changed secrets without inspecting the impact. Revert repository changes via PR; preserve Pages holding, GitHub Pages, existing domains and unrelated App grants. No force push or project deletion.
 
-## Final public cutover (not authorized)
+## Current official references
 
-The builder intentionally supports holding/candidate behavior only. Canonical/public fields retain existing entries; relative candidate paths are separate. After explicit final approval, prepare a coordinated PR set covering four-repository ecosystem metadata, About Websites, public README links, llms, machine descriptor, retrieval contract, cross-links and old-URL mappings. Update candidate notices, indexing policy and corresponding validators. GitHub source repository URLs do not change.
+Checked 2026-09-22; verify live schemas and UI before mutations:
 
-Four repositories cannot form a truly atomic cross-repository Git transaction. Record the cutover checklist and each repository revision, retain old entries during a compatibility window and verify each update; do not describe coordination as an indivisible atomic operation.
-
-## Verification and rollback
-
-Passing GitHub build/browser CI verifies candidate artifacts, not Cloudflare deployment, TLS, DNS or Access.
-
-Before cutover, keep all old GitHub Pages URLs. Restore the holding build or last verified candidate deployment and pause automatic builds when needed. Roll back repository changes through a revert PR. After cutover, restore recorded entries, About Websites and DNS from the checklist. Never delete projects or force-push history as incidental cleanup. Re-read provider actual state after operations; proposals do not establish execution.
-
-## Official operational references
-
-Checked: 2026-09-22. Recheck live UI at execution time.
-
-- https://developers.cloudflare.com/pages/configuration/git-integration/
-- https://developers.cloudflare.com/pages/configuration/preview-deployments/
-- https://developers.cloudflare.com/pages/platform/known-issues/
-- https://developers.cloudflare.com/pages/configuration/branch-build-controls/
-- https://developers.cloudflare.com/pages/configuration/build-configuration/
+- [Workers best practices](https://developers.cloudflare.com/workers/best-practices/workers-best-practices/)
+- [Workers Builds API](https://developers.cloudflare.com/workers/ci-cd/builds/api-reference/)
+- [Worker and preview Access protection](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
+- [workers.dev](https://developers.cloudflare.com/workers/configuration/routing/workers-dev/)
+- [Static asset billing](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/)

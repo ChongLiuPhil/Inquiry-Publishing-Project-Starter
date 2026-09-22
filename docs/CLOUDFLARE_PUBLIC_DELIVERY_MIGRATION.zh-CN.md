@@ -1,61 +1,44 @@
-# Cloudflare 单站公共交付迁移
+# Cloudflare 单站 Workers 交付迁移
 
-**状态：仓库侧准备；provider actual state 未验证；未执行 public cutover。**
+状态：holding 已部署；完整运行站点及 Workers Builds 尚未验证；正式 URL 切换未获批准。v3 契约替代旧 Pages 专用步骤，包括旧文档要求当前主站受 Access 保护的条件。
 
-2026-09-22 用户批准以一个综合网站、一个 Pages 项目取代四个 Pages 项目的旧方案。四个 GitHub 仓库继续独立维护规范、版本、PR 与 CI。完整决定见 [UNIFIED_PUBLIC_SITE.zh-CN.md](UNIFIED_PUBLIC_SITE.zh-CN.md)；机器计划见 [cloudflare-public-delivery.yaml](../templates/cloudflare-public-delivery.yaml)。
+## 已批准目标
 
-## 一个网站，两种入口角色
+四个仓库独立维护，组成一个网站，由 `inquirystack` Worker 提供服务，地址为 `https://inquirystack.philohub.workers.dev`。`/` 是人类入口，`/agent/` 是机器入口。GitHub 为权威源；只连接 Starter，其他三个公开上游按 `site/sources.lock.json` 固定 revision 无凭据读取。网站来源锁与下游采用锁分开维护。
 
-同一个尚待选择的自定义域名：`/` 是以 AHICP 为内容基础的人类入口；`/agent/` 是 Starter 的机器入口。组件栏目位于 `/ahicp/`、`/ppf/`、`/vault-interface/`、`/starter/`；`/start/` 提供启动说明。路径是批准的目标布局，不是已经存在的正式 URL。
+用户于 2026-09-22 明确批准当前综合站主地址匿名公开阅读，不设主站读者名单，也不创建 Everyone Access 放行策略。这不等于批准修改 ecosystem 正式 URL、About Website、DNS 或停用 GitHub Pages。保留原 Pages holding；其他项目保持现有访问方式。免费优先，不自动购买或升级；免费提供商地址可以经验证和独立批准成为正式身份。
 
-GitHub 仍是 canonical source。当前四个 GitHub Pages URL、Human Entry、Machine Entry 与 About Website 均保持不变。静态框架网站使用 Pages；下游 PPF 项目仍按实际运行需要选择 Pages、Workers 或其他 provider。
+## 仓库构建配置
 
-## 构建设置
+读取目标 Git revision 下的 `cloudflare-builds.yaml`、`package-lock.json` 与 `wrangler.jsonc`。根目录 `/`，主分支 `main`，静态输出 `_site`。
 
-只连接 `ChongLiuPhil/Inquiry-Publishing-Project-Starter`；三个其他公开上游按锁定 SHA、不带凭据读取，不需要为本次构建扩大 GitHub App 权限。
+- Build：`npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`
+- Deploy：`npm run cloudflare:deploy`
+- 非主分支：`npm run cloudflare:preview`
+- 目标工具版本：Python 3.12.12、Node 22.22.0、Wrangler 4.136.1。必须从实际构建日志复核，不能把配置当成运行证据。
 
-```text
-Production branch: main
-Root directory: .
-Framework preset: none
-Initial build command: python tools/build_public_site.py --holding
-Full candidate build command: python tools/build_public_site.py
-Build output directory: _site
-PYTHON_VERSION: 3.12
-NODE_VERSION: 22
-```
+holding 构建在 Python 命令后加 `--holding`。现有线上 holding 是直接 API 引导部署，不是 Git 构建，不能把它记为某个 Starter checkout。
 
-旧的 `exit 0` + `docs` 不适用于单站组合。先部署空占位页；访问保护验证前不要部署完整候选内容。不要因 Dashboard 把 main 标记为 Production，就把它解释为生态 public cutover。
+## 云端执行
 
-## 最小人工门与 Agent 恢复点
+1. 先读[仅依赖 GitHub 的交接说明](CLOUDFLARE_WEB_AGENT_HANDOFF.zh-CN.md)，fresh-read 实际提供商状态。复用 Worker 和账户前缀，不改账户全局子域名，不重复创建项目。
+2. 审查仓库 PR，检查通过后合并。待合并实现从 PR head 读取；源文件和 Actions 工件均在 GitHub，不需要原电脑文件。
+3. 通过已有 Cloudflare GitHub App 只连接 Starter；新仓库授权仍由人批准。按上述配置使用原生 Workers Builds。未经核实不得借用其他项目的具名构建凭据；通过提供商 UI 或安全凭据流程选择/创建原生构建 token，秘密不得进入 Git、聊天或日志。原生 user-token 不宣称为单 Worker 最小权限。
+4. 初始关闭非主分支自动构建和预览 URL。Access 团队初始化与预览读者仍未确定，不可为完成测试而公开预览。批准后配置 `preview_worker` Access 保护，并核查优先级更高的 hostname 策略；随后同时更新提供商与 Wrangler 配置，启用预览和非主分支构建。必须测试真实版本预览的匿名拒绝及获准身份可读。预览命令只上传版本，不替换主部署。
+5. 运行完整主分支构建，记录真实 commit、deployment/version，匿名验证 `/`、`/agent/`、全部栏目、双语、移动端、无 JavaScript 内容、JSON、bootstrap、CSS 与 `/build-info.json`。核对四库来源 revision。保留现有正式 URL 与候选提示。
+6. 实际验证一次 Git 提交触发构建，并确认第二次对账不新增重复连接、触发器或策略。手动触发成功不能代替 Git 事件衔接验证。
+7. 分别记录提议、执行、本地/CI 测试和线上验证。通用 PPF 生命周期工具与共享密码模式的剩余实现见交接说明。
 
-1. 打开 `https://dash.cloudflare.com/`，登录并直接完成 MFA，选择实际目标账户。不要把密码、MFA、token、Cookie、私钥或恢复码发到聊天。
-2. 进入 **Workers & Pages**，先检查是否已有对应 Pages 项目；不要重复创建或删除旧项目。首次连接进入 **Create application → Pages → Connect to Git / Import an existing Git repository**。这是 Pages 流程，不是 Worker 的 Deploy command 流程；UI 不同必须先核验当前官方文档/界面。
-3. 在 GitHub App 授权页选择 `ChongLiuPhil`；仅为本任务新增 Starter 仓库权限。已经给其他实际项目的授权不得擅自撤销。完成条件：Cloudflare 可以看到 Starter。人类完成账户授权后，有实际已认证工具的 Agent 应接回常规配置工作；本地浏览器登录不自动建立 Agent 控制面会话。
-4. 按上述初始设置创建/配置**一个** Pages 项目，项目名称尚未决定，不自动假定可用名称。先关闭自动 production/preview 部署，避免配置 Access 时上传完整网站；只部署 holding page。可回传的非秘密结果是项目名称、实际 `pages.dev` 地址和部署状态，不需要 token。
-5. 项目 **Settings → General → Enable access policy** 只解决 preview 默认策略。按官方 Known issues 中的 exact-hostname 流程保护 `项目名.pages.dev`，并保留/重新建立 `*.项目名.pages.dev` 保护；在 Zero Trust Applications 中核验两者都存在。读者身份直接在 Cloudflare 中批准，不创建 Everyone 允许规则。不能把 wildcard preview 策略当成主地址保护；`noindex` 也不是认证。
-6. 用匿名/无痕会话验证主地址和一个真实预览地址不能读取正文；用获准身份验证可读；检查直接文件、JSON、bootstrap、静态资源和替代 hostname。没有预览部署时，preview 检查保持待完成，不标记 PASS。
-7. Access 验证后，Agent 把构建命令改成完整候选命令，执行受限部署，核对 `/build-info.json` 的 Starter revision 和三库固定 revision，再验证所有栏目、双语切换、无 JavaScript fallback、指南加载与机器资源。只写回非秘密项目标识、URL、revision 和实际验证结果；Access ID、读者身份等私人控制面数据留在获授权的私人 provider state。
-8. 之后才由人类选择自定义域名并授权必要 DNS/zone 动作。域名验证与最终 public cutover 是不同的门：不要自动移除 Access、修改正式 URL 或关闭 GitHub Pages。
+## 回滚
 
-## 最终公开切换（尚未授权）
+每次部署前重新读取当前部署并保存非秘密版本引用。已观察到的 holding 版本在交接记录中，使用前确认仍存在。候选失败恢复经验证的 holding 或上一版本，再检查实际响应；必要时暂停自动触发器。若秘密发生变化，不得强制绕过回滚阻止而不检查影响。仓库使用 revert PR；保留 Pages holding、GitHub Pages、已有域名及其他项目 App 授权，不强推或删除项目。
 
-构建器当前故意只有 holding/candidate 行为。候选中的 canonical/public 字段继续记录旧正式入口，相对候选路径放在独立字段。得到最终明确授权后，另做协调 PR：更新四库 ecosystem、About Website、README 公共入口、llms、machine descriptor、retrieval contract、跨站链接与旧 URL 映射；修改候选提示、索引策略及相应验证器。GitHub 源仓库地址不变。
+## 官方依据
 
-四库无法形成真正的跨仓库原子 Git 事务。应记录切换清单与每库 revision，在兼容窗口内保留旧入口，逐项核验，避免把协调切换称为不可分割的原子操作。
+核对日期 2026-09-22；操作前仍需复核 live API/UI：
 
-## 验证与回滚
-
-GitHub CI 构建和浏览器测试通过，只证明候选工件；不证明 Cloudflare 的部署、TLS、DNS 或 Access 已完成。
-
-切换前：继续使用所有旧 GitHub Pages URL；候选失败可恢复 holding build 或上一份已验证部署，并暂停自动构建。仓库变更用 revert PR 回滚。切换后：按已记录的清单恢复旧入口、About 与 DNS。不要删除 Cloudflare 项目或强推历史。每次部署后重新核验 provider actual state，而不是从 proposal 推断实际状态。
-
-## 官方操作依据
-
-核对日期：2026-09-22。实际 UI 仍须在操作时复核。
-
-- https://developers.cloudflare.com/pages/configuration/git-integration/
-- https://developers.cloudflare.com/pages/configuration/preview-deployments/
-- https://developers.cloudflare.com/pages/platform/known-issues/
-- https://developers.cloudflare.com/pages/configuration/branch-build-controls/
-- https://developers.cloudflare.com/pages/configuration/build-configuration/
+- [Workers 建议](https://developers.cloudflare.com/workers/best-practices/workers-best-practices/)
+- [Workers Builds API](https://developers.cloudflare.com/workers/ci-cd/builds/api-reference/)
+- [主站与预览 Access](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
+- [workers.dev](https://developers.cloudflare.com/workers/configuration/routing/workers-dev/)
+- [静态资源计费](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/)

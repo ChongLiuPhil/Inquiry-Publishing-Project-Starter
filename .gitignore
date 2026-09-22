@@ -4,3 +4,7 @@ artifacts/
 __pycache__/
 *.pyc
 public-site-*/
+
+node_modules/
+.wrangler/
+.dev.vars*

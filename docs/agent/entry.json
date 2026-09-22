@@ -29,13 +29,14 @@
   "public_delivery": {
     "canonical_source_provider": "github",
     "current_provider": "github-pages",
-    "preferred_provider": "cloudflare-pages",
-    "migration_state": "prepared-provider-authorization-required",
+    "preferred_provider": "cloudflare-workers",
+    "migration_state": "workers-holding-created-full-site-unverified",
     "migration_plan": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml",
     "migration_guide": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md",
     "cutover_rule": "keep-current-public-urls-until-verified-cloudflare-deployment",
     "target_topology": "single-site-multi-repository",
-    "target_pages_project_count": 1,
-    "source_lock": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/site/sources.lock.json"
+    "source_lock": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/site/sources.lock.json",
+    "target_active_worker_count": 1,
+    "cloud_handoff": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_WEB_AGENT_HANDOFF.zh-CN.md"
   }
 }

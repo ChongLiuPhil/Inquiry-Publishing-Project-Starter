@@ -2,7 +2,7 @@
 
 ## 已批准的架构决定（2026-09-22）
 
-用户明确同意：四个独立 GitHub 仓库组成一个综合网站，由一个 Cloudflare Pages 项目交付；未来使用一个尚待选择的稳定自定义域名。人类入口位于 `/`，机器入口位于 `/agent/`。批准范围包括可逆的仓库实现、PR、验证与状态写回；不包括域名选择、账户授权、DNS 修改或最终 public cutover。
+用户明确同意：四个独立 GitHub 仓库组成一个综合网站，由一个活动 Cloudflare Worker 交付；允许免费提供商地址经明确批准成为正式身份，自定义域名可选。人类入口位于 `/`，机器入口位于 `/agent/`。批准范围包括可逆的仓库实现、PR、验证与状态写回；不包括域名选择、账户授权、DNS 修改或最终 public cutover。
 
 这取代旧的“四个 Pages 项目”迁移拓扑，不合并四个组件的规范权威。AHICP 仍负责主要人类理解内容；Starter 仍负责机器调取、组合与升级。PPF 与 Vault Interface 保持各自权威。下游项目不继承这个网站的公开状态或部署平台选择。
 
@@ -28,7 +28,7 @@ python tools/build_public_site.py
 
 ## 当前状态与候选状态
 
-当前正式 Human Entry、Machine Entry、四组件 URL 仍是 GitHub Pages。候选描述符保留当前 `public_landing` 与 `human_entry`，另以 `delivery_candidate` 声明相对路径；不能把相对候选路径或 `pages.dev` 写成正式身份。首页中的可复制启动指令继续使用当前正式机器入口。
+当前正式人类入口和机器入口在单独批准切换前仍为 GitHub Pages。候选描述符保留 `public_landing` 与 `human_entry`，另以 `delivery_candidate` 声明相对路径。只有经过验证并获正式切换批准后，Workers 地址才可成为正式身份。
 
 候选输出带迁移提示和 `noindex`。**noindex 不等于访问认证。** 构建器目前故意仅支持 candidate/holding，不支持无授权 production 模式；最终切换必须通过单独的、明确授权的协调变更，更新公共 URL、候选提示、索引规则与相关验证器。
 
@@ -36,6 +36,6 @@ python tools/build_public_site.py
 
 `Unified public site` CI 执行离线回归、真实固定上游构建、链接/脚本/来源完整性验证，以及桌面、移动端、无 JavaScript 浏览器检查，并保存候选构建和截图。它没有 Cloudflare 凭据，也没有部署步骤。CI PASS 不等于 provider Access PASS。
 
-Cloudflare 第一次部署使用 `python tools/build_public_site.py --holding`。主 `pages.dev` 与预览通配 hostname 均经过 Access 验证后，才切换为完整候选构建。具体步骤见 [迁移指南](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md)。
+Worker holding 已创建。用户随后明确批准主站公开阅读，无需 Access 名单；完整候选可在构建验证后部署。预览保持关闭，直到访问保护和读者批准完成。正式入口切换仍需独立批准。具体步骤见 [迁移指南](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md)。
 
 仓库回滚使用普通 revert PR；不强推。切换前继续使用全部现有 GitHub Pages URL。候选部署可恢复占位页或之前验证过的部署；不删除 Cloudflare 项目、不撤销其他项目正在使用的 GitHub App 权限。
