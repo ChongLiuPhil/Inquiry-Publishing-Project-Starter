@@ -69,6 +69,10 @@ def validate_lock(lock: dict) -> None:
         elif not re.fullmatch(r"[0-9a-f]{40}", revision):
             raise ValueError(f"Unpinned upstream: {key}")
         files = component.get("files", [])
+        for path in files:
+            parts = PurePosixPath(path).parts
+            if not path.startswith("docs/") or "\\" in path or any(p.startswith(".") for p in parts) or str(PurePosixPath(path)) != path:
+                raise ValueError("Invalid framework publication path")
         if len(files) != len(set(files)) or set(files) != ALLOWED[key]:
             raise ValueError(f"Public file allowlist mismatch: {key}")
 

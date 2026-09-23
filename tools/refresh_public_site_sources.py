@@ -98,14 +98,11 @@ def refresh(lock_path: Path = LOCK_PATH, *, apply: bool = False, resolve=latest_
         print("Registered publication output is unchanged; no source lock commit required.")
         return []
 
-    updated = original
     for key, old_revision, new_revision in replacements:
-        old = f'"revision": "{old_revision}"'
-        new = f'"revision": "{new_revision}"'
-        if updated.count(old) != 1:
-            raise RuntimeError(f"Expected one unique lock entry for {key}; refusing ambiguous update")
-        updated = updated.replace(old, new, 1)
+        group = "components" if key in lock["components"] else "publications"
+        lock[group][key]["revision"] = new_revision
         print(f"Public content changed: {key} -> {new_revision}")
+    updated = json.dumps(lock, ensure_ascii=False, indent=2) + "\n"
 
     if apply:
         updated_lock = json.loads(updated)
