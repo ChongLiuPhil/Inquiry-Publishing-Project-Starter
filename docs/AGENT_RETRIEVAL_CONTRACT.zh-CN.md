@@ -4,7 +4,7 @@
 
 稳定的公共机器入口页面是：
 
-https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+https://inquirystack.philohub.workers.dev/agent/
 
 使用者可以只把这个 URL 交给 AI Agent。Agent 随后必须自行读取权威 ecosystem 与本调取契约，恢复四个组件的关系，并按下文规则继续。公共页面负责提供稳定入口；GitHub 中受版本控制的 ecosystem 与契约仍是权威来源。
 
@@ -89,18 +89,9 @@ Agent 可能从以下任意入口进入：
 
 对于四个公共框架网站，Cloudflare Workers 是首选交付平台，GitHub 继续作为权威源文件、版本历史和 CI 平台。
 
-2026-09-22 批准的新架构把四个仓库组合为**一个网站、一个活动 Worker**，而不是四个 provider 项目。在同一个未来域名下，`/` 是以 AHICP 为内容基础的人类入口，`/agent/` 是 Starter 的机器入口；四个规范权威仍保持独立。必须读取 `docs/UNIFIED_PUBLIC_SITE.zh-CN.md` 与 v3 迁移计划。目标路径不等于正式 URL；`site/sources.lock.json` 只固定网站来源，不替代下游采用锁。这个架构决定不授权 provider 访问、域名选择、DNS 或最终 public cutover。
+已批准架构把四个仓库组合为**一个网站、一个活动 Worker**。用户另行批准 `https://inquirystack.philohub.workers.dev/` 作为正式人类入口，`/agent/` 作为机器入口；四个规范权威仍保持独立。必须读取 `docs/UNIFIED_PUBLIC_SITE.zh-CN.md` 与 v3 迁移计划。`site/sources.lock.json` 只固定网站来源，不替代下游采用锁。
 
-在机器可读迁移计划标记“已验证切换”以前：
-
-- 现有 GitHub Pages URL 仍然是当前正式公共入口；
-- 当前 `inquirystack.philohub.workers.dev` 主站已获准公开阅读，正式身份尚未切换；
-- 不能因为 Cloudflare project 已创建，就提前改写公共入口 URL；
-- 免费提供商地址可以经验证和明确批准成为正式身份，自定义域名可选；
-- 必须读取 `templates/cloudflare-public-delivery.yaml` 确认迁移状态；
-- 协调切换必须遵循 `docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md`。
-
-只要迁移还没有达到 verified-cutover 状态，任何新的公共 URL 都应视为 provisional provider state，而不是正式入口。
+所选 `workers.dev` 地址免费且不需 DNS 修改。旧 GitHub Pages URL 保留供回滚，新公共入口链接指向 Worker。必须读取 `templates/cloudflare-public-delivery.yaml` 的实际迁移与验收状态；批准和 CI 成功不能单独证明线上切换完成。受限预览继续关闭，等待独立 Access 验收。
 
 ## 7. Cloudflare 需要人工操作时的交接标准
 
@@ -118,10 +109,10 @@ Agent 可能从以下任意入口进入：
 
 ## 8. 四个权威公共入口
 
-- AHICP: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
-- PPF: https://chongliuphil.github.io/Personal-Publishing-Framework/
-- Vault Interface: https://chongliuphil.github.io/Vault-interface/
-- Starter: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+- AHICP: https://inquirystack.philohub.workers.dev/
+- PPF: https://inquirystack.philohub.workers.dev/ppf/
+- Vault Interface: https://inquirystack.philohub.workers.dev/vault-interface/
+- Starter: https://inquirystack.philohub.workers.dev/starter/
 
 机器可读生态：
 https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml

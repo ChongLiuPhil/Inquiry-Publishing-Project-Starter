@@ -1,14 +1,14 @@
 # Inquiry Publishing Project Starter
 
-**第一次了解整个体系：** 从 [AHICP 主页](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) 开始；那里提供完整使用指南和可直接交给 AI 的启动指令。
+**第一次了解整个体系：** 从 [AHICP 主页](https://inquirystack.philohub.workers.dev/) 开始；那里提供完整使用指南和可直接交给 AI 的启动指令。
 
 Starter 主要面向 AI 和配置工作；第一次了解体系时，不需要先读这些技术细节。
 
-**机器入口：** [公共 Agent 页面](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/) · [机器描述文件](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/entry.json)
+**机器入口：** [公共 Agent 页面](https://inquirystack.philohub.workers.dev/agent/) · [机器描述文件](https://inquirystack.philohub.workers.dev/agent/entry.json)
 
 这是 AHICP、PPF 与 Vault Interface 的**组合、采用和升级层**，不是第四套规范。
 
-**公共项目主页：** [AHICP](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [Vault Interface](https://chongliuphil.github.io/Vault-interface/) · [Starter](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/)
+**公共项目主页：** [AHICP](https://inquirystack.philohub.workers.dev/) · [PPF](https://inquirystack.philohub.workers.dev/ppf/) · [Vault Interface](https://inquirystack.philohub.workers.dev/vault-interface/) · [Starter](https://inquirystack.philohub.workers.dev/starter/)
 
 **体系与 AI 配置入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
 

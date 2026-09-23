@@ -36,16 +36,16 @@ jobs:
       - run: python tools/test_public_site_browser.py
       - name: Verify holding-page bootstrap contains no project content
         run: |
-          mv _site _site-candidate
+          mv _site _site-public
           python tools/build_public_site.py --holding
           test "$(find _site -type f | wc -l)" -eq 3
           test ! -e _site/agent/entry.json
           rm -r _site
-          mv _site-candidate _site
+          mv _site-public _site
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4; resolved in run 35684632168
         if: always()
         with:
-          name: unified-public-site-candidate
+          name: unified-public-site
           path: |
             _site/
             artifacts/public-site/

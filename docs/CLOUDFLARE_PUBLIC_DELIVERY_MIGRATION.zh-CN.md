@@ -1,12 +1,12 @@
 # Cloudflare 单站 Workers 交付迁移
 
-状态：完整公开候选站、Workers Builds 主分支部署及上游提交触发更新已经验收；预览仍关闭且未通过 Access 验收；正式 URL 切换未获批准。实际版本与证据见[候选站验收记录](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.zh-CN.md)。v3 契约替代旧 Pages 专用步骤，包括旧文档要求当前主站受 Access 保护的条件。
+状态：完整公开候选站及 GitHub 提交触发更新已验收；用户已批准 `workers.dev` 正式 URL 切换，本次版本部署后仍须完成线上复核，才标记 verified-cutover。预览保持关闭，未通过 Access 验收。候选站版本与证据见[验收记录](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.zh-CN.md)。
 
 ## 已批准目标
 
 四个仓库独立维护，组成一个网站，由 `inquirystack` Worker 提供服务，地址为 `https://inquirystack.philohub.workers.dev`。`/` 是人类入口，`/agent/` 是机器入口。GitHub 为权威源；只连接 Starter，其他三个公开上游按 `site/sources.lock.json` 固定 revision 无凭据读取。网站来源锁与下游采用锁分开维护。
 
-用户于 2026-09-22 明确批准当前综合站主地址匿名公开阅读，不设主站读者名单，也不创建 Everyone Access 放行策略。这不等于批准修改 ecosystem 正式 URL、About Website、DNS 或停用 GitHub Pages。保留原 Pages holding；其他项目保持现有访问方式。免费优先，不自动购买或升级；免费提供商地址可以经验证和独立批准成为正式身份。
+用户已批准当前综合站主地址匿名公开阅读，并另行批准 `https://inquirystack.philohub.workers.dev/` 成为正式人类入口，`/agent/` 成为机器入口。不设主站读者名单，也不创建 Everyone Access 放行策略。旧 GitHub Pages 和原 Pages holding 保留；不改 DNS、不购买域名、不升级套餐，其他项目保持各自访问方式。
 
 ## 仓库构建配置
 
@@ -25,7 +25,7 @@ holding 构建在 Python 命令后加 `--holding`。最初 Worker holding 是直
 2. 当前原生 Workers Builds 已只连接 Starter，`main` 更新会触发完整站点构建。新增仓库的 GitHub App 授权仍由人批准；原生 user build token 不宣称单 Worker 最小权限，秘密不得进入 Git、聊天或日志。
 3. GitHub App 已在四个选定仓库安装，按权限最小化的临时安装令牌通知 Starter，并由 App 创建来源锁 PR；普通 PR 检查通过后合并，随后原生 Builds 部署。没有定时轮询。具体权限与失败恢复见 [GitHub App 契约](GITHUB_APP_PUBLICATION.zh-CN.md)。
 4. 预览 URL 与非主分支自动构建继续关闭。若以后批准预览读者，先配置 `preview_worker` Access 保护并审查优先级更高的 hostname 策略，再同时启用预览 URL 与非主分支构建，实际测试匿名拒绝与获准身份可读。预览上传不能替换主部署。
-5. 每次核对主站时，以实际部署 revision、`/build-info.json`、网站路径与来源锁为准。当前完整候选站及一次上游提交触发更新已通过验收；不要把这一快照自动外推为将来每次部署都通过。
+5. 本次正式切换后，以实际部署 revision、`/build-info.json`、`/agent/entry.json`、全部组件路径、双语及无 JavaScript 内容为准，核对 canonical 链接、`robots.txt` 与响应头不再带候选版 `noindex`。结果通过后才将状态写为 `verified-cutover`；若失败，恢复上一已验证 Worker 版本并使用仓库 revert。
 
 ## 回滚
 

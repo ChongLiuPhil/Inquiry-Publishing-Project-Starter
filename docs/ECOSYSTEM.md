@@ -4,10 +4,10 @@ This repository is the composition entrypoint for four logically independent com
 
 | Component | Responsibility | Public entry |
 | --- | --- | --- |
-| AHICP | Human-led, AI-assisted inquiry and creation governance | [homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [repository](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
-| PPF | Source-centered publishing, releases, archives, and Continuous Web | [homepage](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [repository](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) |
-| Vault Interface | Provider-neutral public metadata schemas and validators | [homepage](https://chongliuphil.github.io/Vault-interface/) · [repository](https://github.com/ChongLiuPhil/Vault-interface) |
-| Starter | Composition, adoption, profiles, and upgrades | [homepage](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
+| AHICP | Human-led, AI-assisted inquiry and creation governance | [homepage](https://inquirystack.philohub.workers.dev/) · [repository](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
+| PPF | Source-centered publishing, releases, archives, and Continuous Web | [homepage](https://inquirystack.philohub.workers.dev/ppf/) · [repository](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) |
+| Vault Interface | Provider-neutral public metadata schemas and validators | [homepage](https://inquirystack.philohub.workers.dev/vault-interface/) · [repository](https://github.com/ChongLiuPhil/Vault-interface) |
+| Starter | Composition, adoption, profiles, and upgrades | [homepage](https://inquirystack.philohub.workers.dev/starter/) · [repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
 
 These components remain logically independent. Cross-linking them creates discoverability and a shared adoption path; it does not transfer normative authority from one component to another.
 
@@ -15,7 +15,7 @@ These components remain logically independent. Cross-linking them creates discov
 
 The ecosystem intentionally separates two entry roles:
 
-- **Understand the stack through AHICP:** the [AHICP public homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) explains what the system is for and how to begin.
+- **Understand the stack through AHICP:** the [AHICP public homepage](https://inquirystack.philohub.workers.dev/) explains what the system is for and how to begin.
 - **Configure through Starter:** an AI uses this repository’s `ecosystem.yaml`, profiles, stack files, and Agent Retrieval Contract for project composition, adoption, upgrades, deployment, and reconstruction.
 
 AHICP explains the method and user experience; Starter keeps the precise machine contract. They link to each other without replacing each other.
@@ -76,11 +76,11 @@ Following public links is a retrieval protocol, not permission to access private
 
 ## Public delivery provider
 
-For the four public framework sites, **Cloudflare Workers is the preferred delivery provider** and GitHub remains the canonical source/version-control provider. The current public URLs still use GitHub Pages and remain authoritative until Cloudflare staging, the target domain, the machine entry, and cross-project links have been verified.
+The four public framework sections now use **one Cloudflare Worker** at `https://inquirystack.philohub.workers.dev/`; GitHub remains the canonical source/version-control provider. Former GitHub Pages URLs remain available as legacy entrypoints and rollback paths.
 
-Use [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md) and the machine-readable [cloudflare-public-delivery.yaml](../templates/cloudflare-public-delivery.yaml) for the coordinated migration and cutover. A verified free `workers.dev` URL may become the permanent identity after explicit canonical cutover approval; a custom domain is optional.
+Use [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md) and the machine-readable [cloudflare-public-delivery.yaml](../templates/cloudflare-public-delivery.yaml) for the approved cutover, its live verification and rollback. The selected `workers.dev` identity is free; a custom domain remains optional.
 
-Do not replace ecosystem public URLs merely because a Cloudflare project has been created. URL cutover is a separate verified operation with rollback.
+Future domain or visibility changes remain separate decisions with verification and rollback.
 
 ## Continuous Web and Cloudflare
 

@@ -2,7 +2,7 @@
 """Reconcile registered public outputs after a commit event or manual recovery.
 
 Compare fixed source files or complete rendered deliverables without credentials.
-The workflow validates the candidate before committing the changed lock.
+The workflow validates the assembled public site before committing the changed lock.
 """
 from __future__ import annotations
 

@@ -3,13 +3,13 @@
 
 [中文](README.zh-CN.md)
 
-**New to the full stack?** Start with the [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/), which explains the system from the user’s point of view and provides a bootstrap instruction for AI setup.
+**New to the full stack?** Start with the [AHICP homepage](https://inquirystack.philohub.workers.dev/), which explains the system from the user’s point of view and provides a bootstrap instruction for AI setup.
 
-**Project links:** [Public homepage](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [GitHub repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter)
+**Project links:** [Public homepage](https://inquirystack.philohub.workers.dev/starter/) · [GitHub repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter)
 
-**Related public projects:** [AHICP homepage](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [PPF homepage](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [Vault Interface homepage](https://chongliuphil.github.io/Vault-interface/)
+**Related public projects:** [AHICP homepage](https://inquirystack.philohub.workers.dev/) · [PPF homepage](https://inquirystack.philohub.workers.dev/ppf/) · [Vault Interface homepage](https://inquirystack.philohub.workers.dev/vault-interface/)
 
-**Machine entrypoint:** [Public agent landing](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/) · [machine descriptor](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/entry.json)
+**Machine entrypoint:** [Public agent landing](https://inquirystack.philohub.workers.dev/agent/) · [machine descriptor](https://inquirystack.philohub.workers.dev/agent/entry.json)
 
 **Ecosystem and agent entrypoint:** [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent retrieval contract`](docs/AGENT_RETRIEVAL_CONTRACT.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare guide`](docs/CONTINUOUS_WEB_CLOUDFLARE.md)
 

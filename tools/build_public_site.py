@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compose a candidate public site; never deploy it or change canonical URLs.
+"""Compose the approved public site from pinned, explicitly published sources.
 
 Only explicit public files are read. Remote sources are pinned GitHub commits,
 without credentials; Starter comes from the current build checkout. The lock
@@ -19,6 +19,7 @@ import subprocess
 import tempfile
 from urllib.parse import urljoin, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 STARTER = "ChongLiuPhil/Inquiry-Publishing-Project-Starter"
@@ -30,7 +31,8 @@ REPOSITORIES = {
 }
 MOUNTS = {"ahicp": "/ahicp/", "ppf": "/ppf/", "vault_interface": "/vault-interface/", "starter": "/starter/"}
 CURRENT = {k: "https://chongliuphil.github.io/" + v.split("/")[1] + "/" for k, v in REPOSITORIES.items()}
-MACHINE_ENTRY = CURRENT["starter"] + "agent/"
+PUBLIC_URL = "https://inquirystack.philohub.workers.dev/"
+MACHINE_ENTRY = PUBLIC_URL + "agent/"
 # Publication scope is reviewed configuration, not a second list in code.
 MANIFEST = json.loads((ROOT / "site/publications.json").read_text())
 ALLOWED = {key: set(value["files"]) for key, value in MANIFEST["components"].items()}
@@ -77,6 +79,17 @@ def validate_lock(lock: dict) -> None:
             raise ValueError(f"Public file allowlist mismatch: {key}")
 
 
+def validate_cutover(root: Path) -> None:
+    plan = yaml.safe_load((root / "templates/cloudflare-public-delivery.yaml").read_text())
+    if (plan.get("schema") != "starter/cloudflare-public-delivery/v3"
+            or plan.get("architecture", {}).get("public_cutover_authorized") is not True
+            or plan.get("site", {}).get("provider_url") != PUBLIC_URL.rstrip("/")
+            or plan.get("current_public_delivery_provider") != "cloudflare-workers"
+            or plan.get("cutover_state") not in ("approved-pending-live-verification", "verified-cutover")
+            or plan.get("preview_defaults", {}).get("enabled") is not False):
+        raise ValueError("Public cutover is not authorized for this exact Worker with previews disabled")
+
+
 def destination(key: str, path: str) -> str:
     if key == "starter" and path.startswith("docs/agent/"):
         return "/" + path.removeprefix("docs/")
@@ -90,6 +103,8 @@ def rewrite_link(value: str, key: str, source: str, revision: str) -> str:
         return value
     parts = urlsplit(value)
     if parts.scheme or parts.netloc:
+        if value.startswith(PUBLIC_URL):
+            return urlunsplit(("", "", parts.path or "/", parts.query, parts.fragment))
         for target_key, current in CURRENT.items():
             # Only site URLs are rewritten. GitHub normative URLs remain upstream.
             if value.startswith(current):
@@ -150,12 +165,11 @@ def chrome(text: str, key: str, revision: str) -> str:
     for label, path in (("AHICP", "/ahicp/"), ("PPF", "/ppf/"), ("Vault Interface", "/vault-interface/"), ("Starter", "/starter/"), ("AI Agent", "/agent/")):
         nav += f'<a href="{path}">{label}</a>'
     nav += '</nav>'
-    notice = '<aside class="stack-notice"><span class="stack-zh">单站迁移候选版本，尚未正式切换。<a href="' + CURRENT["ahicp"] + '">当前正式人类入口</a>；<a href="' + MACHINE_ENTRY + '">当前正式机器入口</a>。</span><span class="stack-en">Unified-site candidate, not a public cutover. <a href="' + CURRENT["ahicp"] + '">Current human entry</a>; <a href="' + MACHINE_ENTRY + '">current machine entry</a>.</span></aside>'
     footer = '<footer class="stack-source">Source: <a href="https://github.com/' + REPOSITORIES[key] + '/tree/' + revision + '">' + key + ' @ ' + revision[:12] + '</a> · <a href="/build-info.json">Build provenance</a></footer>'
     if '</head>' not in text or '<body>' not in text or '</body>' not in text:
         raise ValueError(f"Expected a complete static HTML document: {key}")
-    text = text.replace('</head>', '<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/assets/stack.css"></head>', 1)
-    text = text.replace('<body>', '<body>' + nav + notice, 1)
+    text = text.replace('</head>', '<link rel="stylesheet" href="/assets/stack.css"></head>', 1)
+    text = text.replace('<body>', '<body>' + nav, 1)
     return text.replace('</body>', footer + '</body>', 1)
 
 
@@ -193,6 +207,7 @@ def checkout_revision(root: Path) -> tuple[str, bool]:
 
 
 def compose(root: Path, output: Path, lock: dict, revision: str, dirty: bool, loader=remote_source) -> dict:
+    validate_cutover(root)
     validate_lock(lock)
     output.mkdir(parents=True, exist_ok=True)
     files: dict[str, str] = {}
@@ -225,16 +240,20 @@ def compose(root: Path, output: Path, lock: dict, revision: str, dirty: bool, lo
     files["/start/index.html"] = chrome(start_page(False), "starter", revision)
     files["/start/index.en.html"] = chrome(start_page(True), "starter", revision)
     descriptor = json.loads(files["/agent/entry.json"])
-    if descriptor.get("public_landing") != MACHINE_ENTRY or descriptor.get("human_entry") != CURRENT["ahicp"]:
-        raise ValueError("Current public entries changed: implement separately authorized cutover first")
-    descriptor["delivery_candidate"] = {"state": "not-cutover", "topology": "single-site-multi-repository", "human_path": "/", "machine_path": "/agent/", "custom_domain": None, "build_provenance": "/build-info.json"}
+    if descriptor.get("public_landing") != MACHINE_ENTRY or descriptor.get("human_entry") != PUBLIC_URL or descriptor.get("public_delivery", {}).get("current_provider") != "cloudflare-workers":
+        raise ValueError("Machine descriptor does not identify the approved public Worker")
     files["/agent/entry.json"] = json.dumps(descriptor, ensure_ascii=False, indent=2) + "\n"
-    files["/llms.txt"] += "\nUnified-site candidate routes (not canonical URLs):\n/ = AHICP-led human entry\n/agent/ = Starter machine entry\n/agent/entry.json = descriptor\n/build-info.json = source revisions and content hashes\nCurrent public entrypoints above remain unchanged until explicit verified cutover.\n"
+    files["/llms.txt"] += "\nCanonical unified-site routes:\n/ = AHICP-led human entry\n/agent/ = Starter machine entry\n/agent/entry.json = descriptor\n/build-info.json = source revisions and content hashes\n"
     files["/assets/stack.css"] = CSS + "\n"
     files["/404.html"] = '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Not found</title></head><body><h1>Not found</h1><a href="/">Inquiry Publishing Stack</a></body></html>'
-    files["/robots.txt"] = "User-agent: *\nDisallow: /\n"
-    files["/_headers"] = "/*\n  X-Robots-Tag: noindex, nofollow\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n"
-    provenance = {"schema": "inquiry-publishing-stack/public-site-build/v1", "state": "candidate-not-cutover", "starter_revision": revision, "working_tree_dirty": dirty, "source_lock_sha256": hashlib.sha256((root / "site/sources.lock.json").read_bytes()).hexdigest(), "components": source_info, "outputs": {p: hashlib.sha256(t.encode()).hexdigest() for p, t in sorted(files.items())}}
+    for path, text in list(files.items()):
+        if path.endswith(".html") and path != "/404.html":
+            public_path = path.removesuffix("index.html") if path.endswith("index.html") else path
+            canonical = PUBLIC_URL.rstrip("/") + public_path
+            files[path] = text.replace("</head>", f'<link rel="canonical" href="{canonical}"></head>', 1)
+    files["/robots.txt"] = "User-agent: *\nAllow: /\n"
+    files["/_headers"] = "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n"
+    provenance = {"schema": "inquiry-publishing-stack/public-site-build/v1", "state": "canonical-workers-dev", "public_url": PUBLIC_URL, "starter_revision": revision, "working_tree_dirty": dirty, "source_lock_sha256": hashlib.sha256((root / "site/sources.lock.json").read_bytes()).hexdigest(), "components": source_info, "outputs": {p: hashlib.sha256(t.encode()).hexdigest() for p, t in sorted(files.items())}}
     files["/build-info.json"] = json.dumps(provenance, ensure_ascii=False, indent=2) + "\n"
     for path, text in files.items():
         target = output / path.lstrip("/")
@@ -280,7 +299,7 @@ def main() -> int:
         if output.exists():
             shutil.rmtree(output)
         shutil.copytree(stage, output)
-    print("Holding page ready" if args.holding else "Unified-site candidate validated; no deployment or public cutover performed")
+    print("Holding page ready" if args.holding else "Approved unified public site validated")
     return 0
 
 

@@ -4,7 +4,7 @@
 
 The stable public machine/configuration landing page is:
 
-https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+https://inquirystack.philohub.workers.dev/agent/
 
 An AI agent may be handed only that URL. It must then retrieve the canonical ecosystem and this contract, reconstruct all four components, and continue according to the rules below. The public landing page is a discovery surface; the GitHub-tracked ecosystem and contracts remain authoritative.
 
@@ -89,18 +89,9 @@ If those facts cannot be reconstructed, treat the situation as a configuration d
 
 For the four public framework sites, Cloudflare Workers is the preferred delivery provider and GitHub remains the canonical source/version-control provider.
 
-The architecture approved on 2026-09-22 composes the four repositories into **one website and one active Worker**, not four provider projects. On the same future domain, `/` is the AHICP-led human entry and `/agent/` is the Starter machine entry; normative authorities remain independent. Read `docs/UNIFIED_PUBLIC_SITE.md` and the v3 migration plan. Target paths are not canonical URLs. `site/sources.lock.json` pins website sources and does not replace downstream adoption locks. This decision does not authorize provider access, domain selection, DNS or final public cutover.
+The approved architecture composes the four repositories into **one website and one active Worker**. The user separately authorized `https://inquirystack.philohub.workers.dev/` as the canonical human entry and `/agent/` as the machine entry. Normative authorities remain independent. Read `docs/UNIFIED_PUBLIC_SITE.md` and the v3 migration plan. `site/sources.lock.json` pins website sources and does not replace downstream adoption locks.
 
-Until the migration plan reports a verified cutover:
-
-- the existing GitHub Pages URLs remain the current public entrypoints;
-- anonymous main-site reading at `inquirystack.philohub.workers.dev` is authorized, but canonical identity has not changed;
-- an agent must not rewrite public entry URLs merely because a Cloudflare project exists;
-- a verified free provider-native address may be approved as permanent identity; custom domains are optional;
-- the migration state must be read from `templates/cloudflare-public-delivery.yaml`;
-- the coordinated cutover must follow `docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md`.
-
-If the migration has not reached the verified-cutover state, treat any proposed new public URL as provisional provider state.
+The selected `workers.dev` address is free and requires no DNS change. Historical GitHub Pages URLs remain available for rollback, but new public entry links use the Worker. Read the actual migration and verification state from `templates/cloudflare-public-delivery.yaml`; do not infer a completed live cutover merely from authorization or CI. Protected previews remain disabled until their separate Access acceptance.
 
 ## 7. Cloudflare human-handoff standard
 
@@ -118,10 +109,10 @@ If the live provider UI differs from a recorded runbook, the agent must inspect 
 
 ## 8. Canonical public entrypoints
 
-- AHICP: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
-- PPF: https://chongliuphil.github.io/Personal-Publishing-Framework/
-- Vault Interface: https://chongliuphil.github.io/Vault-interface/
-- Starter: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+- AHICP: https://inquirystack.philohub.workers.dev/
+- PPF: https://inquirystack.philohub.workers.dev/ppf/
+- Vault Interface: https://inquirystack.philohub.workers.dev/vault-interface/
+- Starter: https://inquirystack.philohub.workers.dev/starter/
 
 Machine-readable ecosystem:
 https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml

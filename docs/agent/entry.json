@@ -1,13 +1,13 @@
 {
   "schema": "inquiry-publishing-stack/machine-entry/v1",
   "role": "composition-and-configuration-entry",
-  "public_landing": "https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/",
-  "human_entry": "https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/",
+  "public_landing": "https://inquirystack.philohub.workers.dev/agent/",
+  "human_entry": "https://inquirystack.philohub.workers.dev/",
   "canonical": {
     "ecosystem": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml",
     "agent_retrieval_contract_en": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md",
     "agent_retrieval_contract_zh_cn": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md",
-    "llms": "https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/llms.txt"
+    "llms": "https://inquirystack.philohub.workers.dev/llms.txt"
   },
   "default_baseline": [
     "full-ahicp",
@@ -28,12 +28,12 @@
   },
   "public_delivery": {
     "canonical_source_provider": "github",
-    "current_provider": "github-pages",
+    "current_provider": "cloudflare-workers",
     "preferred_provider": "cloudflare-workers",
-    "migration_state": "workers-full-site-verified-candidate-not-cutover",
+    "migration_state": "approved-pending-live-verification",
     "migration_plan": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml",
     "migration_guide": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md",
-    "cutover_rule": "keep-current-public-urls-until-verified-cloudflare-deployment",
+    "cutover_rule": "workers-dev-canonical-after-verified-human-approved-cutover",
     "target_topology": "single-site-multi-repository",
     "source_lock": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/site/sources.lock.json",
     "target_active_worker_count": 1,

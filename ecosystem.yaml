@@ -3,39 +3,39 @@ ecosystem:
   id: inquiry-publishing-stack
   name: Inquiry Publishing Stack
   canonical_entrypoint:
-    homepage: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+    homepage: https://inquirystack.philohub.workers.dev/starter/
     repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
   human_entrypoint:
     role: human-conceptual-entry
-    current_public_landing: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
-    delivery_provider: github-pages
+    current_public_landing: https://inquirystack.philohub.workers.dev/
+    delivery_provider: cloudflare-workers
     provider_may_change: true
     canonical_content_source_zh_cn: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.zh-CN.md
     canonical_content_source_en: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.md
-    homepage: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+    homepage: https://inquirystack.philohub.workers.dev/
     guide_zh_cn: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.zh-CN.md
     guide_en: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.md
   machine_entrypoint:
     role: composition-and-configuration-entry
-    public_landing: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
-    descriptor: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/entry.json
-    bootstrap_en: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/bootstrap.txt
-    bootstrap_zh_cn: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/bootstrap.zh-CN.txt
+    public_landing: https://inquirystack.philohub.workers.dev/agent/
+    descriptor: https://inquirystack.philohub.workers.dev/agent/entry.json
+    bootstrap_en: https://inquirystack.philohub.workers.dev/agent/bootstrap.txt
+    bootstrap_zh_cn: https://inquirystack.philohub.workers.dev/agent/bootstrap.zh-CN.txt
     ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
     agent_retrieval_contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md
   agent_entrypoint: docs/ECOSYSTEM.md
   agent_retrieval_contract: docs/AGENT_RETRIEVAL_CONTRACT.md
-  llms_entrypoint: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/llms.txt
+  llms_entrypoint: https://inquirystack.philohub.workers.dev/llms.txt
   language_policy: human-readable pages are single-language with a Chinese/English switch
   public_delivery:
     canonical_source_provider: github
-    current_provider: github-pages
+    current_provider: cloudflare-workers
     preferred_provider: cloudflare-workers
-    migration_state: workers-full-site-verified-candidate-not-cutover
+    migration_state: approved-pending-live-verification
     migration_plan: templates/cloudflare-public-delivery.yaml
     migration_guide: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
     stable_url_policy: free-provider-native-allowed-after-explicit-cutover
-    cutover_rule: keep-current-public-urls-until-verified-cloudflare-deployment
+    cutover_rule: workers-dev-canonical-after-verified-human-approved-cutover
     target_topology: single-site-multi-repository
     target_active_worker_count: 1
     source_lock: site/sources.lock.json
@@ -52,22 +52,22 @@ ecosystem:
   components:
     ahicp:
       repository: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
-      homepage: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+      homepage: https://inquirystack.philohub.workers.dev/ahicp/
       ecosystem: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/ecosystem.yaml
       role: human-led AI-assisted inquiry and creation governance
     ppf:
       repository: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
-      homepage: https://chongliuphil.github.io/Personal-Publishing-Framework/
+      homepage: https://inquirystack.philohub.workers.dev/ppf/
       ecosystem: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/ecosystem.yaml
       role: source-centered publishing lifecycle and continuous web
     vault_interface:
       repository: https://github.com/ChongLiuPhil/Vault-interface
-      homepage: https://chongliuphil.github.io/Vault-interface/
+      homepage: https://inquirystack.philohub.workers.dev/vault-interface/
       ecosystem: https://github.com/ChongLiuPhil/Vault-interface/blob/main/ecosystem.yaml
       role: provider-neutral public metadata contract
     starter:
       repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
-      homepage: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+      homepage: https://inquirystack.philohub.workers.dev/starter/
       ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
       role: composition, adoption, and upgrade layer
   privacy:

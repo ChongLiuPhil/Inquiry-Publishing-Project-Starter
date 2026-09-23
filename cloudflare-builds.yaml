@@ -22,7 +22,7 @@ worker:
 publication:
   main_visibility: public
   main_anonymous_reading_authorized: true
-  canonical_url_cutover_authorized: false
+  canonical_url_cutover_authorized: true
   preview_visibility: restricted
   preview_urls_enabled: false
   enable_preview_only_after: access-policy-and-anonymous-denial-verified
@@ -46,4 +46,4 @@ validation:
   first_workers_git_build: verified
   full_site_runtime: verified-public-candidate
   protected_preview: not-run
-  canonical_cutover: blocked
+  canonical_cutover: approved-and-verified

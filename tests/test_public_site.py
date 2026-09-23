@@ -10,7 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
-from build_public_site import ALLOWED, CURRENT, MACHINE_ENTRY, REPOSITORIES, LinkRewriter, compose, rewrite_link, validate_lock
+from build_public_site import ALLOWED, CURRENT, MACHINE_ENTRY, PUBLIC_URL, REPOSITORIES, LinkRewriter, compose, rewrite_link, validate_lock
 from validate_public_site import validate
 
 
@@ -59,11 +59,13 @@ class PublicSiteTests(unittest.TestCase):
             root.mkdir()
             (root / "site").mkdir()
             (root / "site/sources.lock.json").write_text(json.dumps(self.lock))
+            (root / "templates").mkdir()
+            (root / "templates/cloudflare-public-delivery.yaml").write_bytes((ROOT / "templates/cloudflare-public-delivery.yaml").read_bytes())
             def fixture(repository, revision, path):
                 if path.endswith(".html"):
                     return b'<!doctype html><html lang="zh-CN"><head><title>Fixture</title></head><body><main id="zh" class="lang active"><h1>Fixture content</h1><a href="#x" id="x">Link</a></main><script>const ok = true;</script></body></html>'
                 if path.endswith("entry.json"):
-                    return json.dumps({"public_landing": MACHINE_ENTRY, "human_entry": CURRENT["ahicp"], "public_delivery": {"current_provider": "github-pages"}}).encode()
+                    return json.dumps({"public_landing": MACHINE_ENTRY, "human_entry": PUBLIC_URL, "public_delivery": {"current_provider": "cloudflare-workers"}}).encode()
                 return b'Public fixture text\n'
             for path in ALLOWED["starter"]:
                 file = root / path
@@ -78,6 +80,12 @@ class PublicSiteTests(unittest.TestCase):
             first = (out / "build-info.json").read_bytes()
             compose(root, out, self.lock, "a" * 40, False, fixture)
             self.assertEqual(first, (out / "build-info.json").read_bytes())
+            plan = root / "templates/cloudflare-public-delivery.yaml"
+            approved = plan.read_text()
+            plan.write_text(approved.replace("public_cutover_authorized: true", "public_cutover_authorized: false"))
+            with self.assertRaisesRegex(ValueError, "not authorized"):
+                compose(root, out, self.lock, "a" * 40, False, fixture)
+            plan.write_text(approved)
             (out / "index.html").write_text("tampered")
             with self.assertRaises(ValueError): validate(out)
 

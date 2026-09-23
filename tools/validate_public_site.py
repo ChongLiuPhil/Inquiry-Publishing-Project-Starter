@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the assembled candidate, including provenance, links, JS and gates."""
+"""Validate the assembled public site, including provenance, links and cutover gates."""
 from __future__ import annotations
 
 import hashlib
@@ -22,6 +22,7 @@ class Page(HTMLParser):
         self.h1 = False
         self.has_title = False
         self.ids = set()
+        self.canonicals = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -29,6 +30,8 @@ class Page(HTMLParser):
         self.has_title |= tag == "title"
         if attrs.get("id"):
             self.ids.add(attrs["id"])
+        if tag == "link" and attrs.get("rel") == "canonical":
+            self.canonicals.append(attrs.get("href"))
         for attr in ("href", "src"):
             if attrs.get(attr):
                 self.links.append(attrs[attr])
@@ -36,8 +39,9 @@ class Page(HTMLParser):
 
 def validate(output: Path) -> None:
     info = json.loads((output / "build-info.json").read_text())
-    if info.get("state") != "candidate-not-cutover":
-        raise ValueError("This builder is not authorized for public cutover")
+    public_url = "https://inquirystack.philohub.workers.dev/"
+    if info.get("state") != "canonical-workers-dev" or info.get("public_url") != public_url:
+        raise ValueError("Public build identity does not match the approved Worker")
     if set(info.get("components", {})) != {"ahicp", "ppf", "vault_interface", "starter"}:
         raise ValueError("Missing independent component provenance")
     for component in info["components"].values():
@@ -51,16 +55,13 @@ def validate(output: Path) -> None:
         if file.is_symlink() or hashlib.sha256(file.read_bytes()).hexdigest() != checksum:
             raise ValueError(f"Output integrity failure: {path}")
     descriptor = json.loads((output / "agent/entry.json").read_text())
-    current = "https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/"
-    if descriptor.get("public_landing") != current or descriptor.get("public_delivery", {}).get("current_provider") != "github-pages":
-        raise ValueError("Candidate must not replace current public identity")
-    if descriptor.get("delivery_candidate", {}).get("custom_domain") is not None:
-        raise ValueError("No custom domain is authorized")
+    if descriptor.get("public_landing") != public_url + "agent/" or descriptor.get("human_entry") != public_url or descriptor.get("public_delivery", {}).get("current_provider") != "cloudflare-workers":
+        raise ValueError("Machine entry does not identify the approved Worker")
     for path in ("agent/bootstrap.txt", "agent/bootstrap.zh-CN.txt", "llms.txt", "HUMAN_GUIDE.md", "HUMAN_GUIDE.zh-CN.md", "ahicp/HUMAN_GUIDE.md", "ahicp/HUMAN_GUIDE.zh-CN.md"):
         if not (output / path).is_file() or not (output / path).stat().st_size:
             raise ValueError(f"Missing machine/guide resource: {path}")
-    if "noindex" not in (output / "_headers").read_text() or "Disallow: /" not in (output / "robots.txt").read_text():
-        raise ValueError("Candidate must discourage indexing; this is not authentication")
+    if "noindex" in (output / "_headers").read_text() or "Disallow: /" in (output / "robots.txt").read_text():
+        raise ValueError("Canonical public site must not carry candidate indexing restrictions")
     for route in sorted(set(ROUTES) | {p.relative_to(output).as_posix() for p in output.rglob("*.html")}):
         page_path = output / route
         text = page_path.read_text(encoding="utf-8")
@@ -68,6 +69,11 @@ def validate(output: Path) -> None:
         page.feed(text)
         if route in ROUTES and (not page.h1 or not page.has_title or 'class="stack-nav"' not in text):
             raise ValueError(f"Missing visible content/navigation: {route}")
+        if route != "404.html":
+            path = route.removesuffix("index.html") if route.endswith("index.html") else route
+            expected = public_url + path
+            if page.canonicals != [expected] or 'noindex' in text.lower():
+                raise ValueError(f"Canonical URL or indexing gate failed: {route}")
         if route in ("index.html", "ahicp/index.html", "ppf/index.html", "vault-interface/index.html", "starter/index.html"):
             if not re.search(r'id="zh"\s+class="[^\"]*\bactive\b', text):
                 raise ValueError(f"Chinese no-JavaScript fallback missing: {route}")
@@ -91,7 +97,7 @@ def validate(output: Path) -> None:
                 result = subprocess.run(["node", "--check", str(script_path)], text=True, capture_output=True)
                 if result.returncode:
                     raise ValueError(f"JavaScript failure in {route}: {result.stderr}")
-    print(f"PASS: {len(ROUTES)} HTML routes, local links, source revisions, output hashes, JavaScript, candidate identity gates")
+    print(f"PASS: {len(ROUTES)} HTML routes, local links, source revisions, output hashes, JavaScript, canonical identity gates")
 
 
 if __name__ == "__main__":
