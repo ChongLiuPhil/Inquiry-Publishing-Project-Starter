@@ -12,7 +12,7 @@
 
 读取目标 Git revision 下的 `cloudflare-builds.yaml`、`package-lock.json` 与 `wrangler.jsonc`。根目录 `/`，主分支 `main`，静态输出 `_site`。
 
-- Build：`npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`
+- Build：`python -m pip install -r requirements-validation.txt && npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`
 - Deploy：`npm run cloudflare:deploy`
 - 非主分支：`npm run cloudflare:preview`
 - 目标工具版本：Python 3.12.12、Node 22.22.0、Wrangler 4.136.1。必须从实际构建日志复核，不能把配置当成运行证据。

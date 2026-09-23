@@ -10,7 +10,7 @@ The owner authorized public anonymous reading and separately approved `https://i
 
 ## Repository configuration
 
-Use `cloudflare-builds.yaml`, `package-lock.json` and `wrangler.jsonc` at the intended Git revision. Root `/`, main branch `main`, assets `_site`. Build: `npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`; deploy: `npm run cloudflare:deploy`; non-production: `npm run cloudflare:preview`. Toolchain targets are Python 3.12.12, Node 22.22.0, Wrangler 4.136.1. Read actual build logs to verify versions; configuration alone is not runtime evidence.
+Use `cloudflare-builds.yaml`, `requirements-validation.txt`, `package-lock.json` and `wrangler.jsonc` at the intended Git revision. Root `/`, main branch `main`, assets `_site`. Build: `python -m pip install -r requirements-validation.txt && npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`; deploy: `npm run cloudflare:deploy`; non-production: `npm run cloudflare:preview`. Toolchain targets are Python 3.12.12, Node 22.22.0, Wrangler 4.136.1. Read actual build logs to verify versions; configuration alone is not runtime evidence.
 
 The holding alternative adds `--holding` to the Python command. The original Worker holding was a direct API bootstrap, not a Git-triggered build. The current main Worker serves the full Starter Git-built candidate; do not mistake historical holding for the current version.
 

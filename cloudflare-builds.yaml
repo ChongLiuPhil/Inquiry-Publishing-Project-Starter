@@ -7,10 +7,10 @@ git:
   non_production_branch_builds: false
   root_directory: /
 commands:
-  build: npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py
+  build: python -m pip install -r requirements-validation.txt && npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py
   deploy: npm run cloudflare:deploy
   preview_deploy: npm run cloudflare:preview
-  holding_build: npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py --holding
+  holding_build: python -m pip install -r requirements-validation.txt && npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py --holding
 toolchain:
   node: '22.22.0'
   python: '3.12.12'

@@ -43,7 +43,7 @@ site:
 build_defaults:
   production_branch: main
   root_dir: .
-  build_command: npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py
+  build_command: python -m pip install -r requirements-validation.txt && npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py
   output_dir: _site
   framework_preset: none
   environment:
