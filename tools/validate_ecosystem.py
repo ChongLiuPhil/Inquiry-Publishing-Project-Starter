@@ -77,8 +77,12 @@ def main() -> int:
         raise SystemExit("the approved topology is one website and one active Worker")
     if architecture.get("public_cutover_authorized") is not False or migration_plan.get("cutover_state") != "not-started":
         raise SystemExit("this preparation change must not authorize public cutover")
-    if migration_plan.get("site", {}).get("provider_state_verified") is not False:
-        raise SystemExit("provider verification must not be inferred from repository preparation")
+    if migration_plan.get("site", {}).get("provider_state_verified") is not True:
+        raise SystemExit("verified public candidate must be recorded separately from canonical cutover")
+    if migration_plan.get("status") != "workers-full-site-verified-candidate-not-cutover":
+        raise SystemExit("migration status must reflect the verified candidate without authorizing cutover")
+    if manifest.get("ecosystem", {}).get("public_delivery", {}).get("migration_state") != migration_plan["status"]:
+        raise SystemExit("ecosystem and Cloudflare migration state disagree")
     from build_public_site import validate_lock
     validate_lock(json.loads((ROOT / "site/sources.lock.json").read_text()))
 
@@ -98,6 +102,8 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must expose Cloudflare Workers as preferred delivery")
     if descriptor_delivery.get("current_provider") != "github-pages":
         raise SystemExit("agent entry descriptor must keep GitHub Pages current before cutover")
+    if descriptor_delivery.get("migration_state") != migration_plan["status"]:
+        raise SystemExit("machine entry and Cloudflare migration state disagree")
 
     agent_page = (ROOT / "docs/agent/index.html").read_text(encoding="utf-8")
     for marker in ("Agent Retrieval Contract", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):

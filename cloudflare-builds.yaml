@@ -27,13 +27,13 @@ publication:
   preview_urls_enabled: false
   enable_preview_only_after: access-policy-and-anonymous-denial-verified
 connection:
-  cloudflare_account: verify-live
-  github_app: starter-clone-previously-verified-via-pages
-  repository_connection: unverified-for-workers-builds
-  worker_target: holding-created
-  production_trigger: unverified
+  cloudflare_account: verified-private-state
+  github_app: starter-only-native-workers-builds-verified
+  repository_connection: verified-starter-only
+  worker_target: full-public-candidate-verified
+  production_trigger: native-git-main-verified
   preview_trigger: not-configured
-  build_token: unverified
+  build_token: configured-provider-managed-user-token
 security:
   production_profile: workers_builds_native
   credentials_in_repository: prohibited
@@ -43,7 +43,7 @@ security:
   paid_upgrade: human-authorization-required
 validation:
   repository_contract_ci: run-on-this-revision
-  first_workers_git_build: not-run
-  full_site_runtime: not-run
+  first_workers_git_build: verified
+  full_site_runtime: verified-public-candidate
   protected_preview: not-run
   canonical_cutover: blocked
