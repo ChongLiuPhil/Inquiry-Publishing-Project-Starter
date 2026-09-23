@@ -30,7 +30,7 @@
     "canonical_source_provider": "github",
     "current_provider": "github-pages",
     "preferred_provider": "cloudflare-workers",
-    "migration_state": "workers-holding-created-full-site-unverified",
+    "migration_state": "workers-full-site-verified-candidate-not-cutover",
     "migration_plan": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml",
     "migration_guide": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md",
     "cutover_rule": "keep-current-public-urls-until-verified-cloudflare-deployment",

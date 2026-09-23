@@ -1,5 +1,5 @@
 schema: starter/cloudflare-public-delivery/v3
-status: workers-holding-created-full-site-unverified
+status: workers-full-site-verified-candidate-not-cutover
 preferred_public_delivery_provider: cloudflare-workers
 canonical_source_provider: github
 current_public_delivery_provider: github-pages
@@ -26,13 +26,18 @@ stable_url_policy:
   custom_domain_optional: true
 site:
   custom_domain: null
-  provider_state_verified: false
-  github_app_repository_scope:
+  provider_state_verified: true
+  cloudflare_builds_repository_scope:
   - ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  publishing_app_installed_repositories:
+  - ChongLiuPhil/Inquiry-Publishing-Project-Starter
+  - ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
+  - ChongLiuPhil/Personal-Publishing-Framework
+  - ChongLiuPhil/Vault-interface
   other_upstreams: public-unauthenticated-pinned-file-reads
   worker_name: inquirystack
   provider_url: https://inquirystack.philohub.workers.dev
-  verified_scope: holding-only
+  verified_scope: full-public-candidate-and-git-triggered-main-build
   retained_pages_project: inquiry-publishing-stack
 build_defaults:
   production_branch: main
@@ -47,7 +52,7 @@ build_defaults:
 bootstrap:
   initial_build_command: python tools/build_public_site.py --holding
   initial_output_contains: holding-page-only
-  automatic_production_deployments: false
+  automatic_production_deployments: true
   automatic_preview_deployments: false
   before_full_candidate:
   - verify-user-authorized-main-public-reading

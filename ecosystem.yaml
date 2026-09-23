@@ -31,7 +31,7 @@ ecosystem:
     canonical_source_provider: github
     current_provider: github-pages
     preferred_provider: cloudflare-workers
-    migration_state: workers-holding-created-full-site-unverified
+    migration_state: workers-full-site-verified-candidate-not-cutover
     migration_plan: templates/cloudflare-public-delivery.yaml
     migration_guide: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
     stable_url_policy: free-provider-native-allowed-after-explicit-cutover
