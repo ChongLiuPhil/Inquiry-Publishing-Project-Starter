@@ -23,7 +23,7 @@
 
 ## 发布清单及完整成品
 
-`site/publications.json` 是发布范围的权威清单；`site/sources.lock.json` 固定来源版本。现有四个组件使用 `static-files` 和已批准页面列表，不复制整个 docs 树。新增书籍或应用在清单 `publications` 中登记唯一键及 `repository / branch / visibility: public / source_directory / output_directory / build / mount`；在来源锁的 `publications` 下以同一键记录 repository 和完整 revision。通知模板复制为来源仓库的 workflow，并配置同一个通知 secret。登记不同默认分支时同步修改模板 push 分支。
+`site/publications.json` 是发布范围的权威清单；`site/sources.lock.json` 固定来源版本。现有四个组件使用 `static-files` 和已批准页面列表，不复制整个 docs 树。新增书籍或应用在清单 `publications` 中登记唯一键及 `repository / branch / visibility: public / source_directory / output_directory / build / mount`；在来源锁的 `publications` 下以同一键记录 repository 和完整 revision。将 `templates/publication-source-changed.yml` 和 `templates/notify-starter.yml` 一起复制为来源仓库的 workflows，把两个模板的 OWNER/REPOSITORY 替换为该登记仓库，并配置同一个通知 secret。push 步骤无凭据；默认分支上的 workflow_run 后续步骤核验原仓库、分支及成功状态后发送通知，兼容 Dependabot。它不下载 artifact、恢复缓存或 checkout 来源代码。fork 默认跳过，必须明确登记才可启用。默认分支更名后通知仍运行，但 Starter 在登记分支同步更新前会明确报告配置漂移。
 
 支持 `static-directory` 与 `quarto`。完整输出目录内的章节、图片、脚本、样式和下载附件自动收录，增删文件无需修改清单。输出需要 index.html；禁止路径越界、符号链接、隐藏文件、路径冲突和超限文件。网页必须使用适用于挂载路径的相对 URL；站点验证检查所有 HTML 的本地链接。成品每文件上限 25 MiB、总计 200 MiB；达到限制报错，不自动购买存储。
 
