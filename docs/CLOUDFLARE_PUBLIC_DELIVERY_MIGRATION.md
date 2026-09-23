@@ -6,7 +6,7 @@ Status: `verified-cutover`. The owner approved `workers.dev` as the canonical UR
 
 Four independent repositories compose one website on Worker `inquirystack`, at `https://inquirystack.philohub.workers.dev`. `/` is the human entry; `/agent/` is the machine entry. GitHub remains the canonical source. Only Starter is connected to Git; the other three public repositories are fetched without credentials at `site/sources.lock.json` revisions. Website source locks and downstream adoption locks remain separate.
 
-The owner authorized public anonymous reading and separately approved `https://inquirystack.philohub.workers.dev/` as the canonical human entry and `/agent/` as the machine entry. Do not add a main-site reader allowlist or Everyone Access rule. Keep former GitHub Pages and Pages holding available. No DNS change, domain purchase or paid upgrade is authorized. Other projects retain independent access modes.
+The owner authorized public anonymous reading and separately approved `https://inquirystack.philohub.workers.dev/` as the canonical human entry and `/agent/` as the machine entry. Do not add a main-site reader allowlist or Everyone Access rule. Keep former GitHub Pages available. The current Cloudflare account listed no Pages projects on 2026-09-23, so a Pages holding site is not a verified recovery point. No DNS change, domain purchase or paid upgrade is authorized. Other projects retain independent access modes.
 
 ## Repository configuration
 
@@ -24,7 +24,7 @@ The holding alternative adds `--holding` to the Python command. The original Wor
 
 ## Rollback
 
-Before a new deployment, re-read the active deployment and save its non-secret version reference. If a candidate fails, restore the prior verified Worker version from private deployment state or revert the source-lock PR through normal checks, then verify the served response. Historical holding needs a fresh availability check before use. Pause triggers if necessary. Never force a rollback past changed secrets without inspecting the impact. Preserve Pages holding, GitHub Pages, existing domains and unrelated App grants. No force push or project deletion.
+Before a new deployment, re-read the active deployment and save its non-secret version reference. If a candidate fails, restore the prior verified Worker version from private deployment state or revert the source-lock PR through normal checks, then verify the served response. The historical Worker holding is not the active site and requires a fresh availability check before use. Pause triggers if necessary. Never force a rollback past changed secrets without inspecting the impact. Preserve GitHub Pages, existing domains and unrelated App grants; do not assume a Pages holding project exists. No force push or project deletion.
 
 ## Current official references
 

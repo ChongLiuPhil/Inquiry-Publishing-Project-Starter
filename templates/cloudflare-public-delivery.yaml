@@ -39,7 +39,8 @@ site:
   worker_name: inquirystack
   provider_url: https://inquirystack.philohub.workers.dev
   verified_scope: full-public-site-and-git-triggered-main-build
-  retained_pages_project: inquiry-publishing-stack
+  retained_pages_project: null
+  pages_holding_verification: not-found-in-current-account-2026-09-23
 build_defaults:
   production_branch: main
   root_dir: .
