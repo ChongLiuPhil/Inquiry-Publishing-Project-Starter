@@ -5,6 +5,7 @@ import io
 import os
 from pathlib import Path, PurePosixPath
 import re
+import shutil
 import subprocess
 import tarfile
 import tempfile
@@ -68,6 +69,12 @@ def build_local(checkout: Path, spec: dict) -> dict[str, bytes]:
         if not path.resolve().is_relative_to(checkout.resolve()):
             raise ValueError('Publication path escapes checkout')
     if spec['build']['kind'] == 'quarto':
+        if source.resolve().is_relative_to(output.resolve()):
+            raise ValueError('Generated output must not contain source directory')
+        if output.is_symlink():
+            raise ValueError('Linked output directory')
+        if output.exists():
+            shutil.rmtree(output)
         # Never inherit API tokens, runner credentials, Git config or user HOME.
         with tempfile.TemporaryDirectory(prefix='publication-home-') as home:
             env = {'PATH': os.defpath + os.pathsep + os.environ.get('PATH', ''), 'HOME': home,

@@ -24,4 +24,8 @@ with tempfile.TemporaryDirectory() as tmp:
             assert any(path.endswith('figure.svg') for path in second)
             assert b'A changed chapter' in second['chapters/chapter.html']
             assert 'private.txt' not in second
+            chapter.write_text('# First chapter\n\nA changed chapter.\n')
+            (checkout / 'chapters/figure.svg').unlink()
+            third = build_local(checkout, spec)
+            assert not any(path.endswith('figure.svg') for path in third)
         print('PASS: real complete output and private-source exclusion:', name)
