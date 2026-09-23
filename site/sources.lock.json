@@ -4,7 +4,7 @@
   "components": {
     "ahicp": {
       "repository": "ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol",
-      "revision": "2b6bbdeb9ac6af0e09bb704c54314afb8d0ec4c3",
+      "revision": "319675af57b068bcca32846a3cd9ca28ea35240c",
       "mount": "/ahicp/",
       "files": [
         "docs/index.html",
