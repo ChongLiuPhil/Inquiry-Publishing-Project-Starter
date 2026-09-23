@@ -6,7 +6,10 @@
     "cloudflare:build": "python tools/build_public_site.py",
     "cloudflare:holding": "python tools/build_public_site.py --holding",
     "cloudflare:deploy": "wrangler deploy",
-    "cloudflare:preview": "wrangler versions upload"
+    "cloudflare:preview": "wrangler versions upload",
+    "test:github-app": "node --test tests/github-app.test.mjs"
   },
-  "devDependencies": {"wrangler": "4.136.1"}
+  "devDependencies": {
+    "wrangler": "4.136.1"
+  }
 }

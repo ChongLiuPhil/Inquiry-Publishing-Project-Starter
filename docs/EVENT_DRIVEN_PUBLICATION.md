@@ -8,22 +8,13 @@ Every upstream default-branch push sends a notification without path filtering. 
 
 Unchanged outputs make no commit or deployment. Changed outputs are pinned to full SHAs, tested, built and validated before committing the lock. Push conflicts fail without force-pushing; rerun after repair. Failed builds retain the last successful site. Starter main updates use the existing Cloudflare Git integration. Bot pushes do not start normal GitHub push workflows, so validation runs inside refresh; Cloudflare delivery of bot pushes requires real acceptance testing.
 
-## One-time owner setup
+## Account-installed GitHub App (default)
 
-1. Open https://github.com/settings/personal-access-tokens/new . Name: `inquiry-starter-sync`; recommended expiration: 90 days, then rotate.
-2. Resource owner: `ChongLiuPhil`. Select only `Inquiry-Publishing-Project-Starter`.
-3. Add only repository **Actions: Read and write**, plus automatic Metadata read. Do not add Contents write. Actions write also manages other Actions in the repository; it is not restricted to one dispatch endpoint.
-4. Enter the generated value directly as `STARTER_SYNC_TOKEN` in each Actions secret form below. Never send the value to the agent, Git, PRs or logs:
-   - https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/settings/secrets/actions/new
-   - https://github.com/ChongLiuPhil/Personal-Publishing-Framework/settings/secrets/actions/new
-   - https://github.com/ChongLiuPhil/Vault-interface/settings/secrets/actions/new
-5. Seeing the secret name in all three repositories completes entry. Successful notification means accepted by Starter, not deployed. The agent must verify the notification, lock commit, Cloudflare build and live version.
-
-The secret is supplied only to the notification step with no checkout or project build. Builds do not receive it. Revoke the token or remove these secrets to stop notifications; manually run Starter refresh to recover missed updates. Missing or expired credentials must fail visibly.
+Use the [GitHub App setup contract](GITHUB_APP_PUBLICATION.md). This supersedes the personal-token setup: upstream repositories need neither a PAT secret nor a notification workflow. The App receives signed push events and requests a short-lived installation token narrowed to Starter Actions write. The existing receiver and Cloudflare Git integration remain unchanged.
 
 ## Publication manifest and complete deliverables
 
-`site/publications.json` owns publication scope; `site/sources.lock.json` pins source versions. Existing components retain approved static-files lists rather than copying entire docs trees. Register a future book or application under a unique publications key with repository, branch, visibility: public, source_directory, output_directory, build and mount. Add the same key under publications in the lock with repository and full revision. Install both templates/publication-source-changed.yml and templates/notify-starter.yml as workflows, replace OWNER/REPOSITORY in both with the registered repository, and configure its secret. The push marker has no credentials. A workflow_run follow-up from the default branch verifies canonical repository, branch and success before dispatch, including Dependabot pushes. It downloads no artifacts, restores no caches and checks out no source code. Forks skip by default and require explicit enrollment. Renaming the default branch still triggers notification; Starter reports configuration drift until the registered branch is updated.
+`site/publications.json` owns publication scope; `site/sources.lock.json` pins source versions. Existing components retain approved static-files lists rather than copying entire docs trees. Register a future book or application under a unique publications key with repository, branch, visibility: public, source_directory, output_directory, build and mount. Add the same key under publications in the lock with repository and full revision. Authorize the new repository in the App installation after approving its publication manifest. No notification workflow is required. Default-branch changes fail with configuration drift until the manifest is updated. The two notification workflow templates are legacy PAT alternatives only; do not enable both mechanisms. Private sources remain outside this public fetcher.
 
 Supported builders are static-directory and quarto. Every chapter, image, script, stylesheet and download in the complete output directory is included; normal additions/deletions need no per-file registration. Require index.html; reject traversal, symlinks, hidden files, mount collisions and excess size. Use mount-compatible relative URLs; validation checks local links in all HTML. Limits: 25 MiB per file and 200 MiB total. Exceeding them fails without purchasing storage.
 
@@ -33,6 +24,6 @@ The Quarto subprocess receives no inherited tokens, user HOME or Git configurati
 
 ## Acceptance and rollback
 
-Record offline tests, real fixed-source builds, GitHub CI and live commit-to-deployment separately. Live acceptance requires upstream notification, source revisions, Starter commit, Cloudflare build/version and live build-info.json. Content-neutral events must produce no lock commit or deployment. Token entry is required before claiming this complete.
+Record offline tests, real fixed-source builds, GitHub CI and live commit-to-deployment separately. Live acceptance requires upstream notification, source revisions, Starter commit, Cloudflare build/version and live build-info.json. Content-neutral events must produce no lock commit or deployment. App installation, provider secrets and real delivery verification are required before claiming this complete.
 
 Rollback uses revert PRs or a verified Worker version. Repair and rerun failed notifications/builds; do not restore cron. On exhausted free quota, stop for quota recovery or a separate human decision; never upgrade automatically.

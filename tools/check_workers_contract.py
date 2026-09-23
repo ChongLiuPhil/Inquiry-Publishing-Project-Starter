@@ -11,6 +11,9 @@ def main():
     package = json.loads((ROOT / 'package.json').read_text())
     lock = json.loads((ROOT / 'package-lock.json').read_text())
     checks = [
+        (config.get("main") == "src/worker.mjs" and config["assets"].get("binding") == "ASSETS", "Webhook runtime binding missing"),
+        (config["assets"].get("run_worker_first") == ["/_events/*"], "Only webhook paths may invoke Worker first"),
+        (config.get("keep_vars") is True, "Preserve provider-side App ID"),
         (config['name'] == builds['worker']['name'] == plan['site']['worker_name'] == 'inquirystack', 'Worker name drift'),
         (config['assets']['directory'] == builds['worker']['static_assets_directory'] == './_site', 'Output directory drift'),
         (config['preview_urls'] is False and builds['git']['non_production_branch_builds'] is False, 'Preview needs separately reviewed Access activation'),
