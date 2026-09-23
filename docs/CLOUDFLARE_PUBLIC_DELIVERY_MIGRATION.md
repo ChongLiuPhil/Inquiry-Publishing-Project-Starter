@@ -1,6 +1,6 @@
 # Unified Cloudflare Workers delivery
 
-Status: the full public candidate and GitHub-triggered update passed acceptance. The owner has approved the `workers.dev` canonical URL cutover; this version still requires live checks after deployment before it can be marked `verified-cutover`. Preview remains disabled and has not passed Access acceptance. See the [candidate acceptance record](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.md) for previous revisions and evidence.
+Status: `verified-cutover`. The owner approved `workers.dev` as the canonical URL; the Worker deployment and public routes passed live acceptance on 2026-09-23. Preview remains disabled and has not passed Access acceptance. See the [acceptance record](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.md) for exact revisions, evidence and rollback.
 
 ## Approved target
 
@@ -12,7 +12,7 @@ The owner authorized public anonymous reading and separately approved `https://i
 
 Use `cloudflare-builds.yaml`, `requirements-validation.txt`, `package-lock.json` and `wrangler.jsonc` at the intended Git revision. Root `/`, main branch `main`, assets `_site`. Build: `python -m pip install -r requirements-validation.txt && npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`; deploy: `npm run cloudflare:deploy`; non-production: `npm run cloudflare:preview`. Toolchain targets are Python 3.12.12, Node 22.22.0, Wrangler 4.136.1. Read actual build logs to verify versions; configuration alone is not runtime evidence.
 
-The holding alternative adds `--holding` to the Python command. The original Worker holding was a direct API bootstrap, not a Git-triggered build. The current main Worker serves the full Starter Git-built candidate; do not mistake historical holding for the current version.
+The holding alternative adds `--holding` to the Python command. The original Worker holding was a direct API bootstrap, not a Git-triggered build. The current main Worker serves the full Starter Git-built canonical site; do not mistake historical holding for the current version.
 
 ## Cloud execution
 
@@ -20,7 +20,7 @@ The holding alternative adds `--holding` to the Python command. The original Wor
 2. Native Workers Builds already connects only Starter and builds the complete main site on `main` updates. New repository grants remain human-owned. The native user build token is not per-Worker least privilege; keep all secrets out of Git, chat and logs.
 3. The publishing GitHub App is installed on the four selected repositories. Scoped installation tokens notify Starter and create source-lock PRs; ordinary checks gate merge and native Builds deploys it. No scheduled polling is configured. See the [App contract](GITHUB_APP_PUBLICATION.md) for permissions and recovery.
 4. Preview URLs and non-main builds remain disabled. After a preview audience is approved, protect `preview_worker` with Access, inspect higher-priority hostname policies, then enable previews and non-main builds together. Verify anonymous denial and approved-reader access on a real version preview. Preview upload must not replace main.
-5. After this canonical deployment, compare actual revision, `/build-info.json`, `/agent/entry.json`, every component route, bilingual and no-JavaScript content. Check canonical links, `robots.txt`, and response headers for removal of candidate `noindex`. Mark `verified-cutover` only after live acceptance; otherwise restore the previous verified Worker version and revert the repository change.
+5. For each later deployment, compare actual revision, `/build-info.json`, `/agent/entry.json`, every component route, bilingual and no-JavaScript content. Check canonical links, `robots.txt`, and response headers for unwanted `noindex`. Keep the last verified Worker version available for rollback.
 
 ## Rollback
 

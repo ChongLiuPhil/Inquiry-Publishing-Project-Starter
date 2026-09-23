@@ -1,6 +1,16 @@
-# 综合站 Workers 候选站验收记录
+# 综合站 Workers 交付验收记录
 
-记录日期：2026-09-23。此记录描述已验证的部署快照；后续提交应以线上 `/build-info.json` 和 Cloudflare 当前部署为准，不能把这里的 SHA 当作浮动最新版本。主站 `https://inquirystack.philohub.workers.dev/` 已获准匿名公开阅读，但尚未成为生态系统正式 URL。
+记录日期：2026-09-23。此记录描述已验证的部署快照；后续提交应以线上 `/build-info.json` 和 Cloudflare 当前部署为准，不能把这里的 SHA 当作浮动最新版本。`https://inquirystack.philohub.workers.dev/` 已成为获批的正式 URL。
+
+## 正式 URL 切换验收：2026-09-23
+
+用户批准免费 `workers.dev` 地址作为人类 `/` 和机器 `/agent/` 入口。AHICP [PR #42](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/pull/42)、PPF [PR #37](https://github.com/ChongLiuPhil/Personal-Publishing-Framework/pull/37)、Vault Interface [PR #14](https://github.com/ChongLiuPhil/Vault-interface/pull/14) 更新公共入口。Starter 来源锁 [PR #37](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/pull/37) 固定三个精确版本；切换 [PR #38](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/pull/38) 三项检查通过并合并。首次 Cloudflare 干净构建缺少 PyYAML 而失败，旧已验证部署继续服务。修复 [PR #39](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/pull/39) 将锁定的 Python 依赖安装写入仓库契约和提供商实际构建命令，三项检查通过并成功部署。
+
+成功部署后的线上 `/build-info.json` 记录 Starter `ccf8e27cf578b6fa82d6af3c41c4f8cc1a51124f`、AHICP `6d314c5d81d296b2e8a6dff7d4feea6aaf63b9de`、PPF `52ceb00b45efc86f7d1f635beb2e0da7201ed588`、Vault Interface `c6f4991556aa280f712ec43a40df39b916da9ba4`；来源锁 SHA256 为 `aea40b131c7678a9f6db67b5b7b1ff930244d5d4c8ffe82ad9257795fd1bd8d3`。构建记录显示工作树干净、`state: canonical-workers-dev` 和获批公共 URL；新版 Worker 承载 100% 流量。26 个可通过 HTTP 读取的产物 SHA256 全部匹配构建记录；`_headers` 由提供商消费。线上 `/`、`/agent/`、`/start/`、四个组件路径、机器描述、canonical 标签、robots 放行、无 `noindex` 及 404 均通过；已审核切换 PR 的本地浏览器检查覆盖 24 种页面、视口和 JavaScript 组合。
+
+上一已验证部署对应 Starter `cd0ce5e5bbcfc64e34c13770929677daff69272a`，精确回滚版本保存在私有部署状态；回滚前先重新读取活动部署。旧 GitHub Pages 和 Pages holding 继续保留，未修改 DNS 或付费套餐。预览 URL 与非主分支构建仍关闭，受限预览及 Access 读者验证尚未验收。
+
+## 早期候选站证据
 
 ## 实际部署和来源
 
@@ -14,7 +24,7 @@
 - 上游提交 → App 通知 → Starter 来源锁 PR → CI → 合并 → Cloudflare Git 构建 → 主站内容更新，实际通过；无需按小时轮询。
 - 线上公开提供的 26 个输出文件与 `/build-info.json` 所列 SHA256 一致；`_headers` 由提供商消费，另核对了实际响应头。`/` 在浏览器显示；`/agent/` 匿名请求返回 HTTP 200。
 - 相同上游通知重放产生[刷新运行](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/actions/runs/35860034407)，成品不变，没有新锁提交、PR 或部署。
-- 当前主站公开；预览 URL 和非主分支自动构建仍关闭。受限预览、Access 读者身份和匿名拒绝 **未验收**，不能记为通过。正式 URL、DNS、GitHub Pages 和原 Pages holding 项目未切换或停用；没有付费升级。
+- 在这一早期快照中，主站已公开，但正式 URL 尚未切换。预览 URL 和非主分支自动构建关闭；受限预览、Access 读者身份和匿名拒绝 **未验收**。DNS 未更改，GitHub Pages 和原 Pages holding 未停用，没有付费升级。
 
 ## 回滚
 

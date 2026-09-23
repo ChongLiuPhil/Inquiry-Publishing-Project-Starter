@@ -31,7 +31,7 @@ ecosystem:
     canonical_source_provider: github
     current_provider: cloudflare-workers
     preferred_provider: cloudflare-workers
-    migration_state: approved-pending-live-verification
+    migration_state: verified-cutover
     migration_plan: templates/cloudflare-public-delivery.yaml
     migration_guide: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
     stable_url_policy: free-provider-native-allowed-after-explicit-cutover
