@@ -20,6 +20,8 @@ def main():
         (config['workers_dev'] is True, 'Approved main address must be enabled'),
         (builds['publication']['main_anonymous_reading_authorized'] is True, 'Main reading approval missing'),
         (builds['publication']['canonical_url_cutover_authorized'] is True, 'Canonical cutover approval missing'),
+        (builds['commands']['build'].startswith('python -m pip install -r requirements-validation.txt && ') and builds['commands']['holding_build'].startswith('python -m pip install -r requirements-validation.txt && '), 'Cloudflare clean build must install pinned Python dependencies'),
+        (builds['commands']['build'] == plan['build_defaults']['build_command'], 'Build command drift'),
         (plan['architecture']['public_cutover_authorized'] is True and plan['cutover_state'] == 'approved-pending-live-verification', 'Formal cutover approval or pending verification state missing'),
         (builds['commands']['preview_deploy'] == 'npm run cloudflare:preview' and package['scripts']['cloudflare:preview'] == 'wrangler versions upload', 'Preview must not replace main'),
         (lock['packages']['node_modules/wrangler']['version'] == package['devDependencies']['wrangler'] == builds['toolchain']['wrangler'], 'Wrangler lock drift'),
