@@ -55,3 +55,21 @@ test('oversized body is refused before external calls',async()=>{
  const result=await makeHandler(registry,()=>assert.fail('network'))(new Request('https://example.com/_events/github',{method:'POST',body:'x',headers:{'content-length':String(3*1024*1024)}}),env);
  assert.equal(result.status,413);
 });
+
+test('workerd runtime supports PEM signing and WebCrypto verification',async()=>{
+ const {Miniflare,convertV4MiniflareOptions}=await import('miniflare');
+ const {readFileSync}=await import('node:fs');
+ const runtime=new Miniflare(convertV4MiniflareOptions({workers:[{
+  name:"webhook-test",compatibilityDate:'2026-09-22',compatibilityFlags:['nodejs_compat'],
+  modules:true,
+  script:readFileSync(new URL('../src/github-app.mjs',import.meta.url),'utf8').replaceAll('export ', '')+`
+    let calls=0;
+    export default {fetch:makeHandler(${JSON.stringify(registry)},async()=>++calls===1?Response.json({token:'synthetic'},{status:201}):new Response(null,{status:204}))};`,
+  bindings:env,
+ }]}));
+ try{
+  const req=request();
+  const result=await runtime.dispatchFetch(req.url,{method:req.method,headers:Object.fromEntries(req.headers),body:await req.text()});
+  assert.equal(result.status,202,await result.text());
+ }finally{await runtime.dispose();}
+});
