@@ -1,12 +1,12 @@
 # Unified Cloudflare Workers delivery
 
-Status: the full public candidate, native Workers Builds main deployment, and upstream commit-triggered update have passed acceptance. Preview remains disabled and has not passed Access acceptance. Canonical URL cutover is not authorized. See the [deployment acceptance record](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.md) for actual revisions and evidence. This v3 contract supersedes the Pages-specific migration procedure, including its requirement to protect the current main site with Access.
+Status: the full public candidate and GitHub-triggered update passed acceptance. The owner has approved the `workers.dev` canonical URL cutover; this version still requires live checks after deployment before it can be marked `verified-cutover`. Preview remains disabled and has not passed Access acceptance. See the [candidate acceptance record](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.md) for previous revisions and evidence.
 
 ## Approved target
 
 Four independent repositories compose one website on Worker `inquirystack`, at `https://inquirystack.philohub.workers.dev`. `/` is the human entry; `/agent/` is the machine entry. GitHub remains the canonical source. Only Starter is connected to Git; the other three public repositories are fetched without credentials at `site/sources.lock.json` revisions. Website source locks and downstream adoption locks remain separate.
 
-The user explicitly authorized public anonymous reading on the current main site on 2026-09-22. Do not require a main-site reader allowlist or create an Everyone Access rule. This does not authorize changing ecosystem canonical URLs, About Websites, DNS, or retiring GitHub Pages. Existing Pages holding is retained. Other projects keep their existing access modes. Free-first: no purchase or paid upgrade; a verified provider-native URL may become permanent after separate explicit canonical cutover approval.
+The owner authorized public anonymous reading and separately approved `https://inquirystack.philohub.workers.dev/` as the canonical human entry and `/agent/` as the machine entry. Do not add a main-site reader allowlist or Everyone Access rule. Keep former GitHub Pages and Pages holding available. No DNS change, domain purchase or paid upgrade is authorized. Other projects retain independent access modes.
 
 ## Repository configuration
 
@@ -20,7 +20,7 @@ The holding alternative adds `--holding` to the Python command. The original Wor
 2. Native Workers Builds already connects only Starter and builds the complete main site on `main` updates. New repository grants remain human-owned. The native user build token is not per-Worker least privilege; keep all secrets out of Git, chat and logs.
 3. The publishing GitHub App is installed on the four selected repositories. Scoped installation tokens notify Starter and create source-lock PRs; ordinary checks gate merge and native Builds deploys it. No scheduled polling is configured. See the [App contract](GITHUB_APP_PUBLICATION.md) for permissions and recovery.
 4. Preview URLs and non-main builds remain disabled. After a preview audience is approved, protect `preview_worker` with Access, inspect higher-priority hostname policies, then enable previews and non-main builds together. Verify anonymous denial and approved-reader access on a real version preview. Preview upload must not replace main.
-5. For each subsequent deployment, compare actual revision, `/build-info.json`, routes and source lock. Acceptance of this deployment snapshot does not automatically validate a later build.
+5. After this canonical deployment, compare actual revision, `/build-info.json`, `/agent/entry.json`, every component route, bilingual and no-JavaScript content. Check canonical links, `robots.txt`, and response headers for removal of candidate `noindex`. Mark `verified-cutover` only after live acceptance; otherwise restore the previous verified Worker version and revert the repository change.
 
 ## Rollback
 

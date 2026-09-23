@@ -1,7 +1,7 @@
 你正在通过 canonical machine/configuration entry 进入 Inquiry Publishing Stack。
 
 公共机器入口：
-https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+https://inquirystack.philohub.workers.dev/agent/
 
 在配置、升级、发布或操作项目之前：
 1. 阅读 canonical Starter ecosystem：
@@ -22,4 +22,4 @@ https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
 14. 必须由人类操作 UI 时，给出准确编号步骤、目标、影响、非秘密填写值、完成证据、验证与回滚。
 
 人类概念入口：
-https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+https://inquirystack.philohub.workers.dev/

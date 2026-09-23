@@ -4,10 +4,10 @@
 
 | 组件 | 责任 | 公共入口 |
 | --- | --- | --- |
-| AHICP | 探究、证据、决定、项目记忆与 AI 协作 | [主页](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) · [仓库](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
-| PPF | 以源文件为中心的出版、发布、归档和 Continuous Web | [主页](https://chongliuphil.github.io/Personal-Publishing-Framework/) · [仓库](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) |
-| Vault Interface | 与提供商无关的公共元数据 Schema 与验证器 | [主页](https://chongliuphil.github.io/Vault-interface/) · [仓库](https://github.com/ChongLiuPhil/Vault-interface) |
-| Starter | 组合、采用、配置方案与升级 | [主页](https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/) · [仓库](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
+| AHICP | 探究、证据、决定、项目记忆与 AI 协作 | [主页](https://inquirystack.philohub.workers.dev/) · [仓库](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
+| PPF | 以源文件为中心的出版、发布、归档和 Continuous Web | [主页](https://inquirystack.philohub.workers.dev/ppf/) · [仓库](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) |
+| Vault Interface | 与提供商无关的公共元数据 Schema 与验证器 | [主页](https://inquirystack.philohub.workers.dev/vault-interface/) · [仓库](https://github.com/ChongLiuPhil/Vault-interface) |
+| Starter | 组合、采用、配置方案与升级 | [主页](https://inquirystack.philohub.workers.dev/starter/) · [仓库](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
 
 四者保持逻辑独立。互相链接建立的是可发现性与共同采用路径，不会把某个组件的规范权威转移给另一个组件。
 
@@ -15,7 +15,7 @@
 
 整个体系有意区分两个入口角色：
 
-- **先从 AHICP 了解体系：** [AHICP 公共主页](https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/) 提供完整使用指南，解释这套体系解决什么问题以及怎样开始。
+- **先从 AHICP 了解体系：** [AHICP 公共主页](https://inquirystack.philohub.workers.dev/) 提供完整使用指南，解释这套体系解决什么问题以及怎样开始。
 - **让 AI 从 Starter 开始配置：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files 与 Agent Retrieval Contract 执行项目组合、采用、升级、部署和状态恢复。
 
 AHICP 负责解释方法和使用方式；Starter 保留精确的机器配置契约，两者互相链接但不互相替代。
@@ -76,11 +76,11 @@ AI agent 从任意组件主页或仓库进入时，必须：
 
 ## 公共网页的交付平台
 
-对于这四个已经公开的框架网站，**Cloudflare Workers 是首选网页交付平台**，GitHub 继续作为权威源文件、版本历史和 CI 平台。当前正式公共 URL 仍然是 GitHub Pages；主站 `inquirystack.philohub.workers.dev` 已获准匿名公开阅读，但尚未切换正式身份；部署与链接验证通过后，仍须单独批准正式 URL 切换。
+四个公共框架栏目现由**一个 Cloudflare Worker** 在 `https://inquirystack.philohub.workers.dev/` 交付；GitHub 继续作为权威源文件、版本历史和 CI 平台。原 GitHub Pages URL 保留为旧入口及回滚路径。
 
-协调迁移与切换遵循 [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md) 和机器可读的 [cloudflare-public-delivery.yaml](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml)。免费的 `workers.dev` 地址可在经过验证并单独批准后成为正式身份；自定义域名可选。
+已批准的切换、线上验收与回滚遵循 [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md) 和机器可读的 [cloudflare-public-delivery.yaml](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml)。所选 `workers.dev` 地址免费；自定义域名仍可选。
 
-仅仅创建了 Cloudflare project 并不等于可以修改 ecosystem 公共 URL。URL 切换必须单独验证，并且保留回滚路径。
+以后再改变域名或可见性，仍须单独决定、验证并保留回滚路径。
 
 ## Continuous Web 与 Cloudflare
 

@@ -1,9 +1,9 @@
 schema: starter/cloudflare-public-delivery/v3
-status: workers-full-site-verified-candidate-not-cutover
+status: approved-pending-live-verification
 preferred_public_delivery_provider: cloudflare-workers
 canonical_source_provider: github
-current_public_delivery_provider: github-pages
-cutover_state: not-started
+current_public_delivery_provider: cloudflare-workers
+cutover_state: approved-pending-live-verification
 cutover_rule: switch-public-entrypoints-only-after-verified-cloudflare-deployment
 architecture:
   topology: single-site-multi-repository
@@ -16,7 +16,8 @@ architecture:
   source_lock: site/sources.lock.json
   decision: docs/UNIFIED_PUBLIC_SITE.md
   human_approved_on: '2026-09-22'
-  public_cutover_authorized: false
+  public_cutover_authorized: true
+  public_cutover_authorized_on: '2026-09-23'
   expected_active_worker_count: 1
 stable_url_policy:
   custom_domain_preferred: false
@@ -37,7 +38,7 @@ site:
   other_upstreams: public-unauthenticated-pinned-file-reads
   worker_name: inquirystack
   provider_url: https://inquirystack.philohub.workers.dev
-  verified_scope: full-public-candidate-and-git-triggered-main-build
+  verified_scope: full-public-site-and-git-triggered-main-build
   retained_pages_project: inquiry-publishing-stack
 build_defaults:
   production_branch: main
@@ -69,7 +70,7 @@ staging_defaults:
   visibility: public
   anonymous_reading_authorized: true
   authorization_date: '2026-09-22'
-  formal_url_cutover_authorized: false
+  formal_url_cutover_authorized: true
   noindex_is_authentication: false
 production_defaults:
   framework_sites_visibility: public-reading-authorized-canonical-cutover-separate
@@ -77,6 +78,9 @@ production_defaults:
   deployment_provider: cloudflare-workers
   downstream_project_visibility: independent-private-restricted-defaults
 current_entries:
+  human: https://inquirystack.philohub.workers.dev/
+  machine: https://inquirystack.philohub.workers.dev/agent/
+legacy_entries:
   human: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
   machine: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
 target_routes:
@@ -93,22 +97,22 @@ target_routes:
 components:
   ahicp:
     repository: https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol
-    current_url: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+    current_url: https://inquirystack.philohub.workers.dev/ahicp/
     target_path: /ahicp/
     role: human-conceptual-content-authority
   ppf:
     repository: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
-    current_url: https://chongliuphil.github.io/Personal-Publishing-Framework/
+    current_url: https://inquirystack.philohub.workers.dev/ppf/
     target_path: /ppf/
     role: publishing-lifecycle-authority
   vault_interface:
     repository: https://github.com/ChongLiuPhil/Vault-interface
-    current_url: https://chongliuphil.github.io/Vault-interface/
+    current_url: https://inquirystack.philohub.workers.dev/vault-interface/
     target_path: /vault-interface/
     role: public-metadata-authority
   starter:
     repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
-    current_url: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+    current_url: https://inquirystack.philohub.workers.dev/starter/
     target_path: /starter/
     role: composition-and-machine-entry-authority
 human_reserved_gates:
@@ -116,7 +120,7 @@ human_reserved_gates:
 - one-time-cloudflare-github-app-authorization
 - custom-domain-selection-if-not-already-decided
 - dns-or-zone-authorization-if-required
-- final-public-url-cutover-authorization
+- future-canonical-url-change-authorization
 - preview-reader-identity-approval
 - secret-direct-entry
 automation_after_authorization:
@@ -139,8 +143,8 @@ cutover_verification:
 - preview-protected-or-disabled
 - provider-native-or-custom-domain-identity-explicitly-approved
 rollback:
-  pre-cutover: keep-all-current-github-pages-urls-and-about-websites
+  legacy: keep-github-pages-urls-available
   candidate: restore-holding-build-or-previous-verified-deployment
   repository: revert-the-unified-site-pr-without-force-push
-  post-cutover: restore-recorded-public-entrypoints-and-dns
+  post-cutover: restore-recorded-legacy-entrypoints-through-revert-no-dns-change
   delete-cloudflare-projects: false

@@ -1,14 +1,14 @@
 # Inquiry Publishing Stack
 
 Human conceptual entrypoint:
-https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+https://inquirystack.philohub.workers.dev/
 Human Guide:
 https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/blob/main/docs/HUMAN_GUIDE.md
 
 Machine/configuration entrypoint:
-https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+https://inquirystack.philohub.workers.dev/agent/
 Machine descriptor:
-https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/entry.json
+https://inquirystack.philohub.workers.dev/agent/entry.json
 Machine-readable ecosystem:
 https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
 
@@ -23,10 +23,10 @@ Current component: Inquiry Publishing Project Starter
 Role: composition, adoption, profile, and upgrade layer. It is not a fourth normative framework.
 
 Public component homepages:
-- AHICP: https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
-- PPF: https://chongliuphil.github.io/Personal-Publishing-Framework/
-- Vault Interface: https://chongliuphil.github.io/Vault-interface/
-- Starter: https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/
+- AHICP: https://inquirystack.philohub.workers.dev/
+- PPF: https://inquirystack.philohub.workers.dev/ppf/
+- Vault Interface: https://inquirystack.philohub.workers.dev/vault-interface/
+- Starter: https://inquirystack.philohub.workers.dev/starter/
 
 Default new-project baseline:
 full AHICP + full PPF + Vault Interface + project-owned content.
@@ -38,7 +38,7 @@ Agent instruction:
 From any component entrypoint, reconstruct the full ecosystem before cross-component configuration. Fresh-read the downstream stack and pinned upstream manifests. For Cloudflare actions, provide numbered operator steps, verification criteria, and rollback instructions.
 
 Public delivery policy:
-Cloudflare Workers is preferred for the unified public framework site. GitHub remains canonical source. Anonymous main-site reading at inquirystack.philohub.workers.dev is authorized; current GitHub Pages URLs remain canonical until separately approved cutover.
+The owner approved the unified public Worker at https://inquirystack.philohub.workers.dev/ as the canonical site. GitHub remains canonical source. Former GitHub Pages URLs remain available for legacy access and rollback; previews remain disabled pending separate Access acceptance.
 
 Approved delivery target (2026-09-22, not actual provider state):
 One unified website, one active Cloudflare Worker, four independent GitHub authorities.

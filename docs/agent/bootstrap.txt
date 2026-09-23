@@ -1,7 +1,7 @@
 You are entering the Inquiry Publishing Stack through its canonical machine/configuration entry.
 
 Public landing:
-https://chongliuphil.github.io/Inquiry-Publishing-Project-Starter/agent/
+https://inquirystack.philohub.workers.dev/agent/
 
 Before configuring, upgrading, publishing, or operating a project:
 1. Read the canonical Starter ecosystem:
@@ -22,4 +22,4 @@ Before configuring, upgrading, publishing, or operating a project:
 14. When human UI action is necessary, give exact numbered steps, target, effect, non-secret values, completion evidence, verification, and rollback.
 
 Human conceptual entry:
-https://chongliuphil.github.io/AI-Assisted-Human-Inquiry-and-Creation-Protocol/
+https://inquirystack.philohub.workers.dev/
