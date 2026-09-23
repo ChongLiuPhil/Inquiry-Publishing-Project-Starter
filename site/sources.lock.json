@@ -24,7 +24,7 @@
     },
     "vault_interface": {
       "repository": "ChongLiuPhil/Vault-interface",
-      "revision": "b896ce373fe6345e0b8ad978d6fec5ce0b24b981",
+      "revision": "fd94e40face66c9ad8dd8381f902233674ebbf6e",
       "mount": "/vault-interface/",
       "files": [
         "docs/index.html",
