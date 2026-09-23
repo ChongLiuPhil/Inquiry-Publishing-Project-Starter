@@ -1,0 +1,3 @@
+# First chapter
+
+Changes to this source rebuild the complete book, including its supporting assets.

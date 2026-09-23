@@ -1,0 +1,12 @@
+{
+  "repository": "OWNER/REPOSITORY",
+  "branch": "main",
+  "visibility": "public",
+  "mount": "/publications/example/",
+  "source_directory": ".",
+  "output_directory": "_book",
+  "build": {
+    "kind": "quarto",
+    "version": "1.10.18"
+  }
+}

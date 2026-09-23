@@ -1,0 +1,11 @@
+{
+  "repository": "OWNER/REPOSITORY",
+  "branch": "main",
+  "visibility": "public",
+  "mount": "/publications/example/",
+  "source_directory": ".",
+  "output_directory": "public",
+  "build": {
+    "kind": "static-directory"
+  }
+}

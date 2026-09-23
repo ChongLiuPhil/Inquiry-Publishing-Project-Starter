@@ -1,0 +1,64 @@
+{
+  "schema": "inquiry-publishing-stack/publication-manifest/v1",
+  "components": {
+    "ahicp": {
+      "repository": "ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol",
+      "branch": "main",
+      "build": {
+        "kind": "static-files"
+      },
+      "mount": "/ahicp/",
+      "files": [
+        "docs/index.html",
+        "docs/HUMAN_GUIDE.md",
+        "docs/HUMAN_GUIDE.zh-CN.md",
+        "docs/llms.txt"
+      ]
+    },
+    "ppf": {
+      "repository": "ChongLiuPhil/Personal-Publishing-Framework",
+      "branch": "main",
+      "build": {
+        "kind": "static-files"
+      },
+      "mount": "/ppf/",
+      "files": [
+        "docs/index.html",
+        "docs/llms.txt"
+      ]
+    },
+    "vault_interface": {
+      "repository": "ChongLiuPhil/Vault-interface",
+      "branch": "main",
+      "build": {
+        "kind": "static-files"
+      },
+      "mount": "/vault-interface/",
+      "files": [
+        "docs/index.html",
+        "docs/llms.txt"
+      ]
+    },
+    "starter": {
+      "repository": "ChongLiuPhil/Inquiry-Publishing-Project-Starter",
+      "branch": "main",
+      "build": {
+        "kind": "static-files"
+      },
+      "mount": "/starter/",
+      "files": [
+        "docs/index.html",
+        "docs/llms.txt",
+        "docs/agent/index.html",
+        "docs/agent/entry.json",
+        "docs/agent/bootstrap.txt",
+        "docs/agent/bootstrap.zh-CN.txt",
+        "docs/AGENT_RETRIEVAL_CONTRACT.md",
+        "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md",
+        "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md",
+        "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md"
+      ]
+    }
+  },
+  "publications": {}
+}
