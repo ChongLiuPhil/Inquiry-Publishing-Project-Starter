@@ -10,7 +10,7 @@
     },
     "ppf": {
       "repository": "ChongLiuPhil/Personal-Publishing-Framework",
-      "revision": "5fca3e99df588c338eca45915478a07a9cadc099",
+      "revision": "e21beb7088f4b1dbb1a74f42bce1f67466a3b24e",
       "mount": "/ppf/",
       "files": ["docs/index.html", "docs/llms.txt"]
     },
