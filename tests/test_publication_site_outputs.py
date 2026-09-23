@@ -63,3 +63,33 @@ class OutputTests(unittest.TestCase):
     def test_output_path_traversal_rejected(self):
         spec=self.spec();spec['output_directory']='../private'
         with self.assertRaises(ValueError): build_local(Path('/tmp'),spec)
+
+class NotificationTests(unittest.TestCase):
+    def script(self):
+        path=Path(__file__).resolve().parents[1]/'templates/notify-starter.yml'
+        import textwrap
+        return textwrap.dedent(path.read_text().split('        run: |\n',1)[1])
+    def test_missing_secret_fails_without_network(self):
+        with patch.dict('os.environ',{},clear=True), patch('urllib.request.urlopen') as send:
+            with self.assertRaisesRegex(SystemExit,'missing'):
+                exec(self.script(),{})
+            send.assert_not_called()
+    def test_expired_secret_reports_status_not_secret(self):
+        from urllib.error import HTTPError
+        env={'STARTER_SYNC_TOKEN':'not-a-real-secret','SOURCE_REPOSITORY':REPO,'SOURCE_BRANCH':'main','SOURCE_REVISION':'a'*40}
+        with patch.dict('os.environ',env,clear=True), patch('urllib.request.urlopen',side_effect=HTTPError('https://api.github.com',401,'Unauthorized',{},None)):
+            with self.assertRaises(SystemExit) as error: exec(self.script(),{})
+        self.assertIn('401',str(error.exception));self.assertNotIn(env['STARTER_SYNC_TOKEN'],str(error.exception))
+    def test_acceptance_is_not_deployment_and_payload_has_only_identity(self):
+        import contextlib, io
+        env={'STARTER_SYNC_TOKEN':'not-a-real-secret','SOURCE_REPOSITORY':REPO,'SOURCE_BRANCH':'main','SOURCE_REVISION':'a'*40}
+        with patch.dict('os.environ',env,clear=True), patch('urllib.request.urlopen') as send:
+            send.return_value.__enter__.return_value.status=204
+            output=io.StringIO()
+            with contextlib.redirect_stdout(output): exec(self.script(),{})
+            request=send.call_args.args[0]
+            payload=json.loads(request.data)
+        self.assertEqual(payload['ref'],'main')
+        self.assertEqual(set(payload['inputs']),{'repository','branch','revision'})
+        self.assertNotIn(env['STARTER_SYNC_TOKEN'],output.getvalue())
+        self.assertIn('not deployment confirmation',output.getvalue())
