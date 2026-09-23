@@ -76,7 +76,7 @@ Following public links is a retrieval protocol, not permission to access private
 
 ## Public delivery provider
 
-The four public framework sections now use **one Cloudflare Worker** at `https://inquirystack.philohub.workers.dev/`; GitHub remains the canonical source/version-control provider. Former GitHub Pages URLs remain available as legacy entrypoints and rollback paths.
+The four public framework sections now use **one Cloudflare Worker** at `https://inquirystack.philohub.workers.dev/`; GitHub remains the canonical source/version-control provider. The former framework GitHub Pages sites are retired; the previous verified Worker version is the rollback point.
 
 Use [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md) and the machine-readable [cloudflare-public-delivery.yaml](../templates/cloudflare-public-delivery.yaml) for the approved cutover, its live verification and rollback. The selected `workers.dev` identity is free; a custom domain remains optional.
 

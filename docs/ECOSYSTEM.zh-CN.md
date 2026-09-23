@@ -76,7 +76,7 @@ AI agent 从任意组件主页或仓库进入时，必须：
 
 ## 公共网页的交付平台
 
-四个公共框架栏目现由**一个 Cloudflare Worker** 在 `https://inquirystack.philohub.workers.dev/` 交付；GitHub 继续作为权威源文件、版本历史和 CI 平台。原 GitHub Pages URL 保留为旧入口及回滚路径。
+四个公共框架栏目现由**一个 Cloudflare Worker** 在 `https://inquirystack.philohub.workers.dev/` 交付；GitHub 继续作为权威源文件、版本历史和 CI 平台。原框架 GitHub Pages 站点已停用；上一已验证 Worker 版本是回滚点。
 
 已批准的切换、线上验收与回滚遵循 [CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md) 和机器可读的 [cloudflare-public-delivery.yaml](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml)。所选 `workers.dev` 地址免费；自定义域名仍可选。
 

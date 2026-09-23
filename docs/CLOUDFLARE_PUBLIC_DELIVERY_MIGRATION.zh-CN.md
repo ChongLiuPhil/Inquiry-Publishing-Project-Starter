@@ -6,7 +6,7 @@
 
 四个仓库独立维护，组成一个网站，由 `inquirystack` Worker 提供服务，地址为 `https://inquirystack.philohub.workers.dev`。`/` 是人类入口，`/agent/` 是机器入口。GitHub 为权威源；只连接 Starter，其他三个公开上游按 `site/sources.lock.json` 固定 revision 无凭据读取。网站来源锁与下游采用锁分开维护。
 
-用户已批准当前综合站主地址匿名公开阅读，并另行批准 `https://inquirystack.philohub.workers.dev/` 成为正式人类入口，`/agent/` 成为机器入口。不设主站读者名单，也不创建 Everyone Access 放行策略。旧 GitHub Pages 保留；2026-09-23 当前 Cloudflare 账户的 Pages 项目列表为空，不能把 Pages holding 当成已验证回滚点；不改 DNS、不购买域名、不升级套餐，其他项目保持各自访问方式。
+用户已批准当前综合站主地址匿名公开阅读，并另行批准 `https://inquirystack.philohub.workers.dev/` 成为正式人类入口，`/agent/` 成为机器入口。不设主站读者名单，也不创建 Everyone Access 放行策略。四个旧框架 GitHub Pages 站点已于 2026-09-23 停用，仓库与源文件保留；2026-09-23 当前 Cloudflare 账户的 Pages 项目列表为空，不能把 Pages holding 当成已验证回滚点；不改 DNS、不购买域名、不升级套餐，其他项目保持各自访问方式。
 
 ## 仓库构建配置
 
@@ -29,7 +29,7 @@ holding 构建在 Python 命令后加 `--holding`。最初 Worker holding 是直
 
 ## 回滚
 
-每次部署前重新读取当前部署并保存非秘密版本引用。候选失败优先恢复私有状态中记录的上一已验证 Worker 版本，或通过正常 PR revert 来源锁，然后检查实际响应；必要时暂停自动触发器。历史 Worker holding 并非活动站点，使用前必须重新确认可用。若秘密发生变化，不得强制绕过回滚阻止而不检查影响。保留 GitHub Pages、已有域名及其他项目 App 授权，不假定 Pages holding 项目存在，不强推或删除项目。
+每次部署前重新读取当前部署并保存非秘密版本引用。候选失败优先恢复私有状态中记录的上一已验证 Worker 版本，或通过正常 PR revert 来源锁，然后检查实际响应；必要时暂停自动触发器。历史 Worker holding 并非活动站点，使用前必须重新确认可用。若秘密发生变化，不得强制绕过回滚阻止而不检查影响。保留源仓库、已有域名及其他项目 App 授权，不假定 Pages holding 项目存在，不强推，也不删除 Worker 或源仓库。
 
 ## 官方依据
 

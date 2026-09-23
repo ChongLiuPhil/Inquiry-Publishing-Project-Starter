@@ -91,7 +91,7 @@ For the four public framework sites, Cloudflare Workers is the preferred deliver
 
 The approved architecture composes the four repositories into **one website and one active Worker**. The user separately authorized `https://inquirystack.philohub.workers.dev/` as the canonical human entry and `/agent/` as the machine entry. Normative authorities remain independent. Read `docs/UNIFIED_PUBLIC_SITE.md` and the v3 migration plan. `site/sources.lock.json` pins website sources and does not replace downstream adoption locks.
 
-The selected `workers.dev` address is free and requires no DNS change. Historical GitHub Pages URLs remain available for rollback, but new public entry links use the Worker. Read the actual migration and verification state from `templates/cloudflare-public-delivery.yaml`; do not infer a completed live cutover merely from authorization or CI. Protected previews remain disabled until their separate Access acceptance.
+The selected `workers.dev` address is free and requires no DNS change. The former framework GitHub Pages sites are retired; the approved Worker is the sole public website entry. Roll back through a previously verified Worker version or a reviewed revert. Read the actual migration and verification state from `templates/cloudflare-public-delivery.yaml`; do not infer a completed live cutover merely from authorization or CI. Protected previews remain disabled until their separate Access acceptance.
 
 ## 7. Cloudflare human-handoff standard
 

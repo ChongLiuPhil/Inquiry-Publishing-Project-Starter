@@ -52,8 +52,13 @@ def validate(output: Path) -> None:
         raise ValueError("Unexpected output files or missing provenance")
     for path, checksum in info["outputs"].items():
         file = output / path.lstrip("/")
-        if file.is_symlink() or hashlib.sha256(file.read_bytes()).hexdigest() != checksum:
+        if file.is_symlink():
             raise ValueError(f"Output integrity failure: {path}")
+        contents = file.read_bytes()
+        if hashlib.sha256(contents).hexdigest() != checksum:
+            raise ValueError(f"Output integrity failure: {path}")
+        if b"chongliuphil.github.io" in contents.lower():
+            raise ValueError(f"Retired GitHub Pages URL leaked into public output: {path}")
     descriptor = json.loads((output / "agent/entry.json").read_text())
     if descriptor.get("public_landing") != public_url + "agent/" or descriptor.get("human_entry") != public_url or descriptor.get("public_delivery", {}).get("current_provider") != "cloudflare-workers":
         raise ValueError("Machine entry does not identify the approved Worker")

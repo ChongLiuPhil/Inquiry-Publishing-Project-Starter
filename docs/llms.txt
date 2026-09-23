@@ -38,7 +38,7 @@ Agent instruction:
 From any component entrypoint, reconstruct the full ecosystem before cross-component configuration. Fresh-read the downstream stack and pinned upstream manifests. For Cloudflare actions, provide numbered operator steps, verification criteria, and rollback instructions.
 
 Public delivery policy:
-The owner approved the unified public Worker at https://inquirystack.philohub.workers.dev/ as the canonical site. GitHub remains canonical source. Former GitHub Pages URLs remain available for legacy access and rollback; previews remain disabled pending separate Access acceptance.
+The owner approved the unified public Worker at https://inquirystack.philohub.workers.dev/ as the canonical site. GitHub remains canonical source. Former framework GitHub Pages sites have been retired; use the previous verified Worker version for rollback; previews remain disabled pending separate Access acceptance.
 
 Approved delivery target (2026-09-22, not actual provider state):
 One unified website, one active Cloudflare Worker, four independent GitHub authorities.
