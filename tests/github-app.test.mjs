@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac, generateKeyPairSync, verify } from 'node:crypto';
-import {makeHandler} from '../src/github-app.mjs';
+import {makeHandler,lockRevisionChanges} from '../src/github-app.mjs';
 const keys=generateKeyPairSync('rsa',{modulusLength:2048});
 const env={GITHUB_APP_ID:'123',GITHUB_APP_WEBHOOK_SECRET:'synthetic-test-key',GITHUB_APP_PRIVATE_KEY:keys.privateKey.export({type:'pkcs1',format:'pem'})};
 const repo='ChongLiuPhil/Personal-Publishing-Framework';
@@ -95,4 +95,38 @@ test('PEM formatting variants preserve key identity; invalid keys fail without n
  const result=await handle(request(),{...env,GITHUB_APP_PRIVATE_KEY:'synthetic-invalid-secret'});
  assert.equal(result.status,502);const message=await result.text();
  assert.match(message,/key signing failed/);assert.ok(!message.includes('synthetic-invalid-secret'));
+});
+
+
+test('source-lock PR rejects scope changes and only opens verified App PRs',async()=>{
+ const before={components:{ppf:{repository:repo,revision:'b'.repeat(40),files:['docs/llms.txt']}}};
+ const after=structuredClone(before);after.components.ppf.revision='c'.repeat(40);
+ assert.equal(lockRevisionChanges(before,after).length,1);
+ for(const mutate of [x=>x.components.ppf.files.push('private.txt'),x=>x.components.ppf.repository='other/repo',x=>x.components.extra={},x=>x.components.ppf.revision='main']){
+  const bad=structuredClone(after);mutate(bad);assert.throws(()=>lockRevisionChanges(before,bad));
+ }
+ const payload={...base,repository:{...base.repository,id:1377778633,full_name:'ChongLiuPhil/Inquiry-Publishing-Project-Starter'},ref:'refs/heads/automation/site-sources-'+base.after};
+ for(const mode of ['success','exists','denied','scope','rollback','private','outside','mismatch','secret-error']){
+  let created=0;
+  const handle=makeHandler(registry,async(url,options)=>{
+   if(mode==='secret-error')throw new Error(env.GITHUB_APP_PRIVATE_KEY);
+   if(url.endsWith('/access_tokens')){
+    assert.deepEqual(JSON.parse(options.body).permissions,{contents:'read',pull_requests:'write'});
+    assert.deepEqual(JSON.parse(options.body).repositories,['Inquiry-Publishing-Project-Starter']);
+    return Response.json({token:'synthetic'}, {status:mode==='denied'?403:201});
+   }
+   if(url.includes('/compare/main...'))return Response.json({status:'ahead',ahead_by:1,behind_by:0,base_commit:{sha:'d'.repeat(40)},files:[{filename:mode==='scope'?'src/worker.mjs':'site/sources.lock.json',status:'modified'}]});
+   if(url.includes('/contents/'))return Response.json({encoding:'base64',content:Buffer.from(JSON.stringify(url.endsWith('d'.repeat(40))?before:after)).toString('base64')});
+   if(url.endsWith('/compare/'+'c'.repeat(40)+'...main'))return Response.json({status:mode==='outside'?'diverged':'identical'});
+   if(url.includes('/compare/'+'b'.repeat(40)))return Response.json({status:mode==='rollback'?'behind':'ahead'});
+   if(url.endsWith('/repos/'+repo))return Response.json({private:mode==='private',default_branch:'main'});
+   if(url.includes('/pulls?'))return Response.json(mode==='exists'?[{number:1}]:[]);
+   if(url.endsWith('/pulls')){created++;assert.equal(options.method,'POST');return Response.json({number:1},{status:201});}
+   assert.fail('Unexpected API path');
+  });
+  const input=mode==='mismatch'?{...payload,ref:'refs/heads/automation/site-sources-'+'f'.repeat(40)}:payload;
+  const result=await handle(request(input),env);
+  assert.equal(result.status,{success:201,exists:200,denied:503,scope:409,mismatch:400}[mode]||502,mode);
+  assert.equal(created,mode==='success'?1:0);assert.ok(!(await result.text()).includes('PRIVATE KEY'));
+ }
 });

@@ -26,6 +26,10 @@
 
 ## 受保护的来源锁发布
 
-来源更新使用本仓库 GITHUB_TOKEN 创建仅修改来源锁的 PR，在固定分支上显式触发现有三项 CI 工作流，全部成功后按正常分支规则合并。禁止直接推送 main、绕过保护或自动批准审查。同一基线与成品的重试复用确定的提交、分支和已成功的检查；检查失败、并发漂移或合并被拒绝时保留 PR 供恢复。
+来源更新先验证成品，再用 Starter 的 GITHUB_TOKEN 推送确定的、仅修改来源锁的分支。GitHub 会把这次机器人推送签名后送至现有 Worker Webhook（已实测）。App 核验 Starter 身份、分支 SHA、单文件差异、公开范围不变、公开默认分支归属及来源版本只前进，然后以 App 身份创建 PR。临时安装令牌仅选择 Starter，权限仅为 Contents read 与 Pull requests write；令牌和私钥均不返回 Actions。重复通知复用已有 PR。
 
-仓库所有者须启用 **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**。GitHub 将创建与批准合并在一个开关中；本工作流不批准审查。作业使用仅限 Starter 的 Contents write、Pull requests write 和 Actions write。App 运行时安装令牌仍只有 Starter Actions write；内容构建不接收 App 私钥。合并后仍须核对 Cloudflare 原生构建与线上 build-info，不能把 PR 合并成功当作部署成功。
+常规 PR CI 随后运行，无需 GITHUB_TOKEN 所创建 PR 的额外维护者批准。来源更新工作流等待固定提交的三项检查全部成功，再用 GITHUB_TOKEN 按正常分支规则合并。不会批准审查、修改必需检查或绕过保护；失败保留分支和 PR。App 尚未创建 PR 时可重放分支 Webhook，协调器中断时可运行来源更新的人工恢复入口。
+
+所有者须在现有 GitHub App 中批准 **Pull requests: Read and write**，并接受安装权限更新。App 权限覆盖安装时选择的仓库；本实现把每次 PR 临时令牌进一步限制到 Starter。保留原有 Contents read、Actions write；无需新秘密、PAT、仓库或付费产品。上游通知仍只请求 Starter Actions write。仓库的 Actions 创建/批准 PR 开关不用于创建或批准这些 App PR。
+
+GitHub 官方说明了 GITHUB_TOKEN 创建 PR 的工作流批准要求，并建议无人值守 PR CI 使用 App 安装令牌：https://docs.github.com/en/enterprise-cloud%40latest/actions/concepts/security/github_token 。合并后仍须独立核对 Cloudflare 原生构建和线上来源记录，不能把合并成功当作部署成功。

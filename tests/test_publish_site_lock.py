@@ -14,9 +14,9 @@ class PublicationPRTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): m.allowed_files(files)
 
     def test_only_exact_head_dispatched_runs_count(self):
-        runs = [dict(id=1, head_sha='a', event='workflow_dispatch'),
-                dict(id=2, head_sha='b', event='workflow_dispatch'),
-                dict(id=3, head_sha='a', event='pull_request')]
+        runs = [dict(id=1, head_sha='a', event='pull_request'),
+                dict(id=2, head_sha='b', event='pull_request'),
+                dict(id=3, head_sha='a', event='workflow_dispatch')]
         self.assertEqual(m.select_run(runs, 'a')['id'], 1)
         self.assertIsNone(m.select_run(runs, 'c'))
 
@@ -37,8 +37,8 @@ class PublicationPRTests(unittest.TestCase):
             def github(path, method='GET', data=None):
                 if method != 'GET': mutations.append((path,method))
                 if '/runs?' in path:
-                    return {'workflow_runs':[dict(id=1,head_sha='a'*40,event='workflow_dispatch',status='completed',conclusion='failure' if mode=='failed' else 'success')]}
-                if '/pulls?' in path: return []
+                    return {'workflow_runs':[dict(id=1,head_sha='a'*40,event='pull_request',status='completed',conclusion='failure' if mode=='failed' else 'success')]}
+                if '/pulls?' in path: return [{'number':1,'html_url':'https://example.test/pr/1','user':{'login':'publishing-app[bot]'}}]
                 if path.endswith('/pulls'): return {'number':1,'html_url':'https://example.test/pr/1'}
                 if path.endswith('/pulls/1'): return {'head':{'sha':('b' if mode=='drift' else 'a')*40},'base':{'ref':'main'}}
                 if '/files?' in path: return [{'filename':m.LOCK}]

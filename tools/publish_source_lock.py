@@ -31,7 +31,7 @@ def api(path, method='GET', data=None):
 
 
 def select_run(runs, revision):
-    candidates = [r for r in runs if r['head_sha'] == revision and r['event'] == 'workflow_dispatch']
+    candidates = [r for r in runs if r['head_sha'] == revision and r['event'] == 'pull_request']
     return max(candidates, key=lambda r: r['id']) if candidates else None
 
 
@@ -57,25 +57,24 @@ def main():
     # A fresh branch per immutable commit avoids force-push and cross-run overwrites.
     branch = f'automation/site-sources-{head}'
     run('git', 'push', 'origin', f'HEAD:refs/heads/{branch}')
-    pulls = api(f'repos/{repo}/pulls?state=open&head={repo.split("/")[0]}:{branch}')
-    pr = pulls[0] if pulls else api(f'repos/{repo}/pulls', 'POST', {
-        'title': 'Refresh verified public-site sources', 'head': branch, 'base': 'main',
-        'body': 'Automated source-lock update. Rendered outputs were validated before this PR. '
-                'All three existing CI workflows are explicitly dispatched on this exact commit. '
-                'Merge uses normal branch rules; no bypass or automatic review approval. '
-                f'Origin run: https://github.com/{repo}/actions/runs/{os.environ["GITHUB_RUN_ID"]}'})
+    # The signed push webhook creates the PR as the App; never as GITHUB_TOKEN.
+    deadline = time.monotonic() + 120
+    while time.monotonic() < deadline:
+        pulls = api(f'repos/{repo}/pulls?state=open&head={repo.split("/")[0]}:{branch}&base=main')
+        if pulls:
+            pr = pulls[0]
+            if pr.get('user', {}).get('login') == 'github-actions[bot]':
+                raise RuntimeError('Legacy GITHUB_TOKEN PR requires recovery; refusing approval bypass')
+            break
+        time.sleep(5)
+    else:
+        raise RuntimeError('App PR not received; check webhook delivery and App Pull requests write approval')
     print(f'Source update PR: {pr["html_url"]}', flush=True)
-    # GITHUB_TOKEN pushes cannot be relied upon to trigger push/PR CI automatically.
-    for workflow in WORKFLOWS:
-        runs = api(f'repos/{repo}/actions/workflows/{workflow}/runs?event=workflow_dispatch&branch={branch}&per_page=10')['workflow_runs']
-        prior = select_run(runs, head)
-        if not prior or (prior['status'] == 'completed' and prior['conclusion'] != 'success'):
-            api(f'repos/{repo}/actions/workflows/{workflow}/dispatches', 'POST', {'ref': branch})
     deadline = time.monotonic() + 600
     while time.monotonic() < deadline:
         completed = True
         for workflow in WORKFLOWS:
-            runs = api(f'repos/{repo}/actions/workflows/{workflow}/runs?event=workflow_dispatch&branch={branch}&per_page=10')['workflow_runs']
+            runs = api(f'repos/{repo}/actions/workflows/{workflow}/runs?event=pull_request&branch={branch}&per_page=10')['workflow_runs']
             found = select_run(runs, head)
             if not found or found['status'] != 'completed':
                 completed = False
