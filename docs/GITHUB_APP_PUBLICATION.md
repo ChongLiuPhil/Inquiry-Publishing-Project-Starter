@@ -23,3 +23,9 @@ Before claiming acceptance, test a real upstream content-changing commit and a c
 ## Recovery
 
 To stop automated notifications, suspend the App installation or deactivate its webhook; the last static website remains available. Rotate a compromised webhook secret in both providers, or replace the private key and revoke the old key. Revert the receiver PR to return to assets-only delivery, or restore a verified Worker version; retain manual Starter refresh. Do not restore hourly polling. Installation selection and publication registration are separate: future books/apps require both owner-approved installation access and a manifest entry. Private manuscripts are not added to this public-source App pipeline.
+
+## Protected source-lock publication
+
+Source refresh uses the repository's GITHUB_TOKEN to open a source-lock-only PR, explicitly dispatch all three existing CI workflows on that immutable branch, and merge through normal branch rules only after success. It never pushes directly to main, bypasses rules, or approves a review. Repeated attempts at the same base and output reuse the deterministic commit/branch and existing successful checks. Failed checks, concurrency drift, and declined merges preserve the PR for recovery.
+
+The repository owner must enable **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**. GitHub combines creation and approval in this setting; this workflow does not approve reviews. Its job permissions are Contents write, Pull requests write and Actions write, limited to Starter. The App's runtime installation token remains Starter Actions write only. No App private key is passed to content builds. After merge, verify the native Cloudflare build and live build-info; a successful PR merge alone is not deployment evidence.
