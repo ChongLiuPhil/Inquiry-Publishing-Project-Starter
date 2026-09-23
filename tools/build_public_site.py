@@ -165,7 +165,7 @@ def chrome(text: str, key: str, revision: str) -> str:
     for label, path in (("AHICP", "/ahicp/"), ("PPF", "/ppf/"), ("Vault Interface", "/vault-interface/"), ("Starter", "/starter/"), ("AI Agent", "/agent/")):
         nav += f'<a href="{path}">{label}</a>'
     nav += '</nav>'
-    footer = '<footer class="stack-source">Source: <a href="https://github.com/' + REPOSITORIES[key] + '/tree/' + revision + '">' + key + ' @ ' + revision[:12] + '</a> · <a href="/build-info.json">Build provenance</a></footer>'
+    footer = '<footer class="stack-source">Source: <a href="https://github.com/' + REPOSITORIES[key] + '/tree/' + revision + '">' + key + ' @ ' + revision[:12] + '</a> · <a href="/build-info.json">Build provenance</a> · <a href="https://github.com/' + REPOSITORIES[key] + '/blob/' + revision + '/LICENSE.md">License</a></footer>'
     if '</head>' not in text or '<body>' not in text or '</body>' not in text:
         raise ValueError(f"Expected a complete static HTML document: {key}")
     text = text.replace('</head>', '<link rel="stylesheet" href="/assets/stack.css"></head>', 1)
