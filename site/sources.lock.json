@@ -6,25 +6,47 @@
       "repository": "ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol",
       "revision": "032407eccbb70691058bdcb5a73d326aa73dae84",
       "mount": "/ahicp/",
-      "files": ["docs/index.html", "docs/HUMAN_GUIDE.md", "docs/HUMAN_GUIDE.zh-CN.md", "docs/llms.txt"]
+      "files": [
+        "docs/index.html",
+        "docs/HUMAN_GUIDE.md",
+        "docs/HUMAN_GUIDE.zh-CN.md",
+        "docs/llms.txt"
+      ]
     },
     "ppf": {
       "repository": "ChongLiuPhil/Personal-Publishing-Framework",
-      "revision": "e21beb7088f4b1dbb1a74f42bce1f67466a3b24e",
+      "revision": "73d8b1d4f85e04cba70180514dd762da18805915",
       "mount": "/ppf/",
-      "files": ["docs/index.html", "docs/llms.txt"]
+      "files": [
+        "docs/index.html",
+        "docs/llms.txt"
+      ]
     },
     "vault_interface": {
       "repository": "ChongLiuPhil/Vault-interface",
       "revision": "599cf997d46ef5f0ca21c4f47b326bd46077c671",
       "mount": "/vault-interface/",
-      "files": ["docs/index.html", "docs/llms.txt"]
+      "files": [
+        "docs/index.html",
+        "docs/llms.txt"
+      ]
     },
     "starter": {
       "repository": "ChongLiuPhil/Inquiry-Publishing-Project-Starter",
       "revision": "build-checkout",
       "mount": "/starter/",
-      "files": ["docs/index.html", "docs/llms.txt", "docs/agent/index.html", "docs/agent/entry.json", "docs/agent/bootstrap.txt", "docs/agent/bootstrap.zh-CN.txt", "docs/AGENT_RETRIEVAL_CONTRACT.md", "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md", "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md", "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md"]
+      "files": [
+        "docs/index.html",
+        "docs/llms.txt",
+        "docs/agent/index.html",
+        "docs/agent/entry.json",
+        "docs/agent/bootstrap.txt",
+        "docs/agent/bootstrap.zh-CN.txt",
+        "docs/AGENT_RETRIEVAL_CONTRACT.md",
+        "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md",
+        "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md",
+        "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md"
+      ]
     }
   }
 }
