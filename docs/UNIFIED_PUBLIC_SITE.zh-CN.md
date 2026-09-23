@@ -24,7 +24,9 @@ python tools/build_public_site.py
 
 构建只允许明确的公开仓库与文件列表，通过不带凭据的 HTTPS 读取远端文件。`build-info.json` 记录四个来源 revision、输入与输出 SHA-256、锁文件摘要以及工作区是否有已跟踪改动。获取失败或验证失败时构建退出，不以旧缓存或浮动 `main` 偷换固定来源。
 
-上游更新不会自动混入网站：维护者/Agent 应 fresh-read 对应 manifest，审阅来源差异，更新 lock，提交 PR 并通过完整测试，再部署已验证的组合。不存在本次批准之外的定时任务或跨仓库自动写权限。
+Starter 中的 `Refresh unified public site sources` 工作流每小时检查三个公开上游的默认分支，只比较 `site/sources.lock.json` 和构建器中明确列出的公共白名单文件。白名单字节有变化时，工作流更新来源 SHA，重新构建并验证综合站，再以 `github-actions[bot]` 提交单行来源锁；Cloudflare Workers Builds 收到 Starter `main` 推送后部署到现有 `workers.dev` 候选地址。没有白名单内容变化时不提交、不触发部署。该流程不读取白名单之外的文件，不访问私有仓库，不引入凭据，也不改正式 URL、DNS 或公开切换状态。
+
+白名单本身、路径映射、构建逻辑或发布策略的变更仍须通过维护者 PR 和完整 CI。来源 SHA 仍记录每次实际发布所使用的不可变 revision；网站来源锁不替代下游项目采用锁。该定时检查可能因 GitHub Actions 调度负载而延迟；Cloudflare Workers Builds 免费计划的月构建时长有上限，达到上限后必须等额度恢复或由用户另行决定，不自动升级付费计划。
 
 ## 当前状态与候选状态
 
