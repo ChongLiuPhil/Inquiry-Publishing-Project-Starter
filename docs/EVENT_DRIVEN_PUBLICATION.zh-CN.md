@@ -8,22 +8,13 @@
 
 输出相同时不提交、不部署；输出变化时固定完整 SHA，在提交前运行测试、完整构建、链接及来源验证。写锁失败不强推，修复后手动重跑。失败保留线上最后成功版本。Starter 自身 main 的更新沿用 Cloudflare Git 集成。GitHub bot 提交不触发普通 GitHub push 工作流，因此必要验证在更新工作流内部完成；Cloudflare 是否收到 bot push 必须实测。
 
-## Token 一次性设置（账户所有者）
+## 账户级 GitHub App（默认）
 
-1. 打开 https://github.com/settings/personal-access-tokens/new 。名称 `inquiry-starter-sync`；建议有效期 90 天，到期后轮换。
-2. Resource owner 选 `ChongLiuPhil`；Only select repositories 仅选 `Inquiry-Publishing-Project-Starter`。
-3. Repository permissions 只增加 **Actions: Read and write**；保留自动的 Metadata read。不增加 Contents write。Actions write 可以管理该仓库的其他 Actions，不是只授权单个通知入口。
-4. 直接把生成的值保存到下列三个仓库的 Actions secret，名称均为 `STARTER_SYNC_TOKEN`。不要把值发给 Agent、写入 Git、PR 或日志：
-   - https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol/settings/secrets/actions/new
-   - https://github.com/ChongLiuPhil/Personal-Publishing-Framework/settings/secrets/actions/new
-   - https://github.com/ChongLiuPhil/Vault-interface/settings/secrets/actions/new
-5. 三个页面均显示该名称即完成录入；通知工作流成功仅代表 Starter 接收，不代表部署成功。Agent 随后核验通知、来源锁提交、Cloudflare 构建和线上版本。
-
-该秘密仅进入无 checkout、无项目构建的通知步骤。内容构建不接收 Token。撤销 Token 或删除三个 secrets 可停止通知；可在 Starter Actions 页面手动运行来源刷新恢复漏掉的更新。授权失败或到期时必须报告失败，不能静默成功。
+使用 [GitHub App 配置契约](GITHUB_APP_PUBLICATION.zh-CN.md)。此路径替代个人 Token 设置：上游无需 PAT secret 或通知工作流。App 接收签名 push，生成仅限 Starter Actions 写权限的短期安装凭据，继续调用已有接收工作流和 Cloudflare Git 集成。
 
 ## 发布清单及完整成品
 
-`site/publications.json` 是发布范围的权威清单；`site/sources.lock.json` 固定来源版本。现有四个组件使用 `static-files` 和已批准页面列表，不复制整个 docs 树。新增书籍或应用在清单 `publications` 中登记唯一键及 `repository / branch / visibility: public / source_directory / output_directory / build / mount`；在来源锁的 `publications` 下以同一键记录 repository 和完整 revision。将 `templates/publication-source-changed.yml` 和 `templates/notify-starter.yml` 一起复制为来源仓库的 workflows，把两个模板的 OWNER/REPOSITORY 替换为该登记仓库，并配置同一个通知 secret。push 步骤无凭据；默认分支上的 workflow_run 后续步骤核验原仓库、分支及成功状态后发送通知，兼容 Dependabot。它不下载 artifact、恢复缓存或 checkout 来源代码。fork 默认跳过，必须明确登记才可启用。默认分支更名后通知仍运行，但 Starter 在登记分支同步更新前会明确报告配置漂移。
+`site/publications.json` 是发布范围的权威清单；`site/sources.lock.json` 固定来源版本。现有四个组件使用 `static-files` 和已批准页面列表，不复制整个 docs 树。新增书籍或应用在清单 `publications` 中登记唯一键及 `repository / branch / visibility: public / source_directory / output_directory / build / mount`；在来源锁的 `publications` 下以同一键记录 repository 和完整 revision。批准发布清单后，在 App 安装中授权新增来源仓库，不需要通知工作流。默认分支更名时必须同步修改清单，否则报告配置漂移。两个通知工作流模板仅作旧 PAT 路径兼容，不要同时启用两套通知。私人来源仍不进入此公共抓取器。
 
 支持 `static-directory` 与 `quarto`。完整输出目录内的章节、图片、脚本、样式和下载附件自动收录，增删文件无需修改清单。输出需要 index.html；禁止路径越界、符号链接、隐藏文件、路径冲突和超限文件。网页必须使用适用于挂载路径的相对 URL；站点验证检查所有 HTML 的本地链接。成品每文件上限 25 MiB、总计 200 MiB；达到限制报错，不自动购买存储。
 
@@ -33,6 +24,6 @@ Quarto 子进程不继承 Token、用户 HOME 或 Git 配置，构建输出不�
 
 ## 验收、状态及回滚
 
-分别记录离线测试、真实固定来源构建、GitHub CI 和真实提交至部署验收。真实验收必须包含各上游通知、来源锁 revision、Starter commit、Cloudflare build/version 和在线 build-info.json；无变化事件确认没有锁提交或部署。Token 录入前不能宣称自动链路已完成。
+分别记录离线测试、真实固定来源构建、GitHub CI 和真实提交至部署验收。真实验收必须包含各上游通知、来源锁 revision、Starter commit、Cloudflare build/version 和在线 build-info.json；无变化事件确认没有锁提交或部署。App 安装、服务端秘密录入和真实交付验证之前，不能宣称自动链路已完成。
 
-回滚使用 revert PR 或恢复已验证 Worker 版本。通知失败时修复 Token 后重跑；构建失败先修复来源，再重跑。无需恢复 cron。免费额度不足时停止，等待恢复或单独人类决定；不自动付费。
+回滚使用 revert PR 或恢复已验证 Worker 版本。通知失败时修复 App 配置后重发投递或手动运行 Starter；构建失败先修复来源，再重跑。无需恢复 cron。免费额度不足时停止，等待恢复或单独人类决定；不自动付费。
