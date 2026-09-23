@@ -61,12 +61,12 @@ def validate(output: Path) -> None:
             raise ValueError(f"Missing machine/guide resource: {path}")
     if "noindex" not in (output / "_headers").read_text() or "Disallow: /" not in (output / "robots.txt").read_text():
         raise ValueError("Candidate must discourage indexing; this is not authentication")
-    for route in ROUTES:
+    for route in sorted(set(ROUTES) | {p.relative_to(output).as_posix() for p in output.rglob("*.html")}):
         page_path = output / route
         text = page_path.read_text(encoding="utf-8")
         page = Page()
         page.feed(text)
-        if not page.h1 or not page.has_title or 'class="stack-nav"' not in text:
+        if route in ROUTES and (not page.h1 or not page.has_title or 'class="stack-nav"' not in text):
             raise ValueError(f"Missing visible content/navigation: {route}")
         if route in ("index.html", "ahicp/index.html", "ppf/index.html", "vault-interface/index.html", "starter/index.html"):
             if not re.search(r'id="zh"\s+class="[^\"]*\bactive\b', text):

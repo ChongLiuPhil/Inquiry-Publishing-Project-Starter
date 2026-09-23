@@ -50,6 +50,17 @@ class RefreshPublicSiteSourcesTests(unittest.TestCase):
         self.assertEqual(changed, [])
         self.assertEqual(after, original)
 
+    def test_fetch_failure_does_not_partially_write_lock(self):
+        with tempfile.TemporaryDirectory() as directory:
+            lock_path = Path(directory) / "sources.lock.json"
+            original = json.dumps(self.lock)
+            lock_path.write_text(original)
+            def fail(repository, revision, path):
+                raise RuntimeError("upstream unavailable")
+            with self.assertRaises(RuntimeError):
+                refresh(lock_path, apply=True, resolve=lambda _: "a"*40, read_file=fail)
+            self.assertEqual(lock_path.read_text(), original)
+
 
 if __name__ == "__main__":
     unittest.main()

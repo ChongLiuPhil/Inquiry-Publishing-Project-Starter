@@ -31,13 +31,9 @@ REPOSITORIES = {
 MOUNTS = {"ahicp": "/ahicp/", "ppf": "/ppf/", "vault_interface": "/vault-interface/", "starter": "/starter/"}
 CURRENT = {k: "https://chongliuphil.github.io/" + v.split("/")[1] + "/" for k, v in REPOSITORIES.items()}
 MACHINE_ENTRY = CURRENT["starter"] + "agent/"
-# Deliberately narrow: additions require code + lock review, never a docs/** glob.
-ALLOWED = {
-    "ahicp": {"docs/index.html", "docs/HUMAN_GUIDE.md", "docs/HUMAN_GUIDE.zh-CN.md", "docs/llms.txt"},
-    "ppf": {"docs/index.html", "docs/llms.txt"},
-    "vault_interface": {"docs/index.html", "docs/llms.txt"},
-    "starter": {"docs/index.html", "docs/llms.txt", "docs/agent/index.html", "docs/agent/entry.json", "docs/agent/bootstrap.txt", "docs/agent/bootstrap.zh-CN.txt", "docs/AGENT_RETRIEVAL_CONTRACT.md", "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md", "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md", "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md"},
-}
+# Publication scope is reviewed configuration, not a second list in code.
+MANIFEST = json.loads((ROOT / "site/publications.json").read_text())
+ALLOWED = {key: set(value["files"]) for key, value in MANIFEST["components"].items()}
 MAX_BYTES = 2_000_000
 CSS = """.stack-nav,.stack-notice,.stack-source{font-family:system-ui,sans-serif;line-height:1.6;padding:12px 22px;margin:0;background:#f1f6f4;color:#17352d;border-bottom:1px solid #ccdcd4;overflow-wrap:anywhere}.stack-nav{display:flex;flex-wrap:wrap;align-items:center;gap:16px}.stack-nav a,.stack-source a,.stack-notice a{color:#17352d;font-weight:650}.stack-nav a:focus-visible{outline:3px solid #517b6d;outline-offset:4px}.stack-nav strong{margin-right:auto}.stack-notice{font-size:.9rem}.stack-source{margin-top:32px;font-size:.85rem}html[lang^=en] .stack-zh{display:none}html:not([lang^=en]) .stack-en{display:none}.stack-page{font-family:system-ui,sans-serif;max-width:850px;margin:auto;padding:40px 22px;line-height:1.8;color:#17352d}.stack-page h1{font-size:clamp(2rem,6vw,3.5rem);line-height:1.2}.stack-page pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f1f6f4;padding:20px;border-radius:12px}.stack-page a{color:#145b64}.stack-page li{margin:12px 0}@media(max-width:600px){.stack-nav{gap:10px}.stack-nav strong{width:100%}}"""
 
@@ -45,6 +41,21 @@ CSS = """.stack-nav,.stack-notice,.stack-source{font-family:system-ui,sans-serif
 def validate_lock(lock: dict) -> None:
     if lock.get("schema") != "inquiry-publishing-stack/public-site-sources/v1" or lock.get("policy") != "explicit-public-file-allowlist":
         raise ValueError("Unsupported public-site lock")
+    from publication_outputs import validate_spec
+    publications = MANIFEST.get("publications", {})
+    if set(lock.get("publications", {})) != set(publications):
+        raise ValueError("Publication source lock and manifest differ")
+    if set(publications) & set(REPOSITORIES):
+        raise ValueError("Publication keys must not shadow framework components")
+    mounts = set()
+    for key, spec in publications.items():
+        validate_spec(spec)
+        if spec['mount'] in mounts:
+            raise ValueError("Duplicate publication mount")
+        mounts.add(spec['mount'])
+        pinned = lock['publications'][key]
+        if pinned.get('repository') != spec['repository'] or not re.fullmatch(r'[0-9a-f]{40}', pinned.get('revision', '')):
+            raise ValueError("Invalid publication source pin")
     components = lock.get("components", {})
     if set(components) != set(REPOSITORIES):
         raise ValueError("Exactly four independent component sources are required")
@@ -58,6 +69,10 @@ def validate_lock(lock: dict) -> None:
         elif not re.fullmatch(r"[0-9a-f]{40}", revision):
             raise ValueError(f"Unpinned upstream: {key}")
         files = component.get("files", [])
+        for path in files:
+            parts = PurePosixPath(path).parts
+            if not path.startswith("docs/") or "\\" in path or any(p.startswith(".") for p in parts) or str(PurePosixPath(path)) != path:
+                raise ValueError("Invalid framework publication path")
         if len(files) != len(set(files)) or set(files) != ALLOWED[key]:
             raise ValueError(f"Public file allowlist mismatch: {key}")
 
@@ -225,6 +240,20 @@ def compose(root: Path, output: Path, lock: dict, revision: str, dirty: bool, lo
         target = output / path.lstrip("/")
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(text, encoding="utf-8")
+    from publication_outputs import build_remote, digest
+    for key, spec in MANIFEST.get('publications', {}).items():
+        pin = lock['publications'][key]
+        assets = build_remote(spec, pin['revision'])
+        provenance.setdefault('publications', {})[key] = {**pin, 'outputs': digest(assets)}
+        for relative, data in assets.items():
+            route = spec['mount'] + relative
+            target = output / route.lstrip('/')
+            if target.exists():
+                raise ValueError('Publication path collision')
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+            provenance['outputs'][route] = hashlib.sha256(data).hexdigest()
+    (output / 'build-info.json').write_text(json.dumps(provenance, ensure_ascii=False, indent=2) + '\n')
     return provenance
 
 

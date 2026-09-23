@@ -21,7 +21,12 @@ jobs:
       - run: python -m pip install -r requirements-validation.txt
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: python tools/check_workers_contract.py
-      - run: python -m unittest discover -s tests -p 'test_public_site.py' -v
+      - run: python -m unittest discover -s tests -p 'test_*site*.py' -v
+      - name: Verify real static and Quarto publication examples
+        run: |
+          quarto_bin="$(bash tools/ensure_quarto.sh)"
+          export PATH="$(dirname "$quarto_bin"):$PATH"
+          python tools/test_publication_examples.py
       - run: python tools/build_public_site.py
       - run: npm run cloudflare:deploy -- --dry-run
       - run: python -m pip install playwright==1.55.0

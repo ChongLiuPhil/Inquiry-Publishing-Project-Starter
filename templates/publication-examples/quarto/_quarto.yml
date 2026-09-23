@@ -1,0 +1,12 @@
+project:
+  type: book
+  output-dir: _book
+book:
+  title: Publication example
+  chapters:
+    - index.qmd
+    - chapters/chapter.qmd
+format:
+  html: default
+execute:
+  enabled: false
