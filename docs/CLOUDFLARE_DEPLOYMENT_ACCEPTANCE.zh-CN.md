@@ -8,7 +8,7 @@
 
 成功部署后的线上 `/build-info.json` 记录 Starter `ccf8e27cf578b6fa82d6af3c41c4f8cc1a51124f`、AHICP `6d314c5d81d296b2e8a6dff7d4feea6aaf63b9de`、PPF `52ceb00b45efc86f7d1f635beb2e0da7201ed588`、Vault Interface `c6f4991556aa280f712ec43a40df39b916da9ba4`；来源锁 SHA256 为 `aea40b131c7678a9f6db67b5b7b1ff930244d5d4c8ffe82ad9257795fd1bd8d3`。构建记录显示工作树干净、`state: canonical-workers-dev` 和获批公共 URL；新版 Worker 承载 100% 流量。26 个可通过 HTTP 读取的产物 SHA256 全部匹配构建记录；`_headers` 由提供商消费。线上 `/`、`/agent/`、`/start/`、四个组件路径、机器描述、canonical 标签、robots 放行、无 `noindex` 及 404 均通过；已审核切换 PR 的本地浏览器检查覆盖 24 种页面、视口和 JavaScript 组合。
 
-上一已验证部署对应 Starter `cd0ce5e5bbcfc64e34c13770929677daff69272a`，精确回滚版本保存在私有部署状态；回滚前先重新读取活动部署。旧 GitHub Pages 和 Pages holding 继续保留，未修改 DNS 或付费套餐。预览 URL 与非主分支构建仍关闭，受限预览及 Access 读者验证尚未验收。
+上一已验证部署对应 Starter `cd0ce5e5bbcfc64e34c13770929677daff69272a`，精确回滚版本保存在私有部署状态；回滚前先重新读取活动部署。四个旧 GitHub Pages 入口仍返回 HTTP 200；当前 Cloudflare 账户未列出 Pages 项目，Pages holding 不能视为已验证回滚点。未修改 DNS 或付费套餐。预览 URL 与非主分支构建仍关闭，受限预览及 Access 读者验证尚未验收。
 
 ## 早期候选站证据
 
@@ -24,8 +24,8 @@
 - 上游提交 → App 通知 → Starter 来源锁 PR → CI → 合并 → Cloudflare Git 构建 → 主站内容更新，实际通过；无需按小时轮询。
 - 线上公开提供的 26 个输出文件与 `/build-info.json` 所列 SHA256 一致；`_headers` 由提供商消费，另核对了实际响应头。`/` 在浏览器显示；`/agent/` 匿名请求返回 HTTP 200。
 - 相同上游通知重放产生[刷新运行](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/actions/runs/35860034407)，成品不变，没有新锁提交、PR 或部署。
-- 在这一早期快照中，主站已公开，但正式 URL 尚未切换。预览 URL 和非主分支自动构建关闭；受限预览、Access 读者身份和匿名拒绝 **未验收**。DNS 未更改，GitHub Pages 和原 Pages holding 未停用，没有付费升级。
+- 在这一早期快照中，主站已公开，但正式 URL 尚未切换。预览 URL 和非主分支自动构建关闭；受限预览、Access 读者身份和匿名拒绝 **未验收**。DNS 未更改，GitHub Pages 未停用，也未执行 Pages holding 删除或付费升级；当时并未独立核实该 Pages 项目是否存在。
 
 ## 回滚
 
-部署故障先重新读取当前 Worker 部署及来源版本。可按正常 PR/检查流程 revert 来源锁变更，或恢复私有部署状态中记录的上一已验证 Worker 版本，并复核主站响应。上一已验证候选版本对应 Starter `c10798832cdf7b47990d36a888bbe93b455f3691`；私有记录保留精确提供商版本 ID。不得通过删除项目、强推或修改正式公共 URL 回滚。
+部署故障先重新读取当前 Worker 部署及来源版本。可按正常 PR/检查流程 revert 来源锁变更，或恢复私有部署状态中记录的上一已验证 Worker 版本，并复核主站响应。上一已验证候选版本对应 Starter `c10798832cdf7b47990d36a888bbe93b455f3691`；私有记录保留精确提供商版本 ID。不得通过删除项目、强推或修改正式公共 URL 回滚。当前 Cloudflare 账户未列出 Pages 项目；若怀疑在其他账户，须先核实后才能将其当作恢复点。
