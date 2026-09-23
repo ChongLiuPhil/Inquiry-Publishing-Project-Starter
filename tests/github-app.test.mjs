@@ -73,3 +73,26 @@ test('workerd runtime supports PEM signing and WebCrypto verification',async()=>
   assert.equal(result.status,202,await result.text());
  }finally{await runtime.dispose();}
 });
+
+
+test('PEM formatting variants preserve key identity; invalid keys fail without network or disclosure',async()=>{
+ for(const type of ['pkcs1','pkcs8']){
+  const pem=keys.privateKey.export({type,format:'pem'});
+  for(const value of [pem,pem.replaceAll('\n',''),pem.replaceAll('\n','\\n'),pem.replaceAll('\n','\r\n')]){
+   let count=0;
+   const handle=makeHandler(registry,async(_url,options)=>{
+    if(++count===1){
+     const [head,body,sig]=options.headers.Authorization.slice(7).split('.');
+     assert.ok(verify('RSA-SHA256',Buffer.from(head+'.'+body),keys.publicKey,Buffer.from(sig,'base64url')));
+     return Response.json({token:'synthetic'},{status:201});
+    }
+    return new Response(null,{status:204});
+   });
+   assert.equal((await handle(request(),{...env,GITHUB_APP_PRIVATE_KEY:value})).status,202);
+  }
+ }
+ const handle=makeHandler(registry,()=>assert.fail('network'));
+ const result=await handle(request(),{...env,GITHUB_APP_PRIVATE_KEY:'synthetic-invalid-secret'});
+ assert.equal(result.status,502);const message=await result.text();
+ assert.match(message,/key signing failed/);assert.ok(!message.includes('synthetic-invalid-secret'));
+});
