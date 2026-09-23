@@ -81,6 +81,9 @@ def main() -> int:
         raise SystemExit("provider state must be verified for canonical cutover")
     if migration_plan.get("status") != "verified-cutover":
         raise SystemExit("migration status must reflect verified cutover")
+    legacy = migration_plan.get("legacy_entries", {})
+    if legacy.get("status") != "retired-2026-09-23" or legacy.get("available") is not False:
+        raise SystemExit("retired GitHub Pages entries must not be offered as live rollback paths")
     if manifest.get("ecosystem", {}).get("public_delivery", {}).get("migration_state") != migration_plan["status"]:
         raise SystemExit("ecosystem and Cloudflare migration state disagree")
     from build_public_site import validate_lock

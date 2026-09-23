@@ -30,7 +30,7 @@ Publication scope lives in `site/publications.json`. Existing framework pages re
 
 ## Approved public delivery
 
-The owner approved `https://inquirystack.philohub.workers.dev/` as the public human entry and `/agent/` as the machine entry. The descriptor identifies those routes. GitHub Pages stays online as a legacy route and rollback path.
+The owner approved `https://inquirystack.philohub.workers.dev/` as the public human entry and `/agent/` as the machine entry. The descriptor identifies those routes. The former GitHub Pages sites have been retired; use the previous verified Worker version for rollback.
 
 The builder requires the exact approved Worker and cutover flag in the versioned migration plan. Public output has canonical links and no candidate `noindex` gate; previews remain disabled until separate Access acceptance. The live cutover is recorded as verified only after deployment and route checks pass.
 
@@ -40,4 +40,4 @@ The builder requires the exact approved Worker and cutover flag in the versioned
 
 Anonymous main-site reading and canonical use of the selected Worker are approved. Previews stay disabled until protection and audience approval are verified. See the [migration guide](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md) for live state.
 
-Roll back repository changes through an ordinary revert PR, never a force push. Keep former GitHub Pages URLs and restore the prior verified Worker version as needed; do not delete Cloudflare projects or revoke App permissions used by unrelated projects.
+Roll back repository changes through an ordinary revert PR, never a force push. Restore the prior verified Worker version as needed; do not delete Cloudflare projects or revoke App permissions used by unrelated projects.

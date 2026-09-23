@@ -30,7 +30,7 @@ python tools/build_public_site.py
 
 ## 已批准的公共交付
 
-用户已批准 `https://inquirystack.philohub.workers.dev/` 为正式人类入口、`/agent/` 为机器入口。机器描述符明确指向这些路径；GitHub Pages 保留为旧入口和回滚路径。
+用户已批准 `https://inquirystack.philohub.workers.dev/` 为正式人类入口、`/agent/` 为机器入口。机器描述符明确指向这些路径；原 GitHub Pages 站点已停用；回滚使用上一已验证 Worker 版本。
 
 构建器要求版本化迁移计划中精确的 Worker 地址和切换授权。正式输出含 canonical 链接，不再带候选版 `noindex`；预览仍关闭，等待单独的 Access 验收。只有部署与路径实际检查通过后，才把线上切换记为已验证。
 
@@ -40,4 +40,4 @@ python tools/build_public_site.py
 
 主站匿名公开阅读和所选 Worker 的正式身份均已获批准。预览保持关闭，直到访问保护和读者批准完成。线上状态见 [迁移指南](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md)。
 
-仓库回滚使用普通 revert PR；不强推。保留原 GitHub Pages URL，必要时恢复上一已验证 Worker 版本；不删除 Cloudflare 项目、不撤销其他项目正在使用的 GitHub App 权限。
+仓库回滚使用普通 revert PR；不强推。必要时恢复上一已验证 Worker 版本；不删除 Cloudflare 项目、不撤销其他项目正在使用的 GitHub App 权限。

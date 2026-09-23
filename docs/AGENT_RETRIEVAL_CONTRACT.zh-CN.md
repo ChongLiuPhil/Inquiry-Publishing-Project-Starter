@@ -91,7 +91,7 @@ Agent 可能从以下任意入口进入：
 
 已批准架构把四个仓库组合为**一个网站、一个活动 Worker**。用户另行批准 `https://inquirystack.philohub.workers.dev/` 作为正式人类入口，`/agent/` 作为机器入口；四个规范权威仍保持独立。必须读取 `docs/UNIFIED_PUBLIC_SITE.zh-CN.md` 与 v3 迁移计划。`site/sources.lock.json` 只固定网站来源，不替代下游采用锁。
 
-所选 `workers.dev` 地址免费且不需 DNS 修改。旧 GitHub Pages URL 保留供回滚，新公共入口链接指向 Worker。必须读取 `templates/cloudflare-public-delivery.yaml` 的实际迁移与验收状态；批准和 CI 成功不能单独证明线上切换完成。受限预览继续关闭，等待独立 Access 验收。
+所选 `workers.dev` 地址免费且不需 DNS 修改。原框架 GitHub Pages 站点已停用；获批 Worker 是唯一公共网站入口。回滚使用上一已验证 Worker 版本或经过审核的 revert。必须读取 `templates/cloudflare-public-delivery.yaml` 的实际迁移与验收状态；批准和 CI 成功不能单独证明线上切换完成。受限预览继续关闭，等待独立 Access 验收。
 
 ## 7. Cloudflare 需要人工操作时的交接标准
 
