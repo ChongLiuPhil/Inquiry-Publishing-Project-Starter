@@ -75,12 +75,12 @@ def main() -> int:
     architecture = migration_plan.get("architecture", {})
     if architecture.get("topology") != "single-site-multi-repository" or architecture.get("expected_active_worker_count") != 1:
         raise SystemExit("the approved topology is one website and one active Worker")
-    if architecture.get("public_cutover_authorized") is not True or migration_plan.get("cutover_state") != "approved-pending-live-verification":
-        raise SystemExit("approved cutover must remain pending until live verification")
+    if architecture.get("public_cutover_authorized") is not True or migration_plan.get("cutover_state") != "verified-cutover":
+        raise SystemExit("canonical cutover must follow approval and live verification")
     if migration_plan.get("site", {}).get("provider_state_verified") is not True:
-        raise SystemExit("verified public candidate must be recorded separately from canonical cutover")
-    if migration_plan.get("status") != "approved-pending-live-verification":
-        raise SystemExit("migration status must reflect the pending live cutover verification")
+        raise SystemExit("provider state must be verified for canonical cutover")
+    if migration_plan.get("status") != "verified-cutover":
+        raise SystemExit("migration status must reflect verified cutover")
     if manifest.get("ecosystem", {}).get("public_delivery", {}).get("migration_state") != migration_plan["status"]:
         raise SystemExit("ecosystem and Cloudflare migration state disagree")
     from build_public_site import validate_lock

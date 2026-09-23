@@ -1,14 +1,14 @@
 # Web AI Agent 接续：GitHub 与 Cloudflare
 
-本交接基于 2026-09-23 已验证的候选站快照。接手时先读取[机器入口](https://inquirystack.philohub.workers.dev/agent/)、Starter 当前 `main` 的 `AGENTS.md`、`ecosystem.yaml`、Agent Retrieval Contract、[迁移契约](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md)、[实际验收记录](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.zh-CN.md)、`cloudflare-builds.yaml`、`wrangler.jsonc` 与 `site/sources.lock.json`。再核对 GitHub 当前 revision、线上 `/build-info.json` 和 Cloudflare 当前部署；历史 SHA 是证据，不是最新状态保证。不需要原电脑或本地附件。
+本交接基于 2026-09-23 已验收的 Worker 正式 URL 切换。接手时先读取[机器入口](https://inquirystack.philohub.workers.dev/agent/)、Starter 当前 `main` 的 `AGENTS.md`、`ecosystem.yaml`、Agent Retrieval Contract、[迁移契约](CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md)、[实际验收记录](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.zh-CN.md)、`cloudflare-builds.yaml`、`wrangler.jsonc` 与 `site/sources.lock.json`。再核对 GitHub 当前 revision、线上 `/build-info.json` 和 Cloudflare 当前部署；历史 SHA 是证据，不是最新状态保证。不需要原电脑或本地附件。
 
 ## 当前可依赖的事实
 
-- 四个独立仓库组成一个公开候选站；Worker 为 `inquirystack`，账户前缀 `philohub`，地址 `https://inquirystack.philohub.workers.dev/`。`/` 为人类入口，`/agent/` 为机器入口。
+- 四个独立仓库组成一个公开网站；Worker 为 `inquirystack`，账户前缀 `philohub`，地址 `https://inquirystack.philohub.workers.dev/`。`/` 为人类入口，`/agent/` 为机器入口。
 - 只把 Starter 连接到原生 Workers Builds。主分支 `main`、根目录 `/`、输出 `_site`；完整构建和主站部署已实际通过。构建命令及工具版本以 `cloudflare-builds.yaml` 为准。
 - GitHub App `Inquiry Publishing ChongLiuPhil` 已安装于 Starter、AHICP、PPF、Vault Interface 四个选定仓库。App 最大权限包括 Contents 读、Actions 写、Pull requests 写；实际临时令牌只选择 Starter，并按通知或创建 PR 的动作进一步收窄。App 私钥与 Webhook Secret 在 Cloudflare Worker Secrets，App ID 为运行时文本变量。不要把任何秘密或读者身份放进 Git、日志或聊天。
 - 已真实验证 PPF 提交 → App 通知 → Starter 来源锁 PR → 三项普通 CI → 合并 → Cloudflare 原生构建 → 线上内容更新；同一通知重放未产生重复部署。准确 SHA、运行链接和回滚边界见[验收记录](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.zh-CN.md)及[来源锁 PR #35](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/pull/35)。没有每小时检查。
-- 当前主站匿名公开阅读及 `workers.dev` 正式身份已获用户批准；本轮切换部署后需核对线上版本，再写 `verified-cutover`。预览 URL 与非主分支自动构建继续关闭；受限 Access 及读者身份验证仍未完成。原 GitHub Pages 和 Pages holding 保留；不改 DNS 或升级付费套餐。
+- 当前主站匿名公开阅读及 `workers.dev` 正式身份已获用户批准；线上切换已通过验收并记录为 `verified-cutover`。预览 URL 与非主分支自动构建继续关闭；受限 Access 及读者身份验证仍未完成。原 GitHub Pages 和 Pages holding 保留；不改 DNS 或升级付费套餐。
 - PPF 的通用生命周期工具 PR [#31](https://github.com/ChongLiuPhil/Personal-Publishing-Framework/pull/31) 已合并。其 CLI `apply` 使用配置好的 Wrangler；不要声称它自动协调 Cloudflare Builds 的 GitHub 连接/触发器。综合站现有连接是已实际配置并验证的实例，通用工具的能力边界仍以 PPF 当前 `main` 为准。
 
 ## 后续操作

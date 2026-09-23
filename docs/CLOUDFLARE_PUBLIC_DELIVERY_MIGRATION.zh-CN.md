@@ -1,6 +1,6 @@
 # Cloudflare 单站 Workers 交付迁移
 
-状态：完整公开候选站及 GitHub 提交触发更新已验收；用户已批准 `workers.dev` 正式 URL 切换，本次版本部署后仍须完成线上复核，才标记 verified-cutover。预览保持关闭，未通过 Access 验收。候选站版本与证据见[验收记录](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.zh-CN.md)。
+状态：`verified-cutover`。用户已批准 `workers.dev` 作为正式 URL；2026-09-23 Worker 部署和公开路径已通过线上验收。预览保持关闭，未通过 Access 验收。精确版本、证据及回滚点见[验收记录](CLOUDFLARE_DEPLOYMENT_ACCEPTANCE.zh-CN.md)。
 
 ## 已批准目标
 
@@ -10,14 +10,14 @@
 
 ## 仓库构建配置
 
-读取目标 Git revision 下的 `cloudflare-builds.yaml`、`package-lock.json` 与 `wrangler.jsonc`。根目录 `/`，主分支 `main`，静态输出 `_site`。
+读取目标 Git revision 下的 `cloudflare-builds.yaml`、`requirements-validation.txt`、`package-lock.json` 与 `wrangler.jsonc`。根目录 `/`，主分支 `main`，静态输出 `_site`。
 
 - Build：`python -m pip install -r requirements-validation.txt && npm ci --ignore-scripts --no-audit --no-fund && python tools/build_public_site.py`
 - Deploy：`npm run cloudflare:deploy`
 - 非主分支：`npm run cloudflare:preview`
 - 目标工具版本：Python 3.12.12、Node 22.22.0、Wrangler 4.136.1。必须从实际构建日志复核，不能把配置当成运行证据。
 
-holding 构建在 Python 命令后加 `--holding`。最初 Worker holding 是直接 API 引导部署，不是 Git 构建；当前主站已由 Starter 的 Git 构建提供完整候选内容，不能再把历史 holding 视作当前主站版本。
+holding 构建在 Python 命令后加 `--holding`。最初 Worker holding 是直接 API 引导部署，不是 Git 构建；当前主站已由 Starter 的 Git 构建提供完整正式内容，不能再把历史 holding 视作当前主站版本。
 
 ## 云端执行
 
@@ -25,7 +25,7 @@ holding 构建在 Python 命令后加 `--holding`。最初 Worker holding 是直
 2. 当前原生 Workers Builds 已只连接 Starter，`main` 更新会触发完整站点构建。新增仓库的 GitHub App 授权仍由人批准；原生 user build token 不宣称单 Worker 最小权限，秘密不得进入 Git、聊天或日志。
 3. GitHub App 已在四个选定仓库安装，按权限最小化的临时安装令牌通知 Starter，并由 App 创建来源锁 PR；普通 PR 检查通过后合并，随后原生 Builds 部署。没有定时轮询。具体权限与失败恢复见 [GitHub App 契约](GITHUB_APP_PUBLICATION.zh-CN.md)。
 4. 预览 URL 与非主分支自动构建继续关闭。若以后批准预览读者，先配置 `preview_worker` Access 保护并审查优先级更高的 hostname 策略，再同时启用预览 URL 与非主分支构建，实际测试匿名拒绝与获准身份可读。预览上传不能替换主部署。
-5. 本次正式切换后，以实际部署 revision、`/build-info.json`、`/agent/entry.json`、全部组件路径、双语及无 JavaScript 内容为准，核对 canonical 链接、`robots.txt` 与响应头不再带候选版 `noindex`。结果通过后才将状态写为 `verified-cutover`；若失败，恢复上一已验证 Worker 版本并使用仓库 revert。
+5. 后续每次部署均核对实际 revision、`/build-info.json`、`/agent/entry.json`、全部组件路径、双语及无 JavaScript 内容，检查 canonical 链接、`robots.txt` 与响应头没有异常 `noindex`。保留上一已验证 Worker 版本供回滚。
 
 ## 回滚
 

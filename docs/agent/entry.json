@@ -30,7 +30,7 @@
     "canonical_source_provider": "github",
     "current_provider": "cloudflare-workers",
     "preferred_provider": "cloudflare-workers",
-    "migration_state": "approved-pending-live-verification",
+    "migration_state": "verified-cutover",
     "migration_plan": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml",
     "migration_guide": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md",
     "cutover_rule": "workers-dev-canonical-after-verified-human-approved-cutover",

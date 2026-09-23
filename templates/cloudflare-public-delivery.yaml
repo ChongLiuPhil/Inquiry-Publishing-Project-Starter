@@ -1,9 +1,9 @@
 schema: starter/cloudflare-public-delivery/v3
-status: approved-pending-live-verification
+status: verified-cutover
 preferred_public_delivery_provider: cloudflare-workers
 canonical_source_provider: github
 current_public_delivery_provider: cloudflare-workers
-cutover_state: approved-pending-live-verification
+cutover_state: verified-cutover
 cutover_rule: switch-public-entrypoints-only-after-verified-cloudflare-deployment
 architecture:
   topology: single-site-multi-repository
