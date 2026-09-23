@@ -15,6 +15,8 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
+  actions: write
 
 concurrency:
   group: unified-public-site-source-refresh
@@ -23,7 +25,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -49,14 +51,8 @@ jobs:
         run: |
           python tools/build_public_site.py
           python tools/validate_public_site.py
-      - name: Commit the verified source lock
+      - name: Publish through protected source-update PR
         if: steps.refresh.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh auth setup-git
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/sources.lock.json
-          git commit -m "Refresh public-site source revisions"
-          git push origin HEAD:main
+        run: python tools/publish_source_lock.py

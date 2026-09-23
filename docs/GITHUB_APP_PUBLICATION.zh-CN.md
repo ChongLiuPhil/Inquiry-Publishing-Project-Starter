@@ -23,3 +23,9 @@
 ## 回滚
 
 暂停 App 安装或关闭 Webhook 可停止通知，已部署静态网站继续可读。秘密泄露时双端轮换 Webhook Secret，或替换私钥并撤销旧密钥。通过 revert PR 恢复纯静态交付，或恢复已验证 Worker 版本；保留 Starter 人工刷新，不恢复每小时轮询。未来书籍和应用需要同时获得安装授权并登记发布清单；私人稿件不加入此公共来源流程。
+
+## 受保护的来源锁发布
+
+来源更新使用本仓库 GITHUB_TOKEN 创建仅修改来源锁的 PR，在固定分支上显式触发现有三项 CI 工作流，全部成功后按正常分支规则合并。禁止直接推送 main、绕过保护或自动批准审查。同一基线与成品的重试复用确定的提交、分支和已成功的检查；检查失败、并发漂移或合并被拒绝时保留 PR 供恢复。
+
+仓库所有者须启用 **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**。GitHub 将创建与批准合并在一个开关中；本工作流不批准审查。作业使用仅限 Starter 的 Contents write、Pull requests write 和 Actions write。App 运行时安装令牌仍只有 Starter Actions write；内容构建不接收 App 私钥。合并后仍须核对 Cloudflare 原生构建与线上 build-info，不能把 PR 合并成功当作部署成功。
