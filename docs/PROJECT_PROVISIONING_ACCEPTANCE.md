@@ -1,61 +1,72 @@
 # Project Provisioning Acceptance
 
-**Purpose:** live end-to-end acceptance for `agent-provisioned-external-ci`.
+**Purpose:** live acceptance for the default `workers-builds-native` guided project bootstrap.
 
-Repository CI, mocks, and provider API simulations do not satisfy this acceptance.
+This acceptance is intentionally project-scoped. It does not require account-wide zero-touch provisioning.
 
 ## Preconditions
 
-- platform authorization is privately recorded and validates as ready;
-- account-wide Cloudflare Access protection is verified;
-- GitHub and Cloudflare provisioning principals are inside approved scopes;
-- trusted secret broker is available;
-- the pilot slug has no existing repository or Worker;
-- no custom domain, DNS change, or paid product is required.
+- the project request validates;
+- the intended GitHub owner is `ChongLiuPhil`;
+- the repository is or will be private;
+- the project uses the pinned PPF revision;
+- public release is not authorized;
+- previews are disabled by default.
 
-## Pilot
+The public `platform-authorization.yaml` template may remain `unconfigured` for this default profile.
 
-Use a disposable project slug and no user manuscript or local-computer material.
+## Acceptance sequence
 
-1. Create a new provisioning request with the default full stack and external-CI profile.
-2. Generate and review the Starter provisioning plan.
-3. Fresh-read pinned AHICP, PPF, and Vault manifests.
-4. Create the private GitHub repository through the authorized provisioning principal.
-5. Compose the pinned stack/template into that repository.
-6. Re-verify account-wide Access, then create Worker metadata.
-7. Confirm the new workers.dev endpoint is not anonymously readable before source deployment.
-8. Have the PPF provisioner emit the secret-broker request.
-9. Through the trusted broker, discover and verify the current Cloudflare individual-Worker policy encoding, create the account-owned credential, prove through non-secret Provider policy/identity evidence that it targets exactly the intended Worker with `Editor`, and install GitHub Actions secrets without returning plaintext to the Agent.
-10. Run repository validation and the deployment workflow.
-11. Confirm the intended Git SHA/revision is deployed.
-12. Confirm anonymous production access is denied/challenged.
-13. If an approved pilot reader exists, verify authorized reading; otherwise do not invent a reader and keep the acceptance limited to anonymous denial.
-14. Request at least one generated asset anonymously and confirm it is also denied/challenged.
-15. Confirm preview URLs remain disabled. Test previews only as a separate later acceptance.
-16. Confirm no secret value appears in repository history, Actions logs, issues, PRs, Agent output, or public metadata.
-17. Record non-secret repository ID, Worker ID/name, deployed revision, Access references, verification timestamp, and rollback target in private state.
-18. Trigger one later source change and verify deployment succeeds with the same project-scoped credential and no new platform authorization.
-19. Re-run with no meaningful source change and confirm no unintended infrastructure drift.
-20. Exercise rollback to the previous verified deployment/version and then restore current, verifying restricted access in both states.
+1. Create or confirm a private repository under `ChongLiuPhil`.
+2. Apply the full Starter composition and pinned upstream revisions.
+3. Validate the generated PPF `project.infrastructure.json`.
+4. Confirm the profile is `workers-builds-native`.
+5. In Cloudflare Workers & Pages, import/connect the intended GitHub repository.
+6. If GitHub asks, authorize the Cloudflare Git integration for that repository.
+7. Configure production branch `main`, root `/`, the pinned PPF build command, and deploy command.
+8. Keep non-production/preview builds disabled.
+9. Save/deploy and record non-secret Worker/repository connection identifiers.
+10. Protect the Worker with Cloudflare Access using **All traffic**, unless verified account-wide Access already protects it.
+11. Verify the GitHub repository is still private.
+12. Verify the first build/deployment succeeds.
+13. Verify the deployed revision matches the intended Git revision.
+14. Verify an anonymous production request is challenged or denied.
+15. Verify an authenticated approved reader can access the publication.
+16. Verify direct asset URLs do not bypass Access.
+17. Make one harmless source change and push it to `main`.
+18. Verify Workers Builds starts automatically and deploys the new revision.
+19. Confirm step 18 required no renewed GitHub repository authorization and no renewed Cloudflare connection.
+20. Verify Access remained enforced after the second deployment.
+21. Record a rollback/restore point and non-secret provider state.
 
 ## Pass criteria
 
-Acceptance passes only if:
+The project passes only when all of these are true:
 
-- no per-project platform reauthorization was needed;
-- GitHub source remained private;
-- account-wide Access stayed enabled;
-- the minted Cloudflare credential's actual Provider policy/identity was recorded as non-secret evidence and limited routine CI authority to exactly the intended Worker with `Editor`;
-- token plaintext never entered model/Git/logs;
-- deployment and revision verification succeeded;
-- anonymous production and direct-asset access were denied/challenged;
-- rollback worked;
-- no paid-plan, domain, DNS, or public-release change occurred.
+- repository owner is `ChongLiuPhil`;
+- repository visibility is private;
+- Workers Builds is connected to the intended repository;
+- production branch is `main`;
+- the first restricted deployment is verified;
+- Worker-scoped Access or explicitly recorded verified account-wide Access is active;
+- anonymous access is denied/challenged;
+- direct assets remain protected;
+- a second push auto-deploys the new revision;
+- the second push requires no provider reauthorization;
+- no credential value appears in Git/chat/logs;
+- rollback/restore evidence is recorded;
+- `public_release: NOT AUTHORIZED`.
 
-## Evidence record
+## Failure handling
 
-Record project slug, immutable commit IDs, non-secret Worker identity, workflow run IDs, deployed version/revision, HTTP results, Access references, rollback version, exact dates, and any failure/recovery steps.
+If the repository is not visible in Cloudflare, ask the human only to adjust the Cloudflare GitHub App repository access, then re-read provider state.
 
-Do not record token values, private keys, OTPs, reader identities, or account-private secrets.
+If the Worker is anonymously reachable, stop private-readiness claims and ask the human to enable/repair Cloudflare Access.
 
-After a pass, update PPF and Starter from `live-new-project-acceptance-pending` to a dated verified state through a reviewed PR.
+If the second push does not deploy automatically, the project bootstrap is incomplete even if the first deployment succeeded.
+
+Do not solve these failures by requesting that a provider token be pasted into chat.
+
+## Optional advanced acceptance
+
+The advanced `agent-provisioned-external-ci` profile keeps its own stricter acceptance requirements, including Trusted Secret Broker and granular-token evidence. Those requirements are not prerequisites for the default Native path.
