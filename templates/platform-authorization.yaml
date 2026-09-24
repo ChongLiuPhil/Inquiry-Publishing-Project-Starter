@@ -11,7 +11,6 @@ cloudflare:
   authorization_state: unverified
   all_workers_access: unverified
   worker_creation_authority: unverified
-  token_creation_authority: unverified
 secret_broker:
   implementation_ref: null
   state: unverified
@@ -22,6 +21,9 @@ standing_authorizations:
   create_restricted_workers: false
   restricted_web_deployment: false
   public_release: false
+  source_repository_public: false
   reader_audience_expansion: false
   custom_domain_change: false
+  provider_permission_scope_expansion: false
   paid_plan_change: false
+  direct_secret_input: false
