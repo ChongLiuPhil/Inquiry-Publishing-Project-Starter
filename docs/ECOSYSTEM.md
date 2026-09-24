@@ -7,7 +7,7 @@ This repository is the composition entrypoint for four logically independent com
 | AHICP | Human-led, AI-assisted inquiry and creation governance | [homepage](https://inquirystack.philohub.workers.dev/) · [repository](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
 | PPF | Source-centered publishing, releases, archives, and Continuous Web | [homepage](https://inquirystack.philohub.workers.dev/ppf/) · [repository](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) |
 | Vault Interface | Provider-neutral public metadata schemas and validators | [homepage](https://inquirystack.philohub.workers.dev/vault-interface/) · [repository](https://github.com/ChongLiuPhil/Vault-interface) |
-| Starter | Composition, adoption, profiles, and upgrades | [homepage](https://inquirystack.philohub.workers.dev/starter/) · [repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
+| Starter | Composition, adoption, project-provisioning orchestration, profiles, and upgrades | [homepage](https://inquirystack.philohub.workers.dev/starter/) · [repository](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
 
 These components remain logically independent. Cross-linking them creates discoverability and a shared adoption path; it does not transfer normative authority from one component to another.
 
@@ -16,7 +16,7 @@ These components remain logically independent. Cross-linking them creates discov
 The ecosystem intentionally separates two entry roles:
 
 - **Understand the stack through AHICP:** the [AHICP public homepage](https://inquirystack.philohub.workers.dev/) explains what the system is for and how to begin.
-- **Configure through Starter:** an AI uses this repository’s `ecosystem.yaml`, profiles, stack files, and Agent Retrieval Contract for project composition, adoption, upgrades, deployment, and reconstruction.
+- **Configure through Starter:** an AI uses this repository’s `ecosystem.yaml`, profiles, stack files, Agent Retrieval Contract, and Project Provisioning Contract for project composition, adoption, low-touch provisioning, upgrades, deployment, and reconstruction.
 
 AHICP explains the method and user experience; Starter keeps the precise machine contract. They link to each other without replacing each other.
 
@@ -34,6 +34,10 @@ AHICP (full)
 The project records actual adoption in project-stack.yaml; it does not create competing copies of upstream normative sources.
 
 The full-research-publication profile is the default new-project profile. Reduced profiles remain available, but an AI agent must use one only after explicit human selection. Apparent project simplicity is not authorization to silently omit AHICP or PPF.
+
+After verified platform bootstrap, the preferred new-project infrastructure profile is `agent-provisioned-external-ci`: private GitHub source, an account-wide Access-protected Worker, a trusted Secret Broker, GitHub Actions deployment with a project-scoped Worker credential, and previews disabled until their own protection is accepted. Verified standing authorization may cover ordinary creation of another private/restricted project inside the approved scopes. Public release, reader expansion, domain/DNS authority, provider-scope expansion, and paid-plan changes remain human-reserved.
+
+`workers-builds-native` remains supported for projects that explicitly choose provider-native Git integration or already use it.
 
 The Vault Interface is an adapter, not a replacement for AHICP or PPF.
 
@@ -56,6 +60,7 @@ For machine-oriented discovery, use:
 
 - [ecosystem.yaml](../ecosystem.yaml)
 - [AGENT_RETRIEVAL_CONTRACT.md](AGENT_RETRIEVAL_CONTRACT.md)
+- [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md)
 - [llms.txt](llms.txt)
 
 A public link can make the ecosystem discoverable, but no webpage can force every arbitrary AI system to crawl additional resources. The contract therefore defines the expected behavior for an agent that follows repository instructions.
@@ -67,10 +72,11 @@ When an AI agent enters through any component homepage or repository, it must:
 1. identify the current component and read that repository's ecosystem.yaml;
 2. read the canonical Starter ecosystem and [AGENT_RETRIEVAL_CONTRACT.md](AGENT_RETRIEVAL_CONTRACT.md);
 3. resolve the roles and public entrypoints of all four components;
-4. for a downstream project, read its selected Starter profile, project-stack.yaml, and lock file;
-5. fresh-read each active upstream manifest at its pinned revision;
-6. inspect private project state only after explicit human authorization;
-7. preserve the distinction between proposal, authorization, execution, verification, and durable write-back.
+4. for a downstream project, read its selected Starter profile, `project-stack.yaml`, lock file, and `project-provisioning.yaml` when present;
+5. for a new project, read the Project Provisioning Contract and—only after authorized control-plane access—the private platform-authorization state when standing authorization is used;
+6. fresh-read each active upstream manifest at its pinned revision;
+7. inspect other private project state only after explicit authorization;
+8. preserve the distinction between proposal, authorization, execution, verification, and durable write-back.
 
 Following public links is a retrieval protocol, not permission to access private repositories or private deployment systems.
 
@@ -84,7 +90,9 @@ Future domain or visibility changes remain separate decisions with verification 
 
 ## Continuous Web and Cloudflare
 
-The detailed operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The minimal-human execution path is [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md), and the browser-agent handoff is [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md).
+The new-project orchestration contract is [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md). The detailed Cloudflare operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The minimal-human execution path is [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md), and the browser-agent handoff is [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md).
+
+Starter records provisioning intent and authorization boundaries; PPF remains authoritative for executable GitHub/Cloudflare provider logic. The language model must never receive the project deployment-token plaintext.
 
 Before asking a human to perform a Cloudflare action, an AI agent must give numbered operator-level steps, identify the exact target account/project/domain and affected layer, explain credential scope and data transmission, state what must not be shared with the AI, define verification evidence, and provide a rollback path.
 
