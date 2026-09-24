@@ -178,7 +178,7 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("check", "plan"))
+    parser.add_argument("command", choices=("validate", "check", "plan"))
     parser.add_argument("--platform", type=Path, default=ROOT / "templates/platform-authorization.yaml")
     parser.add_argument("--request", type=Path, default=ROOT / "templates/project-provisioning-request.yaml")
     parser.add_argument("--json", action="store_true")
@@ -189,6 +189,9 @@ def main(argv: list[str] | None = None) -> int:
         request = load_yaml(args.request)
         validate(platform, PLATFORM_SCHEMA, "platform")
         validate(request, REQUEST_SCHEMA, "request")
+        if args.command == "validate":
+            print("Project provisioning schemas and templates are valid.")
+            return 0
         plan = build_plan(platform, request)
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         print(json.dumps({"status": "CONFIGURATION_ERROR", "error": str(exc)}, ensure_ascii=False, indent=2))
