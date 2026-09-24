@@ -61,7 +61,7 @@ Platform authorization 只保存 reference 和 verified state，绝不能包含 
 - provisioning principal 已授权；
 - account-wide `all_workers` Access baseline 已 verified；
 - Worker creation authority 已 verified；
-- account-owned token creation authority 已 verified。
+- account-owned token 的创建权限已隔离在 trusted Secret Broker / provisioning boundary，并且该隔离状态已 verified。
 
 ### Secret Broker
 
@@ -77,9 +77,12 @@ standing_authorizations:
   create_restricted_workers: true
   restricted_web_deployment: true
   public_release: false
+  source_repository_public: false
   reader_audience_expansion: false
   custom_domain_change: false
+  provider_permission_scope_expansion: false
   paid_plan_change: false
+  direct_secret_input: false
 ```
 
 这表示后续项目无需再次要求人类确认：
