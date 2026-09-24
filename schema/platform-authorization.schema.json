@@ -29,6 +29,7 @@
       "required": [
         "owner_scope",
         "principal_ref",
+        "principal_type",
         "authorization_state"
       ],
       "properties": {
@@ -50,6 +51,20 @@
           "enum": [
             "unverified",
             "authorized"
+          ]
+        },
+        "principal_type": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "github-app-user-access",
+                "github-app-installation",
+                "authorized-provider-connector"
+              ]
+            }
           ]
         }
       }
