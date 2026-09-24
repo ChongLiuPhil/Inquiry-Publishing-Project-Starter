@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/schema/project-provisioning-request.schema.json",
+  "title": "Inquiry Publishing Stack project provisioning request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "project",
+    "stack_profile",
+    "infrastructure",
+    "authorization"
+  ],
+  "properties": {
+    "schema": {
+      "const": "inquiry-publishing-stack/project-provisioning-request/v1"
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "purpose": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "stack_profile": {
+      "const": "full-research-publication"
+    },
+    "infrastructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "github",
+        "cloudflare"
+      ],
+      "properties": {
+        "profile": {
+          "enum": [
+            "agent-provisioned-external-ci",
+            "workers-builds-native"
+          ]
+        },
+        "github": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "owner",
+            "repository",
+            "visibility"
+          ],
+          "properties": {
+            "owner": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            },
+            "repository": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            },
+            "visibility": {
+              "const": "private"
+            }
+          }
+        },
+        "cloudflare": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "worker",
+            "web_visibility",
+            "preview_enabled",
+            "access_policy_ref",
+            "custom_domain"
+          ],
+          "properties": {
+            "worker": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            "web_visibility": {
+              "const": "restricted"
+            },
+            "preview_enabled": {
+              "const": false
+            },
+            "access_policy_ref": {
+              "const": "shared-reader-access"
+            },
+            "custom_domain": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "restricted_deployment_source",
+        "public_release"
+      ],
+      "properties": {
+        "restricted_deployment_source": {
+          "enum": [
+            "platform-standing-authorization",
+            "explicit-project-authorization"
+          ]
+        },
+        "public_release": {
+          "const": false
+        }
+      }
+    }
+  }
+}
