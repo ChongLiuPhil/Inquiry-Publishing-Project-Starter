@@ -3,6 +3,7 @@ status: unconfigured
 github:
   owner_scope: null
   principal_ref: null
+  principal_type: null
   authorization_state: unverified
 cloudflare:
   account_ref: null
