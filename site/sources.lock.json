@@ -15,7 +15,7 @@
     },
     "ppf": {
       "repository": "ChongLiuPhil/Personal-Publishing-Framework",
-      "revision": "585a42e29b5230ba38e6ee1faecdb9f7f488275a",
+      "revision": "46a905bc70045726c7588a7fcd5da22980c9ff32",
       "mount": "/ppf/",
       "files": [
         "docs/index.html",
