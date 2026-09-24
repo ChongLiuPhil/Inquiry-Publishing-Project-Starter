@@ -21,6 +21,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         item["github"].update(
             owner_scope=self.request["infrastructure"]["github"]["owner"],
             principal_ref="github-app:inquiry-project-provisioner",
+            principal_type="github-app-user-access",
             authorization_state="authorized",
         )
         item["cloudflare"].update(
@@ -60,6 +61,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertEqual(plan["infrastructure_profile"], "agent-provisioned-external-ci")
         seed = plan["ppf_handoff"]["desired_state_seed"]
         self.assertEqual(seed["github"]["repositoryVisibility"], "private")
+        self.assertEqual(seed["github"]["ownerType"], "user")
         self.assertEqual(seed["cloudflare"]["applicationVisibility"], "private")
         self.assertEqual(seed["deployment"]["provider"], "github-actions-cloudflare-workers")
         self.assertEqual(seed["deployment"]["credentialStrategy"], "project-scoped-account-token")
@@ -72,6 +74,19 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         platform["secret_broker"]["token_minting_authority"] = "unverified"
         errors = platform_errors(platform, self.request)
         self.assertIn("SECRET_BROKER_TOKEN_MINTING_AUTHORITY_NOT_ISOLATED", errors)
+
+    def test_personal_owner_rejects_installation_only_principal(self):
+        platform = self.ready_platform()
+        platform["github"]["principal_type"] = "github-app-installation"
+        errors = platform_errors(platform, self.request)
+        self.assertIn("GITHUB_USER_REPOSITORY_REQUIRES_USER_ACCESS_OR_CONNECTOR", errors)
+
+    def test_organization_owner_accepts_installation_principal(self):
+        platform = self.ready_platform()
+        platform["github"]["principal_type"] = "github-app-installation"
+        request = copy.deepcopy(self.request)
+        request["infrastructure"]["github"]["owner_type"] = "organization"
+        self.assertNotIn("GITHUB_USER_REPOSITORY_REQUIRES_USER_ACCESS_OR_CONNECTOR", platform_errors(platform, request))
 
     def test_owner_scope_mismatch_blocks(self):
         platform = self.ready_platform()
