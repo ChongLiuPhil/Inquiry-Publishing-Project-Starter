@@ -76,6 +76,9 @@ ecosystem:
       role: composition, adoption, project-provisioning orchestration, and upgrade layer
   project_provisioning:
     status: implemented-reference-live-acceptance-pending
+    default_github_owner: philohub
+    default_github_owner_type: organization
+    default_repository_visibility: private
     preferred_infrastructure_profile: agent-provisioned-external-ci
     contract_en: docs/PROJECT_PROVISIONING_CONTRACT.md
     contract_zh_cn: docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md

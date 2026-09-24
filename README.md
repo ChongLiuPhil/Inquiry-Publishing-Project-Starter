@@ -24,7 +24,7 @@ This repository is the **composition, adoption, upgrade, and project-provisionin
 
 Starter is **not a fourth framework**. AHICP, PPF, and Vault Interface remain authoritative for their own specifications; Starter records how a project composes and adopts them, and when an authorized Agent may invoke the pinned PPF infrastructure provisioner.
 
-**Default for new projects:** full AHICP + full PPF + Vault Interface. Original or unpublished source is private by default; Continuous Web may be prepared as restricted/authenticated. After one-time platform bootstrap, the preferred infrastructure profile is `agent-provisioned-external-ci`: private GitHub repository, account-wide Access-protected Worker, trusted Secret Broker, and GitHub Actions deployment using a project-scoped Worker credential. Public release remains a separate human decision. Reduced stack profiles require explicit human selection.
+**Default for new projects:** full AHICP + full PPF + Vault Interface. Downstream repositories default to the `philohub` GitHub Organization with `owner_type: organization` and `visibility: private`; original or unpublished source remains private. Continuous Web may be prepared as restricted/authenticated. After one-time platform bootstrap, the preferred infrastructure profile is `agent-provisioned-external-ci`: private GitHub repository, account-wide Access-protected Worker, trusted Secret Broker, and GitHub Actions deployment using a project-scoped Worker credential. Public release remains a separate human decision. Reduced stack profiles require explicit human selection.
 
 
 ## Stack v2

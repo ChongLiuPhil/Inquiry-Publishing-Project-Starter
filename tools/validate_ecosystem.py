@@ -90,7 +90,10 @@ def main() -> int:
     infra = request_template.get("infrastructure", {})
     if infra.get("profile") != "agent-provisioned-external-ci":
         raise SystemExit("new-project provisioning template must prefer agent-provisioned-external-ci")
-    if infra.get("github", {}).get("visibility") != "private":
+    github_request = infra.get("github", {})
+    if github_request.get("owner") != "philohub" or github_request.get("owner_type") != "organization":
+        raise SystemExit("new-project provisioning template must default to the philohub organization")
+    if github_request.get("visibility") != "private":
         raise SystemExit("new-project provisioning template must keep GitHub source private")
     cloudflare_request = infra.get("cloudflare", {})
     if cloudflare_request.get("web_visibility") != "restricted" or cloudflare_request.get("preview_enabled") is not False:
@@ -100,6 +103,10 @@ def main() -> int:
     provisioning = ecosystem.get("project_provisioning")
     if not isinstance(provisioning, dict):
         raise SystemExit("Starter ecosystem is missing project_provisioning")
+    if provisioning.get("default_github_owner") != "philohub" or provisioning.get("default_github_owner_type") != "organization":
+        raise SystemExit("Starter ecosystem must default downstream repositories to the philohub organization")
+    if provisioning.get("default_repository_visibility") != "private":
+        raise SystemExit("Starter ecosystem must keep downstream repositories private by default")
     if provisioning.get("preferred_infrastructure_profile") != "agent-provisioned-external-ci":
         raise SystemExit("Starter ecosystem has the wrong preferred provisioning profile")
     if provisioning.get("status") != "implemented-reference-live-acceptance-pending":
@@ -181,6 +188,10 @@ def main() -> int:
     descriptor_provisioning = descriptor.get("project_provisioning")
     if not isinstance(descriptor_provisioning, dict):
         raise SystemExit("agent entry descriptor is missing project_provisioning")
+    if descriptor_provisioning.get("default_github_owner") != "philohub" or descriptor_provisioning.get("default_github_owner_type") != "organization":
+        raise SystemExit("agent entry descriptor must default downstream repositories to the philohub organization")
+    if descriptor_provisioning.get("default_repository_visibility") != "private":
+        raise SystemExit("agent entry descriptor must keep downstream repositories private by default")
     if descriptor_provisioning.get("preferred_profile") != "agent-provisioned-external-ci":
         raise SystemExit("agent entry descriptor has the wrong provisioning profile")
     if descriptor_provisioning.get("status") != "implemented-reference-live-acceptance-pending":

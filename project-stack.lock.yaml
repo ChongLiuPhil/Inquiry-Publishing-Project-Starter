@@ -2,6 +2,6 @@ schema: inquiry-publishing-stack-lock/v2
 generated: false
 resolved:
   ahicp: 02d0b3c02ca23073c760b6e0f761a468e0235a1c
-  ppf: 3f91fcc8ddac93f33a55a5220b14e3a7fb775a51
+  ppf: 8577a09b0ebe97a3ec28d620e0b9b1c2a901b376
   vault_interface: 592c6e2e938f995b7b3e7df07a72f7f1e2c50c5a
   starter: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION

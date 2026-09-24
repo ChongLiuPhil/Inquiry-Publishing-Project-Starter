@@ -12,14 +12,14 @@ Starter 主要面向 AI 和配置工作；第一次了解体系时，不需要�
 
 **体系与 AI 配置入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`项目自动配置契约`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
 
-**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。原创或未发布源文件默认 private；Continuous Web 可作为 restricted + authenticated 准备。平台一次性 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`：private GitHub repository、account-wide Access 保护的 Worker、trusted Secret Broker，以及使用 project-scoped Worker credential 的 GitHub Actions deployment。Public release 仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
+**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。Downstream repository 默认创建在 `philohub` GitHub Organization，使用 `owner_type: organization` 与 `visibility: private`；原创或未发布源文件继续保持 private。Continuous Web 可作为 restricted + authenticated 准备。平台一次性 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`：private GitHub repository、account-wide Access 保护的 Worker、trusted Secret Broker，以及使用 project-scoped Worker credential 的 GitHub Actions deployment。Public release 仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
 
 ## 权威边界
 
 - AHICP：探究、证据、决定、项目记忆和 AI 协作规则；
 - PPF：源内容 → 构建 → 发布 → 正式版本 → 归档；
 - Vault Interface：公开、平台无关的 `project.yaml` / `website.yaml` 元数据接口；
-- Starter：只描述如何组合、采用和升级这些独立上游。
+- Starter：描述如何组合、采用、Provisioning 编排和升级这些独立上游；真正的 Provider execution 仍由固定版本 PPF 实现。
 
 ## Stack v2
 

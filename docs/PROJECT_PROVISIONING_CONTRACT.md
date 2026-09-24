@@ -86,9 +86,9 @@ standing_authorizations:
   direct_secret_input: false
 ```
 
-This means a later project does not need another human confirmation for:
+For the current platform topology, the approved GitHub scope is intended to be the `philohub` Organization. Once the Project Provisioner App installation for that Organization is verified, a later project does not need another human confirmation for:
 
-- creating its private repository;
+- creating its private repository under `philohub`;
 - creating a Worker protected by the verified account-wide Access baseline;
 - deploying a restricted/authenticated Continuous Web publication;
 - verifying that deployment.
@@ -112,6 +112,7 @@ A new project request uses:
 The default request declares:
 
 - `full-research-publication`;
+- GitHub owner `philohub` with `owner_type: organization`;
 - private GitHub source;
 - `agent-provisioned-external-ci`;
 - restricted Web;

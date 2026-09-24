@@ -67,6 +67,9 @@
     "public_acceptance": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_ACCEPTANCE.md",
     "secret_broker_orchestration": "ppf-implemented",
     "trusted_secret_broker_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/TRUSTED_SECRET_BROKER.md",
-    "cloudflare_granular_token_issuer": "live-acceptance-pending"
+    "cloudflare_granular_token_issuer": "live-acceptance-pending",
+    "default_github_owner": "philohub",
+    "default_github_owner_type": "organization",
+    "default_repository_visibility": "private"
   }
 }

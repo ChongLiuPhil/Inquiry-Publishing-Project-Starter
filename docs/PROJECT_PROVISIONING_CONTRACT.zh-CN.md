@@ -86,9 +86,9 @@ standing_authorizations:
   direct_secret_input: false
 ```
 
-这表示后续项目无需再次要求人类确认：
+对当前平台拓扑而言，预期批准的 GitHub scope 是 `philohub` Organization。该 Organization 的 Project Provisioner App installation 验证完成后，后续项目无需再次要求人类确认：
 
-- 创建 private repository；
+- 在 `philohub` 下创建 private repository；
 - 创建由 account-wide Access 保护的 Worker；
 - 部署 restricted/authenticated Continuous Web；
 - 验证该部署。
@@ -112,6 +112,7 @@ standing_authorizations:
 默认 Request 声明：
 
 - `full-research-publication`；
+- GitHub owner 为 `philohub`，`owner_type: organization`；
 - private GitHub source；
 - `agent-provisioned-external-ci`；
 - restricted Web；
