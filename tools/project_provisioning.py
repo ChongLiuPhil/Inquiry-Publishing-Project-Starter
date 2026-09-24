@@ -162,6 +162,22 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
                 },
             },
             "validation_rule": "Validate this seed against the PPF schema pinned by the project's adopted PPF template revision before any provider write.",
+            "publication_materialization": {
+                "source.visibility": "private",
+                "publication.web.enabled": True,
+                "publication.web.authorization_state": "authorized" if not errors else "not-authorized",
+                "publication.web.visibility": "restricted",
+                "publication.web.access.mode": "authenticated",
+                "publication.web.access.implementation": "cloudflare-access",
+                "publication.web.access.policy_ref": "shared-reader-access",
+                "deployment.web.integration_mode": "github-actions-external-ci"
+                    if profile == "agent-provisioned-external-ci"
+                    else "workers-builds-git",
+                "deployment.web.enabled": True if not errors else False,
+                "deployment.web.status": "staged",
+                "public_release": False,
+                "authorization_basis": request["authorization"]["restricted_deployment_source"],
+            },
         },
         "human_reserved_gates": [
             "public-release",
