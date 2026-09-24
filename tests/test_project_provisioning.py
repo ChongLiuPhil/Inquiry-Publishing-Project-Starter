@@ -30,7 +30,6 @@ class ProjectProvisioningContractTests(unittest.TestCase):
             authorization_state="authorized",
             all_workers_access="verified",
             worker_creation_authority="authorized",
-            token_creation_authority="authorized",
         )
         item["secret_broker"].update(
             implementation_ref="trusted-broker-ref",
@@ -102,6 +101,18 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         platform["github"]["owner_scope"] = "different-owner"
         errors = platform_errors(platform, self.request)
         self.assertIn("GITHUB_OWNER_OUTSIDE_APPROVED_SCOPE", errors)
+
+    def test_source_public_and_permission_expansion_remain_human_reserved(self):
+        platform = self.ready_platform()
+        for key in ("source_repository_public", "provider_permission_scope_expansion", "direct_secret_input"):
+            platform["standing_authorizations"][key] = True
+            with self.subTest(key=key):
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "platform.yaml"
+                    path.write_text(yaml.safe_dump(platform), encoding="utf-8")
+                    with self.assertRaises(ValueError):
+                        validate(load_yaml(path), PLATFORM_SCHEMA, "platform")
+            platform["standing_authorizations"][key] = False
 
     def test_public_release_cannot_be_platform_standing_authority(self):
         platform = self.ready_platform()
