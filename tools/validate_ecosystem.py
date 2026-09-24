@@ -106,6 +106,24 @@ def main() -> int:
         raise SystemExit("Starter provisioning status must preserve the live-acceptance evidence boundary")
     if provisioning.get("secret_rule") != "deployment-token-plaintext-never-enters-model-context":
         raise SystemExit("Starter ecosystem is missing the deployment-token secret boundary")
+    if provisioning.get("secret_broker_orchestration") != "ppf-implemented":
+        raise SystemExit("Starter ecosystem must record implemented PPF Secret Broker orchestration")
+    if provisioning.get("cloudflare_granular_token_issuer") != "live-acceptance-pending":
+        raise SystemExit("Cloudflare granular-token issuer must remain live-acceptance-pending until provider acceptance exists")
+    if not str(provisioning.get("trusted_secret_broker_contract", "")).endswith("/docs/TRUSTED_SECRET_BROKER.md"):
+        raise SystemExit("Starter ecosystem is missing the PPF Trusted Secret Broker contract")
+    reserved = set(provisioning.get("human_reserved") or [])
+    required_reserved = {
+        "public-release",
+        "source-repository-public",
+        "reader-audience-expansion",
+        "custom-domain-or-dns-authority",
+        "provider-permission-scope-expansion",
+        "paid-plan-or-billing-change",
+        "direct-secret-input-if-trusted-broker-unavailable",
+    }
+    if not required_reserved.issubset(reserved):
+        raise SystemExit("Starter ecosystem is missing one or more human-reserved provisioning gates")
 
     migration_plan_path = ROOT / "templates/cloudflare-public-delivery.yaml"
     migration_guide_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md"
@@ -169,6 +187,23 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must preserve the provisioning evidence boundary")
     if descriptor_provisioning.get("secret_broker_required") is not True:
         raise SystemExit("agent entry descriptor must require the trusted Secret Broker")
+    if descriptor_provisioning.get("secret_broker_orchestration") != "ppf-implemented":
+        raise SystemExit("agent entry descriptor must expose implemented PPF Secret Broker orchestration")
+    if descriptor_provisioning.get("cloudflare_granular_token_issuer") != "live-acceptance-pending":
+        raise SystemExit("agent entry descriptor must preserve the Cloudflare token-issuer evidence boundary")
+    if not str(descriptor_provisioning.get("trusted_secret_broker_contract", "")).endswith("/docs/TRUSTED_SECRET_BROKER.md"):
+        raise SystemExit("agent entry descriptor is missing the PPF Trusted Secret Broker contract")
+    descriptor_reserved = set(descriptor_provisioning.get("human_reserved_gates") or [])
+    if not {
+        "public-release",
+        "source-repository-public",
+        "reader-audience-expansion",
+        "custom-domain-or-dns-authority",
+        "provider-permission-scope-expansion",
+        "paid-plan-or-billing-change",
+        "direct-secret-input-if-trusted-broker-unavailable",
+    }.issubset(descriptor_reserved):
+        raise SystemExit("agent entry descriptor is missing human-reserved provisioning gates")
     if descriptor.get("authorization", {}).get("public_release_requires_separate_human_approval") is not True:
         raise SystemExit("machine entry must preserve separate human public-release approval")
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
