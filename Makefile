@@ -1,4 +1,4 @@
-.PHONY: stack-check stack-doctor stack-test upstream-check adoption-plan
+.PHONY: stack-check stack-doctor stack-test upstream-check adoption-plan provisioning-contract-check provisioning-plan
 
 stack-check:
 	python3 tools/stack.py check
@@ -14,3 +14,9 @@ upstream-check:
 
 adoption-plan:
 	python3 tools/stack.py adoption-plan
+
+provisioning-contract-check:
+	python3 tools/project_provisioning.py validate
+
+provisioning-plan:
+	python3 tools/project_provisioning.py plan --json
