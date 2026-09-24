@@ -7,8 +7,8 @@ stack_profile: full-research-publication
 infrastructure:
   profile: agent-provisioned-external-ci
   github:
-    owner: replace-with-approved-owner
-    owner_type: user
+    owner: philohub
+    owner_type: organization
     repository: replace-with-project-repository
     visibility: private
   cloudflare:
