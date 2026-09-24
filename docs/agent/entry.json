@@ -62,6 +62,9 @@
     ],
     "public_contract_en": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.md",
     "public_contract_zh_cn": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
-    "public_acceptance": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_ACCEPTANCE.md"
+    "public_acceptance": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_ACCEPTANCE.md",
+    "secret_broker_orchestration": "ppf-implemented",
+    "trusted_secret_broker_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/TRUSTED_SECRET_BROKER.md",
+    "cloudflare_granular_token_issuer": "live-acceptance-pending"
   }
 }
