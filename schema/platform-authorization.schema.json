@@ -77,8 +77,7 @@
         "principal_ref",
         "authorization_state",
         "all_workers_access",
-        "worker_creation_authority",
-        "token_creation_authority"
+        "worker_creation_authority"
       ],
       "properties": {
         "account_ref": {
@@ -108,12 +107,6 @@
           ]
         },
         "worker_creation_authority": {
-          "enum": [
-            "unverified",
-            "authorized"
-          ]
-        },
-        "token_creation_authority": {
           "enum": [
             "unverified",
             "authorized"
@@ -168,7 +161,10 @@
         "public_release",
         "reader_audience_expansion",
         "custom_domain_change",
-        "paid_plan_change"
+        "paid_plan_change",
+        "source_repository_public",
+        "provider_permission_scope_expansion",
+        "direct_secret_input"
       ],
       "properties": {
         "create_private_repositories": {
@@ -190,6 +186,15 @@
           "const": false
         },
         "paid_plan_change": {
+          "const": false
+        },
+        "source_repository_public": {
+          "const": false
+        },
+        "provider_permission_scope_expansion": {
+          "const": false
+        },
+        "direct_secret_input": {
           "const": false
         }
       }
