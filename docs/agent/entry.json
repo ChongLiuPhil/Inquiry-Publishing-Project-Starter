@@ -58,7 +58,9 @@
       "reader-audience-expansion",
       "custom-domain-or-dns-authority",
       "provider-permission-scope-expansion",
-      "paid-plan-or-billing-change"
+      "paid-plan-or-billing-change",
+      "source-repository-public",
+      "direct-secret-input-if-trusted-broker-unavailable"
     ],
     "public_contract_en": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.md",
     "public_contract_zh_cn": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
