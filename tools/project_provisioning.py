@@ -187,6 +187,7 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
         },
         "human_reserved_gates": [
             "public-release",
+            "source-repository-public",
             "reader-audience-expansion",
             "custom-domain-or-dns-authority",
             "provider-permission-scope-expansion",
