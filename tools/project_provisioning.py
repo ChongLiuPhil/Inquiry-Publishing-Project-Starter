@@ -64,6 +64,10 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
         errors.append("PROJECT_TOKEN_CREATION_AUTHORITY_NOT_AUTHORIZED")
     if broker.get("state") != "verified":
         errors.append("SECRET_BROKER_NOT_VERIFIED")
+    if broker.get("plaintext_boundary") != "verified":
+        errors.append("SECRET_BROKER_PLAINTEXT_BOUNDARY_NOT_VERIFIED")
+    if broker.get("token_minting_authority") != "isolated-authorized":
+        errors.append("SECRET_BROKER_TOKEN_MINTING_AUTHORITY_NOT_ISOLATED")
 
     required_standing = (
         "create_private_repositories",
