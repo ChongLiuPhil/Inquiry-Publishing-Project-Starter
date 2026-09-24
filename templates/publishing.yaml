@@ -21,7 +21,7 @@ publication:
 deployment:
   web:
     provider: cloudflare-workers
-    integration_mode: workers-builds-git
+    integration_mode: github-actions-external-ci
     build_contract: cloudflare-builds.yaml
     canonical_publish_gate: make web-publish-check
     enabled: false
