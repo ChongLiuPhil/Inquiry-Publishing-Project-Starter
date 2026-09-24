@@ -14,6 +14,8 @@ cloudflare:
 secret_broker:
   implementation_ref: null
   state: unverified
+  plaintext_boundary: unverified
+  token_minting_authority: unverified
 standing_authorizations:
   create_private_repositories: false
   create_restricted_workers: false
