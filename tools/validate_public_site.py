@@ -62,7 +62,26 @@ def validate(output: Path) -> None:
     descriptor = json.loads((output / "agent/entry.json").read_text())
     if descriptor.get("public_landing") != public_url + "agent/" or descriptor.get("human_entry") != public_url or descriptor.get("public_delivery", {}).get("current_provider") != "cloudflare-workers":
         raise ValueError("Machine entry does not identify the approved Worker")
-    for path in ("agent/bootstrap.txt", "agent/bootstrap.zh-CN.txt", "llms.txt", "HUMAN_GUIDE.md", "HUMAN_GUIDE.zh-CN.md", "ahicp/HUMAN_GUIDE.md", "ahicp/HUMAN_GUIDE.zh-CN.md"):
+    provisioning = descriptor.get("project_provisioning", {})
+    if provisioning.get("preferred_profile") != "agent-provisioned-external-ci" or provisioning.get("secret_broker_required") is not True:
+        raise ValueError("Machine entry does not expose the preferred project provisioning contract")
+    if provisioning.get("status") != "implemented-reference-live-acceptance-pending":
+        raise ValueError("Machine entry lost the new-project live-acceptance evidence boundary")
+    if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
+        raise ValueError("Machine entry must keep deployment-token plaintext out of model context")
+    for path in (
+        "agent/bootstrap.txt",
+        "agent/bootstrap.zh-CN.txt",
+        "llms.txt",
+        "PROJECT_PROVISIONING_CONTRACT.md",
+        "PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
+        "PROJECT_PROVISIONING_ACCEPTANCE.md",
+        "PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md",
+        "HUMAN_GUIDE.md",
+        "HUMAN_GUIDE.zh-CN.md",
+        "ahicp/HUMAN_GUIDE.md",
+        "ahicp/HUMAN_GUIDE.zh-CN.md",
+    ):
         if not (output / path).is_file() or not (output / path).stat().st_size:
             raise ValueError(f"Missing machine/guide resource: {path}")
     if "noindex" in (output / "_headers").read_text() or "Disallow: /" in (output / "robots.txt").read_text():
