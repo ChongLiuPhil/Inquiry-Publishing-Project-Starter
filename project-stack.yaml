@@ -28,3 +28,7 @@ starter:
   source: ChongLiuPhil/Inquiry-Publishing-Project-Starter
   profile: full-research-publication
   adopted_commit: TEMPLATE_SOURCE_COMMIT_AT_ADOPTION
+  project_provisioning:
+    profile: agent-provisioned-external-ci
+    request_ref: project-provisioning.yaml
+    platform_authorization_ref: private-platform-state
