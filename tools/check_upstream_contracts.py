@@ -86,7 +86,6 @@ def main():
                     "authorization_state": "authorized",
                     "all_workers_access": "verified",
                     "worker_creation_authority": "authorized",
-                    "token_creation_authority": "authorized",
                 })
                 platform["secret_broker"].update({
                     "implementation_ref": "ci-synthetic-secret-broker",
