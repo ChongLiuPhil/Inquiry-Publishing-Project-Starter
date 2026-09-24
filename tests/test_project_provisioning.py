@@ -34,6 +34,8 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         item["secret_broker"].update(
             implementation_ref="trusted-broker-ref",
             state="verified",
+            plaintext_boundary="verified",
+            token_minting_authority="isolated-authorized",
         )
         item["standing_authorizations"].update(
             create_private_repositories=True,
@@ -64,6 +66,12 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertTrue(seed["deployment"]["secretBroker"])
         self.assertFalse(seed["release"]["openSource"])
         self.assertIn("public-release", plan["human_reserved_gates"])
+
+    def test_broker_minting_authority_must_be_isolated(self):
+        platform = self.ready_platform()
+        platform["secret_broker"]["token_minting_authority"] = "unverified"
+        errors = platform_errors(platform, self.request)
+        self.assertIn("SECRET_BROKER_TOKEN_MINTING_AUTHORITY_NOT_ISOLATED", errors)
 
     def test_owner_scope_mismatch_blocks(self):
         platform = self.ready_platform()
