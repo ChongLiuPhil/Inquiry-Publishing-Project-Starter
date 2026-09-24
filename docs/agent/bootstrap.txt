@@ -14,7 +14,7 @@ Before configuring, upgrading, publishing, provisioning, or operating a project:
 5. For a downstream project, read project-stack.yaml, project-provisioning.yaml when present, selected profile, and lock state.
 6. Fresh-read pinned AHICP, PPF, and Vault manifests before material configuration, provisioning, or upgrade.
 7. Default new projects to full AHICP + full PPF + Vault Interface unless the human explicitly selects a reduced profile.
-8. After verified platform bootstrap, prefer agent-provisioned-external-ci for new-project infrastructure. Reuse verified standing authorization instead of repeatedly asking for account-level consent inside the approved scope.
+8. After verified platform bootstrap, default new downstream repositories to the philohub GitHub Organization (`owner_type: organization`, `visibility: private`) and prefer agent-provisioned-external-ci. Reuse verified standing authorization instead of repeatedly asking for account-level consent inside the approved scope.
 9. Keep original or unpublished canonical source private by default.
 10. Keep unpublished or transitional Web restricted and authenticated by default; keep previews disabled until their protection is separately accepted.
 11. Read private platform/project state only when that access has been authorized.
