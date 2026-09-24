@@ -81,7 +81,7 @@ def main() -> int:
     if platform_template.get("status") != "unconfigured":
         raise SystemExit("public platform-authorization template must not claim live provider authorization")
     standing = platform_template.get("standing_authorizations", {})
-    for reserved in ("public_release", "reader_audience_expansion", "custom_domain_change", "paid_plan_change"):
+    for reserved in ("public_release", "source_repository_public", "reader_audience_expansion", "custom_domain_change", "provider_permission_scope_expansion", "paid_plan_change", "direct_secret_input"):
         if standing.get(reserved) is not False:
             raise SystemExit(f"platform template must keep {reserved} human-reserved")
     broker = platform_template.get("secret_broker", {})
