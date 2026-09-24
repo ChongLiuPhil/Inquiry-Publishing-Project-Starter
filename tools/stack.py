@@ -42,6 +42,26 @@ def stack_errors(root):
     profile=profile_def(stack["profile"])
     if stack["starter"]["profile"] != stack["profile"]:
         errors.append("starter.profile must equal stack profile")
+
+    provisioning_path=root/"project-provisioning.yaml"
+    provisioning_meta=stack["starter"].get("project_provisioning")
+    if provisioning_path.is_file():
+        provisioning=load(root,"project-provisioning.yaml")
+        if not validate_schema(provisioning,"schema/project-provisioning-request.schema.json","project-provisioning"):
+            errors.append("project provisioning schema validation failed")
+        else:
+            if provisioning.get("project",{}).get("id") != stack["project"]["id"]:
+                errors.append("project-provisioning.yaml project id differs from stack project id")
+            if provisioning.get("stack_profile") != stack["profile"]:
+                errors.append("project-provisioning.yaml stack_profile differs from project-stack profile")
+            if not provisioning_meta:
+                errors.append("starter.project_provisioning is required when project-provisioning.yaml exists")
+            elif provisioning_meta.get("profile") != provisioning.get("infrastructure",{}).get("profile"):
+                errors.append("starter.project_provisioning.profile differs from project-provisioning.yaml infrastructure.profile")
+            elif provisioning_meta.get("request_ref") != "project-provisioning.yaml":
+                errors.append("starter.project_provisioning.request_ref must point to project-provisioning.yaml")
+    elif provisioning_meta:
+        errors.append("project-provisioning.yaml is missing while starter.project_provisioning is configured")
     required=set(profile.get("required_components",[])); optional=set(profile.get("optional_components",[]))
     requested=required|optional
     components=stack.get("components",{}); resolved=lock["resolved"]; sm=source_map()["sources"]
@@ -111,8 +131,10 @@ def build_adoption_plan(root):
     stack=load(root,"project-stack.yaml"); sm=source_map()
     plan={"schema":"inquiry-publishing-adoption-plan/v2","project_id":stack["project"]["id"],"profile":stack["profile"],
           "components":[],"ownership":{"policy":"read-from-pinned-upstream-manifests","starter_contract":"stack/managed-paths.yaml"},
+          "project_provisioning":stack.get("starter",{}).get("project_provisioning"),
           "rules":["fresh-read each pinned upstream manifest before write","never overwrite upstream-declared project-owned paths automatically",
                    "three-way compare upstream-declared merge-managed paths","preserve human approvals and provider actual state",
+                   "validate project-provisioning.yaml before invoking the PPF provisioner",
                    "apply through branch/PR and run project-local gates"]}
     for role,source_key in ROLE_TO_SOURCE.items():
         data=stack.get("components",{}).get(role)
@@ -133,6 +155,8 @@ def adoption_plan(root, as_json=False):
     for c in plan["components"]:
         print(f"- {c['role']}: {c['adoption_state']} {c['repository']} @ {c['template_source_revision']}")
         if c.get("ownership_source"): print(f"  ownership_source: {c['ownership_source']}")
+    if plan.get("project_provisioning"):
+        print(f"provisioning: {plan['project_provisioning'].get('profile')} via {plan['project_provisioning'].get('request_ref')}")
     print("rule: ownership classes come from pinned upstream manifests, not a copied aggregate list")
 
 def main():

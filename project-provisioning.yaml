@@ -1,0 +1,22 @@
+schema: inquiry-publishing-stack/project-provisioning-request/v1
+project:
+  id: replace-with-project-id
+  title: null
+  purpose: null
+stack_profile: full-research-publication
+infrastructure:
+  profile: agent-provisioned-external-ci
+  github:
+    owner: replace-with-approved-owner
+    owner_type: user
+    repository: replace-with-project-repository
+    visibility: private
+  cloudflare:
+    worker: replace-with-project-worker
+    web_visibility: restricted
+    preview_enabled: false
+    access_policy_ref: shared-reader-access
+    custom_domain: null
+authorization:
+  restricted_deployment_source: platform-standing-authorization
+  public_release: false

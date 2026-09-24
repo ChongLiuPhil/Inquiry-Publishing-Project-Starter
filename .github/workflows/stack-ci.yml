@@ -17,5 +17,6 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install -r requirements-validation.txt
       - run: make stack-check
+      - run: make provisioning-contract-check
       - run: make stack-test
       - run: make upstream-check

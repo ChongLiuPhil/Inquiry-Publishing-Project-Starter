@@ -6,6 +6,7 @@ import sys
 import tempfile
 
 import yaml
+from jsonschema import Draft202012Validator
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,10 +50,62 @@ def main() -> int:
         "docs/agent/bootstrap.txt",
         "docs/agent/bootstrap.zh-CN.txt",
         "docs/agent/entry.json",
+        "docs/PROJECT_PROVISIONING_CONTRACT.md",
+        "docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
+        "docs/PROJECT_PROVISIONING_ACCEPTANCE.md",
+        "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md",
+        "schema/platform-authorization.schema.json",
+        "schema/project-provisioning-request.schema.json",
+        "templates/platform-authorization.yaml",
+        "templates/project-provisioning-request.yaml",
+        "project-provisioning.yaml",
     )
     for relative in required_agent_files:
         if not (ROOT / relative).exists():
             raise SystemExit(f"missing public machine-entry artifact: {relative}")
+
+    platform_schema = json.loads((ROOT / "schema/platform-authorization.schema.json").read_text(encoding="utf-8"))
+    request_schema = json.loads((ROOT / "schema/project-provisioning-request.schema.json").read_text(encoding="utf-8"))
+    platform_template = yaml.safe_load((ROOT / "templates/platform-authorization.yaml").read_text(encoding="utf-8"))
+    request_template = yaml.safe_load((ROOT / "templates/project-provisioning-request.yaml").read_text(encoding="utf-8"))
+    project_request = yaml.safe_load((ROOT / "project-provisioning.yaml").read_text(encoding="utf-8"))
+    for label, instance, schema in (
+        ("platform authorization template", platform_template, platform_schema),
+        ("project provisioning template", request_template, request_schema),
+        ("root project provisioning request", project_request, request_schema),
+    ):
+        errors = sorted(Draft202012Validator(schema).iter_errors(instance), key=lambda e: list(e.path))
+        if errors:
+            where = ".".join(str(x) for x in errors[0].path) or "<root>"
+            raise SystemExit(f"{label} is invalid at {where}: {errors[0].message}")
+    if platform_template.get("status") != "unconfigured":
+        raise SystemExit("public platform-authorization template must not claim live provider authorization")
+    standing = platform_template.get("standing_authorizations", {})
+    for reserved in ("public_release", "source_repository_public", "reader_audience_expansion", "custom_domain_change", "provider_permission_scope_expansion", "paid_plan_change", "direct_secret_input"):
+        if standing.get(reserved) is not False:
+            raise SystemExit(f"platform template must keep {reserved} human-reserved")
+    broker = platform_template.get("secret_broker", {})
+    if broker.get("token_minting_authority") != "unverified":
+        raise SystemExit("public platform template must not claim token-minting authority")
+    infra = request_template.get("infrastructure", {})
+    if infra.get("profile") != "agent-provisioned-external-ci":
+        raise SystemExit("new-project provisioning template must prefer agent-provisioned-external-ci")
+    if infra.get("github", {}).get("visibility") != "private":
+        raise SystemExit("new-project provisioning template must keep GitHub source private")
+    cloudflare_request = infra.get("cloudflare", {})
+    if cloudflare_request.get("web_visibility") != "restricted" or cloudflare_request.get("preview_enabled") is not False:
+        raise SystemExit("new-project provisioning template must default to restricted Web with previews disabled")
+    if request_template.get("authorization", {}).get("public_release") is not False:
+        raise SystemExit("new-project provisioning template must not pre-authorize public release")
+    provisioning = ecosystem.get("project_provisioning")
+    if not isinstance(provisioning, dict):
+        raise SystemExit("Starter ecosystem is missing project_provisioning")
+    if provisioning.get("preferred_infrastructure_profile") != "agent-provisioned-external-ci":
+        raise SystemExit("Starter ecosystem has the wrong preferred provisioning profile")
+    if provisioning.get("status") != "implemented-reference-live-acceptance-pending":
+        raise SystemExit("Starter provisioning status must preserve the live-acceptance evidence boundary")
+    if provisioning.get("secret_rule") != "deployment-token-plaintext-never-enters-model-context":
+        raise SystemExit("Starter ecosystem is missing the deployment-token secret boundary")
 
     migration_plan_path = ROOT / "templates/cloudflare-public-delivery.yaml"
     migration_guide_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md"
@@ -107,9 +160,22 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must identify the approved Worker")
     if descriptor_delivery.get("migration_state") != migration_plan["status"]:
         raise SystemExit("machine entry and Cloudflare migration state disagree")
+    descriptor_provisioning = descriptor.get("project_provisioning")
+    if not isinstance(descriptor_provisioning, dict):
+        raise SystemExit("agent entry descriptor is missing project_provisioning")
+    if descriptor_provisioning.get("preferred_profile") != "agent-provisioned-external-ci":
+        raise SystemExit("agent entry descriptor has the wrong provisioning profile")
+    if descriptor_provisioning.get("status") != "implemented-reference-live-acceptance-pending":
+        raise SystemExit("agent entry descriptor must preserve the provisioning evidence boundary")
+    if descriptor_provisioning.get("secret_broker_required") is not True:
+        raise SystemExit("agent entry descriptor must require the trusted Secret Broker")
+    if descriptor.get("authorization", {}).get("public_release_requires_separate_human_approval") is not True:
+        raise SystemExit("machine entry must preserve separate human public-release approval")
+    if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
+        raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
 
     agent_page = (ROOT / "docs/agent/index.html").read_text(encoding="utf-8")
-    for marker in ("Agent Retrieval Contract", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
+    for marker in ("Agent Retrieval Contract", "Project Provisioning", "agent-provisioned-external-ci", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
         if marker not in agent_page:
             raise SystemExit(f"machine-entry page is missing {marker}")
 
@@ -122,6 +188,9 @@ def main() -> int:
         "template_source_commit",
         "project_adopted_commit",
         "adoption_state",
+        "agent-provisioned-external-ci",
+        "trusted Secret Broker",
+        "一次平台授权，多项目复用",
         "为什么它不是第四套规范",
     ]
     for marker in required_homepage_markers:
@@ -143,7 +212,7 @@ def main() -> int:
     if check.returncode != 0:
         raise SystemExit("Starter homepage JavaScript syntax error:\n" + check.stderr)
 
-    print("ecosystem + machine-entry + homepage + single-site plan validation passed")
+    print("ecosystem + provisioning + machine-entry + homepage + single-site plan validation passed")
     return 0
 
 

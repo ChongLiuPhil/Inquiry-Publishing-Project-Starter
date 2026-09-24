@@ -48,6 +48,10 @@ ecosystem:
     source_visibility: private-by-default-for-original-work
     web_visibility: restricted-by-default-for-unpublished-work
     cloudflare_access: required-for-private-or-transitional-publications
+    infrastructure_profile: agent-provisioned-external-ci
+    platform_authorization: reusable-standing-authorization-after-verified-bootstrap
+    secret_broker: required-for-project-scoped-deployment-credential
+    live_new_project_acceptance: pending
     deviations: require-explicit-human-selection
   components:
     ahicp:
@@ -69,7 +73,33 @@ ecosystem:
       repository: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter
       homepage: https://inquirystack.philohub.workers.dev/starter/
       ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
-      role: composition, adoption, and upgrade layer
+      role: composition, adoption, project-provisioning orchestration, and upgrade layer
+  project_provisioning:
+    status: implemented-reference-live-acceptance-pending
+    preferred_infrastructure_profile: agent-provisioned-external-ci
+    contract_en: docs/PROJECT_PROVISIONING_CONTRACT.md
+    contract_zh_cn: docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md
+    acceptance_en: docs/PROJECT_PROVISIONING_ACCEPTANCE.md
+    acceptance_zh_cn: docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md
+    request_schema: schema/project-provisioning-request.schema.json
+    request_template: templates/project-provisioning-request.yaml
+    platform_authorization_schema: schema/platform-authorization.schema.json
+    platform_authorization_template: templates/platform-authorization.yaml
+    executable_provider_authority: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
+    executable_provider_contract: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/AGENT_PROVISIONED_EXTERNAL_CI.md
+    standing_authorization_can_cover:
+      - create-private-repository
+      - create-restricted-worker
+      - restricted-web-deployment
+    human_reserved:
+      - public-release
+      - reader-audience-expansion
+      - custom-domain-or-dns-authority
+      - provider-permission-scope-expansion
+      - paid-plan-or-billing-change
+      - direct-secret-input-if-trusted-broker-unavailable
+    secret_rule: deployment-token-plaintext-never-enters-model-context
+
   privacy:
     original_unpublished_content: private-by-default
     private_control_plane: never copied into public repositories
@@ -92,6 +122,8 @@ ecosystem:
     fetch_private_state: only-after-explicit-human-authorization
     public_links_do_not_grant_private_access: true
   cloudflare:
+    new_project_default_profile: agent-provisioned-external-ci
+    native_profile: workers-builds-native
     public_delivery_migration: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
     public_delivery_plan: templates/cloudflare-public-delivery.yaml
     operational_guide: docs/CONTINUOUS_WEB_CLOUDFLARE.md

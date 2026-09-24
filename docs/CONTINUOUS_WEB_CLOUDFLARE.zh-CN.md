@@ -1,6 +1,6 @@
 # Continuous Web 与 Cloudflare 操作指南
 
-如需把人类操作压缩到最少，先读 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)。如交给可操作浏览器的 Agent，直接使用 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。非秘密机器计划见 [../templates/cloudflare-access-plan.yaml](../templates/cloudflare-access-plan.yaml)。
+新项目先读 [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)，再读 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)。如交给可操作浏览器的 Agent，使用 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。非秘密机器计划见 [../templates/cloudflare-access-plan.yaml](../templates/cloudflare-access-plan.yaml)。
 
 本指南是一份可复用的操作契约，不表示所有项目已经完成部署。
 
@@ -67,11 +67,11 @@ policy_ref 只用于标识预期策略，绝不能用来存放真实凭据。
 
 ## 4. 部署 profile
 
-部署前必须选择并记录一种 profile：
+部署前必须选择并记录一种 Profile：
 
-- 提供商原生集成：运维最简单；必须核验托管凭据实际范围，未验证时不能称为最小权限；
-- 强化外部 CI：GitHub Actions 或其他 CI 使用限制到目标 Worker/项目的账户 token，token 只存于 CI secret store；
-- 未来或提供商特定 profile：只有当前 provider 文档和真实测试确认支持后才能采用。
+- **Agent-Provisioned External CI — 平台 bootstrap 后新项目首选。** Platform Provisioner 创建 Worker；trusted broker 把只限制到该 individual Worker、角色为 Editor 的 account-owned token 直接写入 GitHub Actions；token 明文不进入模型。
+- **Workers Builds Native — provider-native 备选。** 明确重视原生 Git integration 或已有采用时使用；当前 build credential 使用 Provider user-token 模型。
+- **未来/Provider-specific Profile** — 只有当前文档与真实测试确认支持后才能采用。
 
 PPF 的安全 profile 文档记录参考权衡。部署凭据安全与读者访问控制仍然是两个正交安全轴。
 
@@ -79,16 +79,16 @@ PPF 的安全 profile 文档记录参考权衡。部署凭据安全与读者访�
 
 1. 确认准确的 GitHub 源仓库、输出目录、canonical domain、可见性、保留策略、Cloudflare account 与目标 Worker/project。
 2. 如果项目含有未发布原创内容，确认源仓库为 private。
-3. 选择构建与部署 profile。
-4. 创建或连接 Cloudflare 项目，不把秘密暴露到仓库。
-5. 根据仓库中的 machine contract 配置 build command 与 output path。
-6. 配置 preview 行为。
-7. 在任何未发布输出被暴露前先配置 reader access。
-8. 配置 custom domain 时只保留 provisioning 所需的临时权限。
-9. 执行 preview build，验证 HTML、assets、feeds、redirects、headers、备用 URL 与 access 行为。
-10. 只有人类批准 publication state 后才执行 production deployment。
-11. 将 provider actual state、deployment revision、access-policy reference 与验证结果写回私人项目状态。
-12. 保留 build、access policy 与 domain routing 的回滚路径。
+3. 选择 build/deployment Profile；新项目除非明确选择其他 Profile，否则采用 `agent-provisioned-external-ci`。
+4. 创建 Worker 前先验证 platform standing authorization 与 account-wide `all_workers` Access。
+5. 通过已授权 Provisioner 创建/复用 private GitHub repository 与 restricted Worker。
+6. External CI 由 trusted Secret Broker 把 project-scoped Worker credential 直接安装到 GitHub Actions；明文不得暴露给 Agent。
+7. 根据 repository machine contract 配置 build command 与 output path。
+8. Preview 在独立保护验收前保持 disabled。
+9. 只有 durable project authorization 覆盖 restricted Web deployment 时才部署 restricted production。
+10. 验证准确 deployed revision、anonymous denial 与代表性 direct asset。
+11. Custom Domain 只有独立 domain/DNS authorization 后才配置。
+12. 把已验证的非秘密 Provider state、deployment revision、access-policy reference 与 rollback result 写回 private project state。
 
 ## 6. AI Agent 必须采用的人类交接格式
 
@@ -105,16 +105,19 @@ PPF 的安全 profile 文档记录参考权衡。部署凭据安全与读者访�
 
 仅说“配置 Cloudflare”“启用 Access”“设置 DNS”都不够。
 
-## 7. Cloudflare ↔ GitHub 连接
+## 7. GitHub + Cloudflare 平台集成
 
-PPF 参考实现的详细 operator runbook 位于 PPF 仓库：
+首选新项目路径不需要 per-project Cloudflare GitHub App authorization。Starter 校验 platform authorization，并把 Provider execution 交给固定版本 PPF 的 `agent-provisioned-external-ci` 实现。
 
-- docs/CLOUDFLARE_GITHUB_AUTHORIZATION.md：账户所有者与 GitHub App 授权；
-- docs/CLOUDFLARE_SECURITY_PROFILES.md：部署凭据 profile 与最小权限权衡；
-- docs/CLOUDFLARE_ACCESS_PROFILE.md：publication visibility 到 reader access 的映射；
-- docs/CLOUDFLARE_OBSERVED_UI_MAPPING.md：带日期的 Cloudflare UI 字段观察。
+读取当前 PPF runbook：
 
-Agent 在给出 provider-specific 点击路径或字段映射前，应先阅读这些文件。
+- docs/AGENT_PROVISIONED_EXTERNAL_CI.zh-CN.md：最小人类新项目 Profile；
+- docs/CLOUDFLARE_GITHUB_AUTHORIZATION.zh-CN.md：两项平台级授权与 Native 备选；
+- docs/CLOUDFLARE_SECURITY_PROFILES.zh-CN.md：Provisioning / deployment credential 边界；
+- docs/CLOUDFLARE_ACCESS_PROFILE.zh-CN.md：publication visibility → reader access；
+- docs/CLOUDFLARE_OBSERVED_UI_MAPPING.zh-CN.md：带日期 UI 观察。
+
+只有明确选择 `workers-builds-native` 时才走 Cloudflare GitHub App 授权；不得因为旧习惯对 External-CI 项目套用该步骤。
 
 ## 8. Restricted reader access 配置
 

@@ -2,10 +2,14 @@
 from __future__ import annotations
 
 import argparse
+import copy
 from pathlib import Path
 import sys
 import urllib.request
 import yaml
+from jsonschema import Draft202012Validator
+
+from project_provisioning import build_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 ROLE_TO_SOURCE = {
@@ -62,6 +66,52 @@ def main():
             declared=manifest.get("profile")
             if profile and declared != profile:
                 errors.append(f"publishing profile {profile!r} != pinned PPF manifest profile {declared!r}")
+
+            provisioning_path = root / "project-provisioning.yaml"
+            if provisioning_path.is_file():
+                request = load(root, "project-provisioning.yaml")
+                platform = copy.deepcopy(load(ROOT, "templates/platform-authorization.yaml"))
+                owner_type = request.get("infrastructure", {}).get("github", {}).get("owner_type")
+                owner = request.get("infrastructure", {}).get("github", {}).get("owner")
+                platform["status"] = "ready"
+                platform["github"].update({
+                    "owner_scope": owner,
+                    "principal_ref": "ci-synthetic-github-principal",
+                    "principal_type": "github-app-user-access" if owner_type == "user" else "github-app-installation",
+                    "authorization_state": "authorized",
+                })
+                platform["cloudflare"].update({
+                    "account_ref": "ci-synthetic-cloudflare-account",
+                    "principal_ref": "ci-synthetic-cloudflare-principal",
+                    "authorization_state": "authorized",
+                    "all_workers_access": "verified",
+                    "worker_creation_authority": "authorized",
+                })
+                platform["secret_broker"].update({
+                    "implementation_ref": "ci-synthetic-secret-broker",
+                    "state": "verified",
+                    "plaintext_boundary": "verified",
+                    "token_minting_authority": "isolated-authorized",
+                })
+                platform["standing_authorizations"].update({
+                    "create_private_repositories": True,
+                    "create_restricted_workers": True,
+                    "restricted_web_deployment": True,
+                })
+                plan = build_plan(platform, request)
+                if plan.get("status") != "READY_FOR_PROVISIONER":
+                    errors.append("Starter provisioning plan is not ready under a synthetic verified platform baseline")
+                else:
+                    schema = fetch_yaml(component["source"], revision, "schema/project.infrastructure.schema.json")
+                    desired = plan["ppf_handoff"]["desired_state_seed"]
+                    schema_errors = sorted(
+                        Draft202012Validator(schema).iter_errors(desired),
+                        key=lambda error: list(error.path),
+                    )
+                    if schema_errors:
+                        first = schema_errors[0]
+                        where = ".".join(str(part) for part in first.path) or "<root>"
+                        errors.append(f"Starter PPF desired-state seed violates pinned PPF schema at {where}: {first.message}")
         elif role == "portfolio_interface":
             version=component.get("version")
             declared=manifest.get("version")

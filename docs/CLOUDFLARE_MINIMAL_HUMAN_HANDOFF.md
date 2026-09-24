@@ -1,181 +1,173 @@
 # Cloudflare minimal-human handoff
 
 **Status:** canonical operator handoff for private/restricted Continuous Web  
+**Default new-project infrastructure profile:** `agent-provisioned-external-ci`  
 **Policy reference:** `shared-reader-access`
 
-This guide reduces Cloudflare work to the smallest practical set of human-reserved actions. Everything else should be performed by an authorized API-capable agent or by a browser agent such as ChatGPT Work when available.
+This guide reduces repeated human work by separating **platform bootstrap** from **project provisioning**.
+
+For the full orchestration contract, read [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md). PPF remains authoritative for the executable provider implementation.
 
 ## 1. Canonical access model
 
-The canonical policy is **not a repository password**. It is a reusable Cloudflare Access policy named `shared-reader-access`.
+For unpublished/restricted work:
 
-For human readers, the preferred low-friction model is:
-
-~~~text
-restricted hostname
+```text
+restricted Worker hostname
 -> Cloudflare Access
--> shared-reader-access reusable policy
--> explicit allowed reader email(s)
--> One-Time PIN
--> 24h session
-~~~
+-> account-wide all_workers baseline
+-> project/audience policy
+-> authenticated reader
+```
 
-The policy name is shared; reader identities and provider IDs remain private provider state.
+The access-policy reference may be stored in project files. Reader identities, application/policy IDs that are account-private, credentials, OTPs, and token values remain private provider state.
 
-Current Cloudflare Access documentation is identity-policy based. A generic static shared password is not a native Access policy selector. Therefore a pre-existing shared password is treated as a **legacy compatibility credential**, not the canonical Access mechanism. Never move that secret into Git merely to preserve the old UX.
+A generic shared static password is not the canonical model.
 
-## 2. Human actions that should remain human
+## 2. The minimum human role
 
-A human should normally need to perform only these actions:
+For the preferred new-project profile, ordinary projects should not require a new Cloudflare ↔ GitHub authorization.
+
+The human normally acts only at these boundaries:
+
+### Platform bootstrap — one-time / infrequent
 
 1. Sign in to Cloudflare and complete MFA.
-2. **Once per GitHub account/organization:** authorize the Cloudflare Workers & Pages GitHub App for the selected repository or repositories.
-3. **Once per automation principal:** create the initial scoped API token(s). Enter or copy the token only into the secure tool/secret store that will execute the automation; never paste it into chat or commit it.
-4. Confirm the intended reader identity set. If OTP is used, enter the allowed email addresses directly in Cloudflare or in the secure agent form.
-5. If an existing deployment still uses a legacy shared static password, enter that secret directly into the existing provider-side secret field only. Do not send the value to the AI.
-6. Approve the final restricted-to-public publication cutover when and if publication should become public.
+2. Authorize a bounded Cloudflare provisioning principal.
+3. Establish and verify an account-wide Access baseline covering `all_workers`.
+4. Establish the trusted Secret Broker / token-minting boundary.
+5. Authorize the GitHub provisioning principal for the intended GitHub owner/organization scope.
 
-Everything else is expected to be agent-operable and verifiable.
+### Later human-reserved decisions
 
-## 3. One-time Cloudflare ↔ GitHub authorization
+- public release;
+- adding or expanding readers;
+- a new custom/canonical domain or DNS authority;
+- expanding GitHub or Cloudflare permission scope;
+- paid-plan/billing changes;
+- fallback direct secret entry if the trusted broker is unavailable.
 
-For Workers Builds, Cloudflare's current flow is:
+Creating another private/restricted project inside already approved platform scopes is **not** itself a human gate.
 
-1. Cloudflare Dashboard → **Workers & Pages**.
-2. Open the Worker, then **Settings → Builds → Connect**.
-3. Choose **GitHub**.
-4. Install/authorize the **Cloudflare Workers and Pages** GitHub App.
-5. Prefer **selected repositories only** and select only the project repositories that Cloudflare must build.
-6. Return to Cloudflare and confirm that the Git repository is shown under the Worker's build settings.
+## 3. Cloudflare provisioning principal
 
-This is the main unavoidable account-owner browser authorization. After it exists, Workers Builds can be managed programmatically through Cloudflare's Builds API.
+The platform principal needs only the capabilities required by the selected implementation, but new Worker creation is broader than routine deployment.
 
-## 4. One-time API automation credentials
+Current Cloudflare Workers roles distinguish:
 
-For an API-capable agent, create narrowly scoped user tokens in **My Profile → API Tokens → Create Token → Custom token**.
+- product-level **Admin** — can create Workers;
+- individual-Worker **Editor** — can update/deploy an existing Worker but cannot delete it.
 
-### Access application and policy token
+Therefore:
 
-Required permission:
+```text
+platform provisioner
+  -> Workers product Admin for creation
 
-~~~text
-Account → Access: Apps and Policies → Edit
-~~~
+project CI
+  -> individual Worker Editor for routine deployment
+```
 
-Limit the token to the intended Cloudflare account where possible.
+Do not give the project CI the platform provisioning credential.
 
-### Identity-provider token
+## 4. High-privilege token-minting boundary
 
-Only needed when the agent must create or modify OTP/IdP configuration:
+Automatically creating an account-owned API token is itself a high-privilege account operation.
 
-~~~text
-Account → Access: Organizations, Identity Providers, and Groups → Edit
-~~~
+Current Cloudflare account-token documentation requires elevated account authority to create/update account-owned tokens. This power belongs only inside the trusted Secret Broker / provisioning boundary.
 
-If the identity provider is already configured, do not grant this extra permission.
+The language model and project CI must never receive that minting authority.
 
-### Workers Builds token
+The broker should create:
 
-Cloudflare's Builds API currently requires a **user-scoped** API token:
+```text
+account-owned API token
+scope: specified individual Worker
+role: Editor
+```
 
-~~~text
-Account → Workers Builds Configuration → Edit
-Account → Workers Scripts → Read
-~~~
+and transfer it directly into the target repository's GitHub Actions secrets.
 
-The first permission manages triggers/build settings. Workers Scripts Read is used to resolve the immutable Worker tag.
+## 5. Secret Broker contract
 
-Do not use a Global API key.
+The PPF provisioner returns only a non-secret `ppf/secret-broker-request/v1`.
 
-## 5. Reader authentication: recommended OTP path
+The trusted broker performs atomically:
 
-If One-Time PIN is not already available:
+1. resolve the target Worker;
+2. create the scoped account-owned Worker token;
+3. obtain the repository Actions-secret public key / secure write interface;
+4. write `CLOUDFLARE_API_TOKEN`;
+5. write `CLOUDFLARE_ACCOUNT_ID`;
+6. discard plaintext token material;
+7. return only non-secret installation status and identifiers.
 
-1. Cloudflare Dashboard → **Zero Trust → Integrations → Identity providers**.
-2. Under **Your identity providers**, choose **Add new identity provider**.
-3. Choose **One-time PIN**.
-4. Save.
-5. Do not enable broad `Everyone` or `all valid emails` access merely to make OTP work.
+Never paste the token into chat, a PR, an issue, a repository file, or an Agent-visible log.
 
-Create the reusable policy:
+## 6. Account-wide Access bootstrap
 
-1. **Zero Trust → Access controls → Policies**.
-2. Select **Add a policy**.
-3. Policy name: `shared-reader-access`.
-4. Action: **Allow**.
-5. Session duration: **24 hours** initially.
-6. Include: **Emails** → add only approved reader email addresses.
-7. Require: **Login Methods** → **One-time PIN**.
-8. Save.
+Before automatic project Worker creation, verify an Access application whose destination covers `all_workers` or an equivalent account-wide baseline.
 
-The 24-hour value is a starting security/usability balance; later changes are a policy decision, not a template migration.
+This baseline should protect existing and future Workers.
 
-## 6. Protect one publication hostname
+The project provisioner must fail closed if the baseline cannot be verified.
 
-For each restricted publication:
+Public production later becomes an explicit exact-project exception; do not disable the baseline for the account.
 
-1. **Zero Trust → Access controls → Applications**.
-2. Select **Create new application**.
-3. Select **Self-hosted and private**.
-4. Select **Add public hostname**.
-5. Enter the project's canonical restricted hostname. Protect the entire hostname unless the project contract intentionally specifies narrower paths.
-6. Under **Access policies**, attach the existing reusable policy `shared-reader-access`.
-7. Select the intended login provider, normally One-Time PIN.
-8. Set the application session duration to the intended value, normally 24 hours initially.
-9. Save the application.
-10. Verify the Access application appears for the exact hostname before exposing unpublished output.
+## 7. Reader authentication
 
-Cloudflare Access is deny-by-default for a protected application: a reader must match an Allow policy.
+A reusable policy such as `shared-reader-access` may use an approved identity mechanism such as One-Time PIN and an explicit allowed audience.
 
-## 7. Agent/API execution after the human bootstrap
+Do not create a broad Everyone/all-email Allow rule merely to make authentication easy.
 
-Once the GitHub App and scoped API token exist, an API-capable agent should do the routine work:
+For each restricted project, verification must include:
 
-1. Read the project's `publishing.yaml`, `cloudflare-builds.yaml`, Worker name, repository ID, branch, build command, deploy command, preview command, and hostname.
-2. Inspect current Cloudflare actual state.
-3. Create or update `shared-reader-access` through the Access API.
-4. Create or update the self-hosted Access application for the hostname.
-5. Connect/configure Workers Builds after the GitHub App authorization already exists.
-6. Trigger a preview build.
-7. Verify build revision, runtime URL, Access behavior, direct assets, feeds, and alternate routes.
-8. Write only non-secret IDs/status back into private project state.
-9. Stop before public cutover unless the human has explicitly authorized publication.
+- anonymous request challenged/denied;
+- approved reader succeeds when an audience has actually been approved;
+- unapproved reader fails;
+- direct asset/feed/generated-file URLs cannot bypass Access.
 
-## 8. Browser-agent / ChatGPT Work mode
+Reader identities are private state and do not belong in the public project repository.
 
-If direct Cloudflare API tooling is unavailable, use **Work mode** with the prompt in `CLOUDFLARE_WORK_AGENT_HANDOFF.md`.
+## 8. Agent execution after platform bootstrap
 
-The human should take over only when Cloudflare asks for:
+After platform authorization is recorded as ready, the Agent should normally:
 
-- sign-in/MFA;
-- GitHub App authorization;
-- API token secret capture/secure storage;
-- reader identity approval;
-- direct entry of an existing legacy password/secret;
-- final public-release approval.
+1. validate `project-provisioning.yaml`;
+2. verify that the requested GitHub owner is within scope;
+3. re-verify account-wide Access;
+4. invoke the pinned PPF provisioner;
+5. create/reuse the private repository and restricted Worker;
+6. pass the non-secret broker request to the trusted broker;
+7. verify deployment-secret metadata without reading secret values;
+8. run repository validation and authorized GitHub Actions deployment;
+9. verify the exact deployed revision and restricted HTTP behavior;
+10. persist only non-secret state and rollback evidence.
 
-After each human-reserved action, return control to the agent so it can continue configuration and verification.
+Stop before public release unless the human separately authorizes it.
 
-## 9. Legacy shared static password
+## 9. Workers Builds Native alternative
 
-If a current deployment already has one shared static reading password:
+`workers-builds-native` remains supported for projects that explicitly choose provider-native Git integration or already use it.
 
-- do **not** paste it into chat;
-- do **not** encode it into `publishing.yaml`, `website.yaml`, `wrangler.jsonc`, CI variables committed to Git, or Access policy metadata;
-- if the existing runtime has a provider-side secret field, the human may enter the current value there directly as a temporary compatibility layer;
-- do not build a new static-password gate unless preserving that exact UX is a deliberate project requirement;
-- prefer migrating human readers to Access identity + OTP, while keeping `shared-reader-access` as the stable policy reference.
+That path requires the Cloudflare Workers & Pages GitHub App and its repository authorization. Its build credential remains a user-token model rather than the preferred one-Worker account-owned deployment identity.
 
-## 10. Verification gate
+Do not mix the two profiles in one project without an explicit migration plan.
 
-Restricted Continuous Web is not complete until all are true:
+## 10. Completion gate
 
-- anonymous private/incognito request is challenged or denied;
-- an approved reader can authenticate and read;
-- an unapproved reader cannot read;
-- a direct asset/feed/generated-file URL cannot bypass Access;
-- preview and production endpoints have the intended protection;
-- deployed revision matches the intended source revision;
-- no reader secret appears in Git, build logs, PRs, or chat;
+Restricted Continuous Web is complete only when:
+
+- private GitHub source is correct;
+- account-wide Access remains verified;
+- target Worker is correct;
+- project deployment secrets are installed without secret disclosure;
+- repository/build checks pass;
+- deployed revision matches the intended source;
+- anonymous production access is challenged/denied;
+- direct assets cannot bypass Access;
+- enabled previews, if any, are independently protected;
 - rollback is known;
-- private project state records the Access application ID/policy ID and verification result, but no credential value.
+- only non-secret provider state is written back.
+
+Deployment success does not authorize public release.

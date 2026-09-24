@@ -5,6 +5,7 @@ optional_components: []
 publishing: true
 recommended_ahicp_profile: research-standard
 recommended_ppf_profile: quarto-book-cloudflare
+recommended_infrastructure_profile: agent-provisioned-external-ci
 privacy_default: private-source
 web_visibility_default: restricted
 deviations_require_explicit_human_selection: true

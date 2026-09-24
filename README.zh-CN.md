@@ -6,13 +6,13 @@ Starter 主要面向 AI 和配置工作；第一次了解体系时，不需要�
 
 **机器入口：** [公共 Agent 页面](https://inquirystack.philohub.workers.dev/agent/) · [机器描述文件](https://inquirystack.philohub.workers.dev/agent/entry.json)
 
-这是 AHICP、PPF 与 Vault Interface 的**组合、采用和升级层**，不是第四套规范。
+这是 AHICP、PPF 与 Vault Interface 的**组合、采用、升级和项目 Provisioning 编排层**，不是第四套规范。
 
 **公共项目主页：** [AHICP](https://inquirystack.philohub.workers.dev/) · [PPF](https://inquirystack.philohub.workers.dev/ppf/) · [Vault Interface](https://inquirystack.philohub.workers.dev/vault-interface/) · [Starter](https://inquirystack.philohub.workers.dev/starter/)
 
-**体系与 AI 配置入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
+**体系与 AI 配置入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`项目自动配置契约`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
 
-**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。原创或未发布源文件默认 private（私有）；Continuous Web 可以同时准备，但在明确公开发布前默认 restricted + authenticated（受限并需要认证）。精简配置（profile）必须由使用者明确选择。
+**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。原创或未发布源文件默认 private；Continuous Web 可作为 restricted + authenticated 准备。平台一次性 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`：private GitHub repository、account-wide Access 保护的 Worker、trusted Secret Broker，以及使用 project-scoped Worker credential 的 GitHub Actions deployment。Public release 仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
 
 ## 权威边界
 
@@ -48,9 +48,23 @@ make stack-check
 make stack-test
 make upstream-check
 make adoption-plan
+make provisioning-contract-check
 ```
 
-机器计划会报告每个组件是否 active / deferred、权威仓库、固定模板版本，以及升级前需要重新读取的上游 ownership manifest。
+机器计划会报告每个组件是否 active / deferred、权威仓库、固定模板版本、升级前需要重新读取的上游 ownership manifest，以及存在时的 Provisioning Profile。
+
+## 项目自动配置
+
+新的 downstream 项目还记录 `project-provisioning.yaml`。公共 Schema / Template 只描述非秘密意图；真实 Platform Authorization 属于 private control-plane state。
+
+```bash
+python tools/project_provisioning.py validate
+python tools/project_provisioning.py plan --platform /secure/path/platform-authorization.yaml --request project-provisioning.yaml --json
+```
+
+Planner 不创建也不返回 deployment token。Starter 把经过校验的 desired-state seed 交给固定版本 PPF Provisioner；如果 PPF 返回 Secret Broker Request，由 trusted broker——而不是语言模型——创建 scoped Cloudflare credential 并直接写入 GitHub Actions Secret。
+
+详见 [`docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) 与 [`docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md)。
 
 ## Ownership 规则
 

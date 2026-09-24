@@ -2,6 +2,7 @@ schema: starter-ownership/v2
 composition_managed:
   - project-stack.yaml
   - project-stack.lock.yaml
+  - project-provisioning.yaml
 project_merge_managed:
   - project.yaml
   - website.yaml

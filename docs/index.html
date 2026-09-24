@@ -22,9 +22,9 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
 
   <main id="zh" class="lang active">
     <div class="hero">
-      <div class="eyebrow">Composition · Adoption · Upgrade</div>
-      <h1>让 AI 知道该采用哪些组件、采用哪个版本，以及怎样安全地升级现有项目。</h1>
-      <p class="lead">Starter 不是第四套方法论。它是一层“组合与升级说明”：把 AHICP、PPF 和 Vault Interface 接到具体项目中，记录项目实际采用的状态，并在以后升级时保护项目自己的内容和已经确认的决定。</p>
+      <div class="eyebrow">Composition · Adoption · Provisioning · Upgrade</div>
+      <h1>让 AI 知道项目采用什么、怎样安全建立基础设施，以及何时必须把决定交还给人。</h1>
+      <p class="lead">Starter 不是第四套方法论，也不是第二套 Cloudflare 控制平面。它负责组合、采用和 Provisioning 编排：把 AHICP、PPF 与 Vault Interface 接到具体项目中，记录项目实际采用状态，并把经过授权的新项目基础设施工作交给固定版本的 PPF Provisioner。</p>
     </div>
 
     <section class="block">
@@ -39,7 +39,8 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
         <div class="card"><h3>组合</h3><p>决定一个项目需要完整 AHICP、完整 PPF、Vault Interface，还是经过明确选择的精简组合。</p></div>
         <div class="card"><h3>采用</h3><p>记录项目实际接受了哪个上游版本，而不是假设“模板更新了，所以项目也自动同意了”。</p></div>
         <div class="card"><h3>升级</h3><p>比较上游的新版本和项目当前状态，区分可以自动更新的内容、需要合并的内容，以及必须保留的项目自有内容。</p></div>
-        <div class="card"><h3>交接</h3><p>把采用状态写成机器可读信息，使新的 AI 能恢复组件关系、版本和下一步，而不是重新猜测。</p></div>
+        <div class="card"><h3>Provision</h3><p>在平台 standing authorization 已验证时，让 AI 编排 private repository、restricted Worker、Secret Broker 与 GitHub Actions，而不重复索要账户级授权。</p></div>
+        <div class="card"><h3>交接</h3><p>把采用与 Provisioning 状态写成机器可读信息，使新的 AI 能恢复组件关系、授权边界、版本和下一步，而不是重新猜测。</p></div>
       </div>
     </section>
 
@@ -75,6 +76,21 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
       <h2>新项目的默认配置</h2>
       <p>新项目默认采用 <strong>完整 AHICP + 完整 PPF + Vault Interface</strong>。只有使用者明确选择时，AI 才使用精简配置。项目“看起来简单”不是自动删掉某个组件的理由。</p>
       <p>原创或未发布源内容默认保持 private（私有）；未正式公开的网页默认 restricted + authenticated（受限并需要认证）。是否公开网页和是否公开源仓库是两个不同决定。</p>
+      <p>平台 bootstrap 已 verified 后，新项目基础设施首选 <code>agent-provisioned-external-ci</code>：private GitHub source、account-wide Access 保护的 Worker、trusted Secret Broker，以及使用 project-scoped Worker credential 的 GitHub Actions deployment。Preview 在独立保护验收前保持 disabled。</p>
+    </section>
+
+    <section class="block">
+      <h2>一次平台授权，多项目复用</h2>
+      <div class="flow">
+        <div class="flow-row"><strong>1 · 平台 Bootstrap</strong><div>GitHub provisioning principal、Cloudflare provisioning principal、account-wide Access 与 trusted Secret Broker 只在平台层建立和验证。</div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-row"><strong>2 · 新项目 Request</strong><div>项目只声明 full stack、private repository、restricted Web 与首选 infrastructure profile，不保存任何 secret。</div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-row"><strong>3 · AI Provisioning</strong><div>Starter 校验 standing authorization，fresh-read 固定 PPF 契约，再由 PPF Provisioner 创建/复用 repository 与 Worker，并通过 Secret Broker 安装部署凭据。</div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-row"><strong>4 · 人类只保留真正的 Gate</strong><div>Public release、reader 扩大、domain/DNS、Provider 扩权、付费变化仍需人类决定；普通 private/restricted 项目创建不应重复授权。</div></div>
+      </div>
+      <p class="small">当前状态：实现与 CI 契约已建立，但首个全新项目的 External-CI live acceptance 仍需独立完成；在此之前不得把它描述成 production-accepted。</p>
     </section>
 
     <section class="block">
@@ -92,16 +108,16 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
 
     <section class="block">
       <h2>进一步了解</h2>
-      <p class="links"><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter">GitHub 仓库</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/ECOSYSTEM.zh-CN.md">体系说明</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md">Agent 调取契约</a><a href="https://inquirystack.philohub.workers.dev/">AHICP</a><a href="https://inquirystack.philohub.workers.dev/ppf/">PPF</a><a href="https://inquirystack.philohub.workers.dev/vault-interface/">Vault Interface</a></p>
-      <p class="small">Starter 的职责是组合、记录采用状态和帮助升级；各上游仓库仍然分别拥有自己的规范。</p>
+      <p class="links"><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter">GitHub 仓库</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/ECOSYSTEM.zh-CN.md">体系说明</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md">Agent 调取契约</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md">项目自动配置契约</a><a href="https://inquirystack.philohub.workers.dev/">AHICP</a><a href="https://inquirystack.philohub.workers.dev/ppf/">PPF</a><a href="https://inquirystack.philohub.workers.dev/vault-interface/">Vault Interface</a></p>
+      <p class="small">Starter 负责组合、采用状态、Provisioning 编排与升级；可执行 Provider 逻辑仍由 PPF 保持权威，各上游仓库继续拥有自己的规范。</p>
     </section>
   </main>
 
   <main id="en" class="lang">
     <div class="hero">
-      <div class="eyebrow">Composition · Adoption · Upgrade</div>
-      <h1>Tell an AI which components a project uses, which versions it has actually adopted, and how to upgrade without trampling project-owned work.</h1>
-      <p class="lead">Starter is not a fourth methodology. It is a composition and upgrade layer that connects AHICP, PPF, and Vault Interface to a real project, records the project’s actual adoption state, and preserves project-owned content and accepted decisions during future upgrades.</p>
+      <div class="eyebrow">Composition · Adoption · Provisioning · Upgrade</div>
+      <h1>Tell an AI what the project adopts, how to provision it safely, and which decisions must remain human.</h1>
+      <p class="lead">Starter is not a fourth methodology and not a second Cloudflare control plane. It owns composition, adoption, and provisioning orchestration: it connects AHICP, PPF, and Vault Interface to a real project, records adopted state, and hands authorized new-project infrastructure execution to the pinned PPF provisioner.</p>
     </div>
 
     <section class="block">
@@ -116,7 +132,8 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
         <div class="card"><h3>Compose</h3><p>Choose full AHICP, full PPF, Vault Interface, or an explicitly selected reduced composition.</p></div>
         <div class="card"><h3>Adopt</h3><p>Record the upstream version the project actually accepted instead of assuming that every template update is automatically adopted.</p></div>
         <div class="card"><h3>Upgrade</h3><p>Compare newer upstream versions with the project’s current state and distinguish automatic updates, merge-managed changes, and project-owned work.</p></div>
-        <div class="card"><h3>Handoff</h3><p>Keep adoption state machine-readable so a new AI can reconstruct component roles, versions, and the next safe action.</p></div>
+        <div class="card"><h3>Provision</h3><p>When platform standing authorization is verified, orchestrate private repositories, restricted Workers, the trusted Secret Broker, and GitHub Actions without repeatedly asking for account-level consent.</p></div>
+        <div class="card"><h3>Handoff</h3><p>Keep adoption and provisioning state machine-readable so a new AI can reconstruct component roles, authorization boundaries, versions, and the next safe action.</p></div>
       </div>
     </section>
 
@@ -152,6 +169,21 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
       <h2>Default for new projects</h2>
       <p>New projects default to <strong>full AHICP + full PPF + Vault Interface</strong>. An AI uses a reduced profile only after explicit user selection; a project that looks simple is not permission to silently drop a component.</p>
       <p>Original or unpublished source remains private by default. Unreleased web output remains restricted and authenticated by default. Public website access and public source-code access are separate decisions.</p>
+      <p>After verified platform bootstrap, the preferred new-project infrastructure profile is <code>agent-provisioned-external-ci</code>: private GitHub source, an account-wide Access-protected Worker, a trusted Secret Broker, and GitHub Actions deployment using a project-scoped Worker credential. Previews stay disabled until separately accepted as protected.</p>
+    </section>
+
+    <section class="block">
+      <h2>Authorize the platform once; reuse it for later projects</h2>
+      <div class="flow">
+        <div class="flow-row"><strong>1 · Platform bootstrap</strong><div>Establish and verify the GitHub provisioning principal, Cloudflare provisioning principal, account-wide Access baseline, and trusted Secret Broker at the platform layer.</div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-row"><strong>2 · New-project request</strong><div>The project declares the full stack, private repository, restricted Web, and preferred infrastructure profile—never secret values.</div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-row"><strong>3 · AI provisioning</strong><div>Starter validates standing authorization, fresh-reads the pinned PPF contract, and hands repository/Worker creation plus credential installation to the PPF provisioner and trusted broker.</div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-row"><strong>4 · Keep real decisions human</strong><div>Public release, reader expansion, domain/DNS changes, provider-scope expansion, and paid-plan changes remain human gates; another ordinary private/restricted project should not require reauthorization.</div></div>
+      </div>
+      <p class="small">Current evidence boundary: implementation and CI contracts exist, but the first clean External-CI new-project live acceptance is still pending. Until that passes, this path is not described as production-accepted.</p>
     </section>
 
     <section class="block">
@@ -169,8 +201,8 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
 
     <section class="block">
       <h2>Go deeper</h2>
-      <p class="links"><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter">GitHub repository</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/ECOSYSTEM.md">Ecosystem guide</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md">Agent Retrieval Contract</a><a href="https://inquirystack.philohub.workers.dev/">AHICP</a><a href="https://inquirystack.philohub.workers.dev/ppf/">PPF</a><a href="https://inquirystack.philohub.workers.dev/vault-interface/">Vault Interface</a></p>
-      <p class="small">Starter owns composition, adoption state, and upgrade mechanics. Each upstream repository remains authoritative for its own specification.</p>
+      <p class="links"><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter">GitHub repository</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/ECOSYSTEM.md">Ecosystem guide</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md">Agent Retrieval Contract</a><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_CONTRACT.md">Project Provisioning Contract</a><a href="https://inquirystack.philohub.workers.dev/">AHICP</a><a href="https://inquirystack.philohub.workers.dev/ppf/">PPF</a><a href="https://inquirystack.philohub.workers.dev/vault-interface/">Vault Interface</a></p>
+      <p class="small">Starter owns composition, adoption state, provisioning orchestration, and upgrade mechanics. PPF remains authoritative for executable provider logic; each upstream repository remains authoritative for its own specification.</p>
     </section>
   </main>
 

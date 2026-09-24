@@ -7,7 +7,7 @@
 | AHICP | 探究、证据、决定、项目记忆与 AI 协作 | [主页](https://inquirystack.philohub.workers.dev/) · [仓库](https://github.com/ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol) |
 | PPF | 以源文件为中心的出版、发布、归档和 Continuous Web | [主页](https://inquirystack.philohub.workers.dev/ppf/) · [仓库](https://github.com/ChongLiuPhil/Personal-Publishing-Framework) |
 | Vault Interface | 与提供商无关的公共元数据 Schema 与验证器 | [主页](https://inquirystack.philohub.workers.dev/vault-interface/) · [仓库](https://github.com/ChongLiuPhil/Vault-interface) |
-| Starter | 组合、采用、配置方案与升级 | [主页](https://inquirystack.philohub.workers.dev/starter/) · [仓库](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
+| Starter | 组合、采用、项目 Provisioning 编排、配置方案与升级 | [主页](https://inquirystack.philohub.workers.dev/starter/) · [仓库](https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter) |
 
 四者保持逻辑独立。互相链接建立的是可发现性与共同采用路径，不会把某个组件的规范权威转移给另一个组件。
 
@@ -16,7 +16,7 @@
 整个体系有意区分两个入口角色：
 
 - **先从 AHICP 了解体系：** [AHICP 公共主页](https://inquirystack.philohub.workers.dev/) 提供完整使用指南，解释这套体系解决什么问题以及怎样开始。
-- **让 AI 从 Starter 开始配置：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files 与 Agent Retrieval Contract 执行项目组合、采用、升级、部署和状态恢复。
+- **让 AI 从 Starter 开始配置：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files、Agent Retrieval Contract 与 Project Provisioning Contract 执行项目组合、采用、低人工 Provisioning、升级、部署和状态恢复。
 
 AHICP 负责解释方法和使用方式；Starter 保留精确的机器配置契约，两者互相链接但不互相替代。
 
@@ -34,6 +34,10 @@ AHICP（完整）
 项目通过 project-stack.yaml 记录真实采用状态，不复制出与上游规范竞争的第二真值源。
 
 `full-research-publication` 是新项目默认 profile。精简 profile 仍然保留，但 AI Agent 只有在使用者明确选择时才能使用；不能因为项目看起来简单就自动省略 AHICP 或 PPF。
+
+平台 bootstrap 已 verified 后，新项目首选 infrastructure profile 是 `agent-provisioned-external-ci`：private GitHub source、account-wide Access 保护的 Worker、trusted Secret Broker、使用 project-scoped Worker credential 的 GitHub Actions deployment，以及在独立保护验收前保持 disabled 的 Preview。Verified standing authorization 可以覆盖已批准 scope 内普通 private/restricted 项目的再次创建；public release、reader expansion、domain/DNS authority、Provider scope 扩大与 paid-plan change 仍由人保留。
+
+`workers-builds-native` 继续支持明确选择 provider-native Git integration 或已经采用它的项目。
 
 Vault Interface 是适配层，不替代 AHICP 或 PPF。
 
@@ -56,6 +60,7 @@ Vault Interface 是适配层，不替代 AHICP 或 PPF。
 
 - [ecosystem.yaml](../ecosystem.yaml)
 - [AGENT_RETRIEVAL_CONTRACT.zh-CN.md](AGENT_RETRIEVAL_CONTRACT.zh-CN.md)
+- [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)
 - [llms.txt](llms.txt)
 
 公共页面只能提高可发现性，不能强制任意 AI 系统自动抓取其他资源。因此，本契约定义的是遵循仓库指令的 Agent 应执行的调取行为。
@@ -67,10 +72,11 @@ AI agent 从任意组件主页或仓库进入时，必须：
 1. 确认当前组件并读取该仓库 ecosystem.yaml；
 2. 读取 canonical Starter ecosystem 与 AGENT_RETRIEVAL_CONTRACT；
 3. 恢复四个组件的责任和公共入口；
-4. 面对下游项目时读取所选 Starter profile、project-stack.yaml 与 lock；
-5. fresh-read 每个 active 上游组件的固定 revision manifest；
-6. 只有在人类明确授权后才检查私人项目状态；
-7. 始终区分 proposal、authorization、execution、verification 与 durable write-back。
+4. 面对下游项目时读取所选 Starter profile、`project-stack.yaml`、lock，以及存在时的 `project-provisioning.yaml`；
+5. 面对新项目时读取 Project Provisioning Contract；若使用 standing authorization，只在 control-plane access 已获授权后读取私人 platform-authorization state；
+6. fresh-read 每个 active 上游组件的固定 revision manifest；
+7. 其他私人项目状态仍只在相应访问已获授权后读取；
+8. 始终区分 proposal、authorization、execution、verification 与 durable write-back。
 
 沿公共链接调取是一套阅读协议，不构成私人仓库或部署系统访问权限。
 
@@ -84,7 +90,9 @@ AI agent 从任意组件主页或仓库进入时，必须：
 
 ## Continuous Web 与 Cloudflare
 
-详细操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。最小人类操作路径见 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)，Browser Agent / Work 交接见 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。
+新项目编排契约见 [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)。详细 Cloudflare 操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。最小人类操作路径见 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)，Browser Agent / Work 交接见 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。
+
+Starter 只记录 Provisioning 意图与授权边界；真正可执行的 GitHub/Cloudflare Provider 逻辑由 PPF 保持权威。Project deployment token 明文绝不能进入语言模型。
 
 AI agent 在要求人类执行 Cloudflare 操作前，必须给出编号的操作者级步骤，指出准确目标账户/项目/域名和受影响层，解释凭据范围与数据传输，明确哪些秘密不得发送给 AI，定义完成证据，并给出回滚路径。
 

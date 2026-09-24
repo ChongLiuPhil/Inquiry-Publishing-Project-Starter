@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/schema/platform-authorization.schema.json",
+  "title": "Inquiry Publishing Stack platform authorization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "github",
+    "cloudflare",
+    "secret_broker",
+    "standing_authorizations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "inquiry-publishing-stack/platform-authorization/v1"
+    },
+    "status": {
+      "enum": [
+        "unconfigured",
+        "partially-authorized",
+        "ready"
+      ]
+    },
+    "github": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_scope",
+        "principal_ref",
+        "principal_type",
+        "authorization_state"
+      ],
+      "properties": {
+        "owner_scope": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        },
+        "principal_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "authorization_state": {
+          "enum": [
+            "unverified",
+            "authorized"
+          ]
+        },
+        "principal_type": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "github-app-user-access",
+                "github-app-installation",
+                "authorized-provider-connector"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "cloudflare": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "principal_ref",
+        "authorization_state",
+        "all_workers_access",
+        "worker_creation_authority"
+      ],
+      "properties": {
+        "account_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "principal_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "authorization_state": {
+          "enum": [
+            "unverified",
+            "authorized"
+          ]
+        },
+        "all_workers_access": {
+          "enum": [
+            "unverified",
+            "verified"
+          ]
+        },
+        "worker_creation_authority": {
+          "enum": [
+            "unverified",
+            "authorized"
+          ]
+        }
+      }
+    },
+    "secret_broker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implementation_ref",
+        "state",
+        "plaintext_boundary",
+        "token_minting_authority"
+      ],
+      "properties": {
+        "implementation_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "state": {
+          "enum": [
+            "unverified",
+            "verified"
+          ]
+        },
+        "plaintext_boundary": {
+          "enum": [
+            "unverified",
+            "verified"
+          ]
+        },
+        "token_minting_authority": {
+          "enum": [
+            "unverified",
+            "isolated-authorized"
+          ]
+        }
+      }
+    },
+    "standing_authorizations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "create_private_repositories",
+        "create_restricted_workers",
+        "restricted_web_deployment",
+        "public_release",
+        "reader_audience_expansion",
+        "custom_domain_change",
+        "paid_plan_change",
+        "source_repository_public",
+        "provider_permission_scope_expansion",
+        "direct_secret_input"
+      ],
+      "properties": {
+        "create_private_repositories": {
+          "type": "boolean"
+        },
+        "create_restricted_workers": {
+          "type": "boolean"
+        },
+        "restricted_web_deployment": {
+          "type": "boolean"
+        },
+        "public_release": {
+          "const": false
+        },
+        "reader_audience_expansion": {
+          "const": false
+        },
+        "custom_domain_change": {
+          "const": false
+        },
+        "paid_plan_change": {
+          "const": false
+        },
+        "source_repository_public": {
+          "const": false
+        },
+        "provider_permission_scope_expansion": {
+          "const": false
+        },
+        "direct_secret_input": {
+          "const": false
+        }
+      }
+    }
+  }
+}

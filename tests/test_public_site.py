@@ -65,7 +65,17 @@ class PublicSiteTests(unittest.TestCase):
                 if path.endswith(".html"):
                     return b'<!doctype html><html lang="zh-CN"><head><title>Fixture</title></head><body><main id="zh" class="lang active"><h1>Fixture content</h1><a href="#x" id="x">Link</a></main><script>const ok = true;</script></body></html>'
                 if path.endswith("entry.json"):
-                    return json.dumps({"public_landing": MACHINE_ENTRY, "human_entry": PUBLIC_URL, "public_delivery": {"current_provider": "cloudflare-workers"}}).encode()
+                    return json.dumps({
+                        "public_landing": MACHINE_ENTRY,
+                        "human_entry": PUBLIC_URL,
+                        "public_delivery": {"current_provider": "cloudflare-workers"},
+                        "authorization": {"deployment_token_plaintext_in_model_context": False},
+                        "project_provisioning": {
+                            "preferred_profile": "agent-provisioned-external-ci",
+                            "secret_broker_required": True,
+                            "status": "implemented-reference-live-acceptance-pending",
+                        },
+                    }).encode()
                 return b'Public fixture text\n'
             for path in ALLOWED["starter"]:
                 file = root / path
@@ -75,7 +85,11 @@ class PublicSiteTests(unittest.TestCase):
             info = compose(root, out, self.lock, "a" * 40, False, fixture)
             validate(out)
             self.assertEqual(info["components"]["starter"]["revision"], "a" * 40)
-            self.assertEqual(json.loads((out / "agent/entry.json").read_text())["public_landing"], MACHINE_ENTRY)
+            descriptor = json.loads((out / "agent/entry.json").read_text())
+            self.assertEqual(descriptor["public_landing"], MACHINE_ENTRY)
+            self.assertEqual(descriptor["project_provisioning"]["preferred_profile"], "agent-provisioned-external-ci")
+            self.assertTrue((out / "PROJECT_PROVISIONING_CONTRACT.md").is_file())
+            self.assertTrue((out / "PROJECT_PROVISIONING_ACCEPTANCE.md").is_file())
             self.assertFalse((out / "docs/working-memory").exists())
             first = (out / "build-info.json").read_bytes()
             compose(root, out, self.lock, "a" * 40, False, fixture)

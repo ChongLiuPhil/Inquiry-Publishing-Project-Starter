@@ -1,6 +1,6 @@
 # Continuous Web and Cloudflare operational guide
 
-For the shortest human handoff, read [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md). For browser-capable execution, use [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md). The machine-readable non-secret plan is [../templates/cloudflare-access-plan.yaml](../templates/cloudflare-access-plan.yaml).
+For a new project, first read [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md), then [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md). For browser-capable execution, use [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md). The machine-readable non-secret plan is [../templates/cloudflare-access-plan.yaml](../templates/cloudflare-access-plan.yaml).
 
 This guide is a reusable operational contract, not a claim that every project has already been deployed.
 
@@ -69,9 +69,9 @@ policy_ref identifies the intended policy. It is not a place to store credential
 
 Choose and record one profile before deployment:
 
-- Native provider integration — simplest operational path; validate the provider-managed credential scope and do not describe it as least privilege unless verified.
-- Hardened external CI — GitHub Actions or another CI uses an account-owned token restricted to the target Worker or project; keep the token only in the CI secret store.
-- Future/provider-specific profile — use only after current provider documentation and a real test confirm its capability.
+- **Agent-provisioned external CI — preferred for new projects after platform bootstrap.** A platform provisioner creates the Worker; a trusted broker installs an account-owned token scoped to that individual Worker with the Editor role into GitHub Actions. Token plaintext never enters model context.
+- **Workers Builds Native — provider-native alternative.** Use when native Git integration is explicitly preferred or already adopted; its current build credential follows the provider user-token model.
+- **Future/provider-specific profile** — use only after current provider documentation and a real test confirm its capability.
 
 PPF security-profile documents provide the reference trade-offs. Deployment credentials and reader access remain orthogonal.
 
@@ -79,16 +79,16 @@ PPF security-profile documents provide the reference trade-offs. Deployment cred
 
 1. Identify the exact GitHub source repository, output directory, canonical domain, visibility, retention policy, Cloudflare account, and target Worker/project.
 2. Confirm that the source repository is private when it contains unpublished original work.
-3. Select the build and deployment profile.
-4. Create or connect the Cloudflare project without exposing secrets to the repository.
-5. Configure build commands and output paths from repository-owned machine contracts.
-6. Configure preview behavior.
-7. Configure reader access before exposing unpublished output.
-8. Configure a custom domain only with the temporary authority required for provisioning.
-9. Run a preview build and verify HTML, assets, feeds, redirects, headers, alternate URLs, and access behavior.
-10. Run production deployment only after the human approves the publication state.
-11. Record verified provider state, deployment revision, access-policy reference, and verification result in private project state.
-12. Preserve rollback paths for build, access policy, and domain routing.
+3. Select the build/deployment profile; for a new project use `agent-provisioned-external-ci` unless another profile was explicitly selected.
+4. Verify platform standing authorization and account-wide `all_workers` Access before creating a Worker.
+5. Create/reuse the private GitHub repository and restricted Worker through the authorized provisioner.
+6. For external CI, have the trusted Secret Broker install the project-scoped Worker credential directly into GitHub Actions; do not expose plaintext to the Agent.
+7. Configure build commands and output paths from repository-owned machine contracts.
+8. Keep previews disabled until their protection is separately accepted.
+9. Deploy restricted production only when durable project authorization covers restricted Web deployment.
+10. Verify the exact deployed revision, anonymous denial, and representative direct assets.
+11. Configure a custom domain only after separate domain/DNS authorization.
+12. Record verified non-secret provider state, deployment revision, access-policy reference, and rollback result in private project state.
 
 ## 6. Required AI-agent handoff format
 
@@ -105,16 +105,19 @@ Before any Cloudflare action that requires human account-owner interaction, the 
 
 Vague instructions such as “configure Cloudflare,” “enable Access,” or “set up DNS” are insufficient.
 
-## 7. Cloudflare ↔ GitHub connection
+## 7. GitHub + Cloudflare platform integration
 
-For the PPF reference implementation, detailed operator runbooks live in the PPF repository:
+For the preferred new-project path, there is no per-project Cloudflare GitHub App authorization. Starter validates platform authorization and hands Provider execution to the pinned PPF `agent-provisioned-external-ci` implementation.
 
-- docs/CLOUDFLARE_GITHUB_AUTHORIZATION.md — account-owner and GitHub App authorization flow;
-- docs/CLOUDFLARE_SECURITY_PROFILES.md — deployment credential profiles and least-privilege trade-offs;
-- docs/CLOUDFLARE_ACCESS_PROFILE.md — mapping of publication visibility to reader-access configuration;
-- docs/CLOUDFLARE_OBSERVED_UI_MAPPING.md — dated observations of Cloudflare UI fields.
+Read the current PPF runbooks:
 
-An agent should read these before giving provider-specific clicks or field mappings.
+- docs/AGENT_PROVISIONED_EXTERNAL_CI.md — minimum-human new-project profile;
+- docs/CLOUDFLARE_GITHUB_AUTHORIZATION.md — two platform-level authorizations plus the native alternative;
+- docs/CLOUDFLARE_SECURITY_PROFILES.md — provisioning/deployment credential boundaries;
+- docs/CLOUDFLARE_ACCESS_PROFILE.md — publication visibility to reader-access mapping;
+- docs/CLOUDFLARE_OBSERVED_UI_MAPPING.md — dated Cloudflare UI observations.
+
+If `workers-builds-native` is explicitly selected, follow its Cloudflare GitHub App authorization path. Do not apply those steps to an external-CI project merely out of habit.
 
 ## 8. Restricted reader-access setup
 

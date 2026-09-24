@@ -33,11 +33,12 @@ Agent 可能从以下任意入口进入：
    - PPF：以源文件为中心的出版生命周期与 Continuous Web；
    - Vault Interface：与平台无关的公共元数据接口；
    - Starter：组合、采用、配置方案与升级层。
-5. 如果面对下游项目，读取 `project-stack.yaml`、所选 profile 与 lock 文件。
-6. 对每个 active 的 AHICP 或 PPF 组件，在配置或升级前重新读取固定 revision 对应的上游 manifest 或 template manifest。
-7. 只有在人类明确授权后才读取私人项目状态。
-8. 在写入外部状态前，明确区分提议（proposal）、授权（authorization）、执行（execution）、验证（verification）和持久写回（durable write-back）。
-9. 涉及 Cloudflare 时，先读取共享的 Continuous Web / Cloudflare 指南，以及所选部署 profile 对应的 PPF 服务商操作说明。
+5. 如果面对下游项目，读取 `project-stack.yaml`、所选 profile、lock 文件，以及存在时的 `project-provisioning.yaml`。
+6. 面对**新项目**时，读取权威 Project Provisioning Contract；如果 Request 依赖 platform standing authorization，只有在该 control-plane access 已获授权后才读取私人 platform-authorization state。
+7. 对每个 active 的 AHICP 或 PPF 组件，在配置或升级前 fresh-read 固定 revision 对应的上游 manifest / template manifest。
+8. 其他私人项目状态仍只在人类明确授权后读取。
+9. 在写入外部状态前，明确区分 proposal、authorization、execution、verification 与 durable write-back。
+10. 涉及 Cloudflare 时，读取共享 Continuous Web / Cloudflare 指南，以及所选 deployment profile 对应的 PPF Provider contract。
 
 沿公共链接阅读只是一项调取指令，不构成私人仓库、私人 Vault、提供商账户、凭据、未发布源文件或部署控制平面的访问授权。
 
@@ -53,6 +54,8 @@ Agent 可能从以下任意入口进入：
 ~~~
 
 精简 profile 仍然可用，但必须由使用者明确选择。Agent 不得因为项目“看起来简单”就自动省略 AHICP 或 PPF。
+
+新建完整 Stack 项目在平台 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`：private GitHub source、account-wide Access 保护的 Worker、trusted Secret Broker 传递的 project-scoped deployment credential、GitHub Actions deployment，以及在独立验收前保持 disabled 的 Preview。`workers-builds-native` 继续支持明确选择或已经采用它的项目。
 
 ## 4. 默认隐私与发布姿态
 
@@ -79,9 +82,12 @@ Agent 可能从以下任意入口进入：
 - 固定的上游 revision；
 - 源仓库隐私与 Web 可见性；
 - 当前发布授权状态；
-- Cloudflare 部署 profile 与访问策略；
+- Cloudflare deployment profile 与 access policy；
+- 适用时的 project provisioning profile 与 `project-provisioning.yaml` 状态；
+- platform standing authorization 是否覆盖当前 GitHub owner 与 Cloudflare scope；
+- trusted Secret Broker 及其隔离的 token-minting boundary 是否 verified；
 - 哪些操作已经授权、哪些仍由人保留；
-- 哪些服务商实际状态仍需验证。
+- 哪些 Provider actual state 仍需验证。
 
 如果无法恢复这些事实，应把它视为配置缺陷，而不是自行猜测。
 

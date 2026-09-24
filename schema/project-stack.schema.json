@@ -208,6 +208,31 @@
               "const": "TEMPLATE_SOURCE_COMMIT_AT_ADOPTION"
             }
           ]
+        },
+        "project_provisioning": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profile",
+            "request_ref",
+            "platform_authorization_ref"
+          ],
+          "properties": {
+            "profile": {
+              "enum": [
+                "agent-provisioned-external-ci",
+                "workers-builds-native"
+              ]
+            },
+            "request_ref": {
+              "type": "string",
+              "const": "project-provisioning.yaml"
+            },
+            "platform_authorization_ref": {
+              "type": "string",
+              "const": "private-platform-state"
+            }
+          }
         }
       }
     }
