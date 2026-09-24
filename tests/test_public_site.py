@@ -71,9 +71,12 @@ class PublicSiteTests(unittest.TestCase):
                         "public_delivery": {"current_provider": "cloudflare-workers"},
                         "authorization": {"deployment_token_plaintext_in_model_context": False},
                         "project_provisioning": {
-                            "preferred_profile": "agent-provisioned-external-ci",
-                            "secret_broker_required": True,
-                            "status": "implemented-reference-live-acceptance-pending",
+                            "preferred_profile": "workers-builds-native",
+                            "default_setup_mode": "human-assisted-once-per-project",
+                            "default_access_mode": "worker-scoped-access",
+                            "secret_broker_required_for_default": False,
+                            "status": "guided-per-project-default",
+                            "per_project_setup_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md",
                         },
                     }).encode()
                 return b'Public fixture text\n'
@@ -87,7 +90,7 @@ class PublicSiteTests(unittest.TestCase):
             self.assertEqual(info["components"]["starter"]["revision"], "a" * 40)
             descriptor = json.loads((out / "agent/entry.json").read_text())
             self.assertEqual(descriptor["public_landing"], MACHINE_ENTRY)
-            self.assertEqual(descriptor["project_provisioning"]["preferred_profile"], "agent-provisioned-external-ci")
+            self.assertEqual(descriptor["project_provisioning"]["preferred_profile"], "workers-builds-native")
             self.assertTrue((out / "PROJECT_PROVISIONING_CONTRACT.md").is_file())
             self.assertTrue((out / "PROJECT_PROVISIONING_ACCEPTANCE.md").is_file())
             self.assertFalse((out / "docs/working-memory").exists())
