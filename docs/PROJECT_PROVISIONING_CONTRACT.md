@@ -37,6 +37,7 @@ The executable provider authority is the PPF infrastructure layer:
 - `providers/infrastructure/coordinator.py`
 - `schema/project.infrastructure.schema.json`
 - `docs/AGENT_PROVISIONED_EXTERNAL_CI.md`
+- `docs/TRUSTED_SECRET_BROKER.md`
 
 Starter is responsible for selecting the PPF profile, creating the project-level request, checking platform authorization, applying the stack template, and preserving the human decision boundary.
 
@@ -203,7 +204,9 @@ Secrets never belong in:
 
 The PPF provisioner returns only a non-secret `ppf/secret-broker-request/v1`.
 
-The secret broker is a trusted execution boundary, not an LLM prompt.
+PPF now implements the atomic Secret Broker orchestration and safe `ppf/secret-broker-result/v1` contract. It refuses to overwrite existing target Secrets, verifies the issuer-reported Worker/role scope, rolls back transaction-created Secrets, and revokes a newly minted token when the broker transaction fails. The Cloudflare granular-token issuer adapter remains `live-acceptance-pending` until the exact current individual-Worker `Editor` policy encoding is verified against the live Provider API.
+
+The secret broker is a trusted execution boundary, not an LLM prompt. Starter must not treat “broker orchestration implemented” as equivalent to “Cloudflare token issuer production-accepted”.
 
 ## 11. Completion criteria
 
@@ -234,7 +237,7 @@ The contract, schemas, planner, PPF provisioner, workflow, and CI can establish 
 
 They cannot establish live production acceptance for this new profile.
 
-The first production-grade acceptance must use one clean test project and record:
+The first production-grade acceptance must use one clean test project, first record non-secret Provider evidence proving the minted Cloudflare credential is scoped to exactly the intended existing Worker with `Editor`, and then record:
 
 ```text
 project request
