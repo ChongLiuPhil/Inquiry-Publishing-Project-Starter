@@ -1,181 +1,173 @@
 # Cloudflare 最小人类操作交接
 
-**状态：** private/restricted Continuous Web 的 canonical 操作交接  
-**策略引用：** `shared-reader-access`
+**状态：** private/restricted Continuous Web 的权威操作交接  
+**新项目默认 Infrastructure Profile：** `agent-provisioned-external-ci`  
+**Policy Reference：** `shared-reader-access`
 
-本指南把 Cloudflare 配置压缩到尽可能少的人类保留操作。其余工作应尽量由获得授权的 API Agent，或可使用浏览器的 ChatGPT Work 类 Agent 完成。
+本指南通过区分**平台 bootstrap**与**项目 provisioning**，把重复人类操作压到最低。
 
-## 1. Canonical 访问模型
+完整编排规则见 [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)。真正可执行的 Provider implementation 仍由 PPF 负责。
 
-Canonical 策略**不是仓库密码**，而是一个名为 `shared-reader-access` 的可复用 Cloudflare Access policy。
+## 1. Canonical Access 模型
 
-对人类读者，当前推荐的低摩擦模型是：
+未发布/restricted 项目：
 
-~~~text
-restricted hostname
+```text
+restricted Worker hostname
 -> Cloudflare Access
--> shared-reader-access reusable policy
--> 明确允许的读者 email
--> One-Time PIN
--> 24h session
-~~~
+-> account-wide all_workers baseline
+-> project / audience policy
+-> authenticated reader
+```
 
-共享的是 policy 名称；读者身份、Cloudflare application/policy ID 与其他 provider state 保持在私人 provider state 中。
+项目文件可以记录 access-policy reference。Reader identity、账户私有 application/policy ID、credential、OTP 与 token 值仍属于 private provider state。
 
-Cloudflare Access 当前官方模型以身份与策略为中心，并没有通用的“静态共享密码” Access selector。因此，已经存在的统一阅读密码应当视为**旧系统兼容凭据**，而不是新的 canonical Access 机制。不要为了保留旧体验而把密码移入 Git。
+通用共享静态密码不是新的 canonical 模型。
 
-## 2. 应当保留给人类的最少操作
+## 2. 最少人类角色
 
-正常情况下，人类只需要做：
+首选新项目 Profile 不要求每个项目再做一次 Cloudflare ↔ GitHub 授权。
+
+人类通常只在以下边界操作：
+
+### Platform bootstrap — 一次性/低频
 
 1. 登录 Cloudflare 并完成 MFA。
-2. **每个 GitHub account/org 一次：** 授权 Cloudflare Workers & Pages GitHub App 访问指定仓库。
-3. **每个 automation principal 一次：** 创建初始 scoped API token。Token 只进入执行 Agent 的安全 secret store，绝不粘贴进聊天或 Git。
-4. 确认实际允许阅读的人。使用 OTP 时，把读者 email 直接填入 Cloudflare 或安全 Agent 表单。
-5. 如果旧部署仍使用统一静态密码，由人类把该秘密直接输入现有 provider-side secret 字段；不要把值发送给 AI。
-6. 将来如果要从 restricted 变为 public，由人类明确批准最终公开发布。
+2. 授权范围受限的 Cloudflare provisioning principal。
+3. 建立并验证覆盖 `all_workers` 的 account-wide Access baseline。
+4. 建立 trusted Secret Broker / token-minting boundary。
+5. 授权 GitHub provisioning principal 访问预定 GitHub owner/organization scope。
 
-其余步骤都应尽量由 Agent 完成并验证。
+### 之后仍由人保留的决定
 
-## 3. 一次性 Cloudflare ↔ GitHub 授权
+- public release；
+- 新增/扩大 reader；
+- 新 custom/canonical domain 或 DNS authority；
+- 扩大 GitHub / Cloudflare permission scope；
+- paid-plan / billing change；
+- trusted broker 不可用时的 fallback direct secret input。
 
-当前 Workers Builds 的人类操作：
+在已经批准的平台 scope 内再创建一个 private/restricted 项目，**本身不是新的 human gate**。
 
-1. Cloudflare Dashboard → **Workers & Pages**。
-2. 打开目标 Worker → **Settings → Builds → Connect**。
-3. 选择 **GitHub**。
-4. 安装/授权 **Cloudflare Workers and Pages** GitHub App。
-5. 优先选择 **selected repositories only**，只授权实际需要构建的项目仓库。
-6. 返回 Cloudflare，确认 Worker 的 Build settings 已显示目标 Git repository。
+## 3. Cloudflare Provisioning Principal
 
-这是最主要的不可替代账户所有者授权。完成以后，Workers Builds 的触发器与配置可以通过 Cloudflare Builds API 自动化。
+Platform principal 只应拥有实现真正需要的 capability，但“创建 Worker”比日常 deployment 权限更广。
 
-## 4. 一次性 API 自动化凭据
+Cloudflare 当前 Workers role 区分：
 
-如果后续交给 API Agent，在 **My Profile → API Tokens → Create Token → Custom token** 创建最小权限 user token。
+- product-level **Admin**：可以创建 Worker；
+- individual-Worker **Editor**：可以更新/部署既有 Worker，但不能删除。
 
-### Access application / policy token
+因此：
 
-权限：
+```text
+platform provisioner
+  -> Workers product Admin 用于创建
 
-~~~text
-Account → Access: Apps and Policies → Edit
-~~~
+project CI
+  -> individual Worker Editor 用于日常部署
+```
 
-尽可能把资源范围限制到目标 Cloudflare account。
+绝不能把 platform provisioning credential 交给 project CI。
 
-### Identity provider token
+## 4. 高权限 Token-Minting 边界
 
-只有 Agent 需要创建或修改 OTP/IdP 时才授予：
+自动创建 account-owned API token 本身是高权限账户动作。
 
-~~~text
-Account → Access: Organizations, Identity Providers, and Groups → Edit
-~~~
+Cloudflare 当前 account-token 文档要求创建/更新 account-owned token 的主体拥有较高账户 authority。因此，这项能力只能存在于 trusted Secret Broker / provisioning boundary。
 
-如果 OTP/IdP 已经存在，就不要增加这项权限。
+语言模型与 project CI 都不能获得 token-minting authority。
 
-### Workers Builds token
+Broker 应创建：
 
-Cloudflare 当前 Builds API 要求 **user-scoped** API token：
+```text
+account-owned API token
+scope: specified individual Worker
+role: Editor
+```
 
-~~~text
-Account → Workers Builds Configuration → Edit
-Account → Workers Scripts → Read
-~~~
+并直接把它写入目标 repository 的 GitHub Actions Secret。
 
-前者用于 build trigger/configuration；后者只用于解析 Worker 的 immutable tag。
+## 5. Secret Broker Contract
 
-不要使用 Global API key。
+PPF Provisioner 只返回非秘密 `ppf/secret-broker-request/v1`。
 
-## 5. 读者认证：推荐 OTP 路径
+Trusted broker 原子执行：
 
-如果 One-Time PIN 尚未存在：
+1. 解析目标 Worker；
+2. 创建 scoped account-owned Worker token；
+3. 获取 repository Actions-secret public key / 安全写入接口；
+4. 写入 `CLOUDFLARE_API_TOKEN`；
+5. 写入 `CLOUDFLARE_ACCOUNT_ID`；
+6. 丢弃 token 明文；
+7. 只返回非秘密安装状态与 ID。
 
-1. Cloudflare Dashboard → **Zero Trust → Integrations → Identity providers**。
-2. 在 **Your identity providers** 下选择 **Add new identity provider**。
-3. 选择 **One-time PIN**。
-4. Save。
-5. 不要为了省事创建 `Everyone` 或“所有有效 email”式 Allow policy。
+绝不把 token 粘贴进聊天、PR、issue、repository file 或 Agent 可见 log。
 
-建立 reusable policy：
+## 6. Account-Wide Access Bootstrap
 
-1. **Zero Trust → Access controls → Policies**。
-2. 选择 **Add a policy**。
-3. Policy name：`shared-reader-access`。
-4. Action：**Allow**。
-5. Session duration：初始使用 **24 hours**。
-6. Include：**Emails** → 只加入获准读者 email。
-7. Require：**Login Methods** → **One-time PIN**。
-8. Save。
+自动创建任何 project Worker 以前，必须验证 destination 覆盖 `all_workers` 的 Access application 或等价 account-wide baseline。
 
-24 小时只是当前安全性/便利性的初始平衡；将来修改 session 是策略决定，不是模板迁移。
+该 baseline 应覆盖现有和未来 Worker。
 
-## 6. 保护一个 publication hostname
+Provisioner 无法验证时必须 fail closed。
 
-每个 restricted publication：
+以后 production 公开应表现为准确的 project exception；不得为了公开一个项目而关闭 account baseline。
 
-1. **Zero Trust → Access controls → Applications**。
-2. **Create new application**。
-3. 选择 **Self-hosted and private**。
-4. **Add public hostname**。
-5. 填入项目 canonical restricted hostname。除非项目契约明确要求更窄 path，否则保护整个 hostname。
-6. **Access policies** 中附加已有 reusable policy `shared-reader-access`。
-7. 选择预期 login provider，通常为 One-Time PIN。
-8. Application session duration 初始同样用 24 hours。
-9. Save。
-10. 在暴露未发布输出之前，确认准确 hostname 已存在对应 Access application。
+## 7. Reader Authentication
 
-受 Access 保护的 application 默认拒绝未匹配 Allow policy 的请求。
+`shared-reader-access` 等 reusable policy 可以使用 One-Time PIN 等已批准 identity mechanism 与明确 reader audience。
 
-## 7. 人类 bootstrap 之后由 Agent 完成
+不得为了省事建立 Everyone / 所有 email 均允许的规则。
 
-GitHub App 与 scoped API token 就绪后，API Agent 应完成：
+每个 restricted 项目至少验证：
 
-1. 读取项目 `publishing.yaml`、`cloudflare-builds.yaml`、Worker name、repository ID、branch、build/deploy/preview command 与 hostname。
-2. 读取 Cloudflare actual state。
-3. 通过 Access API 创建或更新 `shared-reader-access`。
-4. 创建或更新对应 hostname 的 self-hosted Access application。
-5. 在 GitHub App 已授权前提下配置 Workers Builds。
-6. 触发 preview build。
-7. 验证 build revision、runtime URL、Access 行为、direct asset、feed 与 alternate route。
-8. 只把非秘密 ID/status 写回私人 project state。
-9. 没有人类明确 public-release authorization 时，在公开切换前停止。
+- anonymous request 被 challenge/deny；
+- 已实际批准 reader 时，approved reader 可以访问；
+- unapproved reader 不可访问；
+- direct asset/feed/generated-file URL 不能绕过 Access。
 
-## 8. Browser Agent / ChatGPT Work
+Reader identity 属于 private state，不进入公共 project repository。
 
-没有直接 Cloudflare API 工具时，使用 **Work mode**，并采用 `CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md` 中的 prompt。
+## 8. Platform Bootstrap 后由 Agent 执行
 
-只有出现以下界面时交还人类：
+Platform authorization 已记录为 ready 后，Agent 通常应：
 
-- Cloudflare 登录/MFA；
-- GitHub App authorization；
-- API token secret 的生成与安全保存；
-- 读者 identity 批准；
-- 旧统一密码/秘密的直接输入；
-- 最终公开发布批准。
+1. 校验 `project-provisioning.yaml`；
+2. 确认 GitHub owner 位于批准 scope；
+3. 再次验证 account-wide Access；
+4. 调用固定版本 PPF Provisioner；
+5. 创建/复用 private repository 与 restricted Worker；
+6. 把非秘密 Broker Request 交给 trusted broker；
+7. 只验证 deployment-secret metadata，不读取 Secret 值；
+8. 运行 repository validation 与已授权 GitHub Actions deployment；
+9. 验证准确 deployed revision 与 restricted HTTP behavior；
+10. 只持久记录非秘密状态与 rollback evidence。
 
-人类完成后立即把控制权交回 Agent，让 Agent 继续设置与验证。
+没有人类独立 public-release authorization 时，必须停在公开切换之前。
 
-## 9. 旧统一静态阅读密码
+## 9. Workers Builds Native 备选
 
-如果当前部署已经有一个共享静态阅读密码：
+`workers-builds-native` 继续支持明确选择 provider-native Git integration 或已有采用该 Profile 的项目。
 
-- **不要发送到聊天**；
-- **不要写进** `publishing.yaml`、`website.yaml`、`wrangler.jsonc`、Git-tracked CI config 或 Access policy metadata；
-- 如果既有 runtime 已有 provider-side secret 字段，人类可以直接把当前值填进去，作为临时 compatibility layer；
-- 除非“必须保持完全相同的单一密码 UX”是明确项目需求，否则不要为了新项目再造一个静态密码 gate；
-- 对人类读者优先迁移到 Access identity + OTP，同时继续把 `shared-reader-access` 作为稳定 policy reference。
+该路径需要 Cloudflare Workers & Pages GitHub App 与 repository authorization；build credential 仍是 user-token 模型，而不是首选的 one-Worker account-owned deployment identity。
 
-## 10. 完成验证门
+没有明确 migration plan 时，不得在同一项目混用两种 Profile。
 
-restricted Continuous Web 只有在全部满足时才完成：
+## 10. 完成门
 
-- private/incognito 匿名访问被 challenge 或 deny；
-- approved reader 可以认证阅读；
-- unapproved reader 不能阅读；
-- direct asset/feed/generated-file URL 不能绕过 Access；
-- preview 与 production endpoint 符合预期保护策略；
-- deployed revision 与目标 source revision 一致；
-- Git、build log、PR、chat 中不存在 reader secret；
-- rollback 路径明确；
-- 私人 project state 记录 Access application ID / policy ID 与验证结果，但不记录 credential value。
+Restricted Continuous Web 只有在以下全部成立时才完成：
+
+- private GitHub source identity 正确；
+- account-wide Access 仍 verified；
+- target Worker 正确；
+- project deployment Secret 已安装且没有 Secret disclosure；
+- repository/build gate 通过；
+- deployed revision 与 intended source 一致；
+- production anonymous access 被 challenge/deny；
+- direct asset 不可绕过 Access；
+- 已启用 Preview（如有）独立受保护；
+- rollback 明确；
+- 只把非秘密 Provider state 写回。
+
+Deployment success 不构成 public-release authorization。
