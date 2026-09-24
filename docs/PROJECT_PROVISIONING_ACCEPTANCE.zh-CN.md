@@ -1,61 +1,72 @@
-# 项目自动配置验收
+# 项目 Provisioning 验收
 
-**目的：** 对 `agent-provisioned-external-ci` 做真实端到端 live acceptance。
+**用途：** 对默认 `workers-builds-native`“每项目一次引导式 bootstrap”进行真实验收。
 
-Repository CI、mock 与 Provider API 模拟均不能替代本验收。
+该验收是项目级的，不要求账户级零人工 Provisioning。
 
 ## 前置条件
 
-- platform authorization 已在私人状态中记录并校验为 ready；
-- account-wide Cloudflare Access protection 已 verified；
-- GitHub / Cloudflare provisioning principal 位于已批准 scope；
-- trusted Secret Broker 可用；
-- pilot slug 对应 repository / Worker 事先不存在；
-- 不需要 Custom Domain、DNS 改动或付费产品。
+- Project Request 校验通过；
+- 目标 GitHub owner 为 `ChongLiuPhil`；
+- repository 已是或将以 private 创建；
+- 项目采用固定版本 PPF；
+- Public release 未授权；
+- Preview 默认关闭。
 
-## Pilot
+对默认 Profile，公共 `platform-authorization.yaml` Template 可以继续保持 `unconfigured`。
 
-使用可丢弃 project slug，且不得包含用户 manuscript 或本地电脑材料。
+## 验收步骤
 
-1. 用默认 full stack + External-CI Profile 新建 Provisioning Request。
-2. 生成并审核 Starter Provisioning Plan。
-3. Fresh-read 固定 AHICP / PPF / Vault manifest。
-4. 由已授权 GitHub provisioning principal 创建 private repository。
-5. 把固定 Stack / Template 组合进 repository。
-6. 再次验证 account-wide Access 后才创建 Worker metadata。
-7. Source deployment 前确认新 workers.dev endpoint 不可匿名读取。
-8. 让 PPF Provisioner 输出 Secret Broker request。
-9. Trusted broker discovery / verify 当前 Cloudflare individual-Worker policy encoding，创建 account-owned credential，并用非秘密 Provider policy / identity 证据证明它只命中目标 Worker、角色为 `Editor`；随后安装 GitHub Actions Secret，明文不得返回 Agent。
-10. 运行 repository validation 与 deployment workflow。
-11. 确认预期 Git SHA / revision 已部署。
-12. 确认 production 匿名访问被 deny/challenge。
-13. 如果 pilot 已明确批准 reader，则验证授权 reader 可读；否则不得自行发明 reader，只验匿名拒绝。
-14. 匿名直接请求至少一个生成 asset，确认同样被 deny/challenge。
-15. 确认 Preview URL 仍 disabled；Preview 作为后续独立验收。
-16. 确认 repository history、Actions log、issue、PR、Agent output 与公共 metadata 中没有 Secret 值。
-17. 在 private state 中记录非秘密 repository ID、Worker ID/name、deployed revision、Access reference、verification timestamp 与 rollback target。
-18. 再触发一次后续 source change，确认同一 project-scoped credential 可以 deploy，且无需新的 platform authorization。
-19. 无实质 source change 时再运行，确认没有意外 infrastructure drift。
-20. 回滚到上一 verified deployment/version，再恢复当前版本，并确认两个状态都保持 restricted access。
+1. 在 `ChongLiuPhil` 下创建或确认 private repository。
+2. 应用完整 Starter 组合与固定 upstream revisions。
+3. 校验生成的 PPF `project.infrastructure.json`。
+4. 确认 Profile 是 `workers-builds-native`。
+5. 在 Cloudflare Workers & Pages 中 Import / Connect 目标 GitHub repository。
+6. 如果 GitHub 提示，为该 repository 授权 Cloudflare Git integration。
+7. 配置 production branch `main`、root `/`、固定 PPF build command 与 deploy command。
+8. 保持 non-production / preview build disabled。
+9. Save / Deploy，并只记录非秘密 Worker / repository connection identifiers。
+10. 给 Worker 启用 Cloudflare Access，选择 **All traffic**；如果已经有 verified account-wide Access 覆盖它，则记录并复用。
+11. 核验 GitHub repository 仍为 private。
+12. 核验第一次 build / deployment 成功。
+13. 核验 deployed revision 与预期 Git revision 一致。
+14. 核验匿名 production 请求被 challenge / deny。
+15. 核验已批准 reader 完成认证后可以访问 publication。
+16. 核验 direct asset URL 不能绕过 Access。
+17. 对 source 做一次无害改动并 push 到 `main`。
+18. 核验 Workers Builds 自动启动并部署新 revision。
+19. 确认第 18 步不需要重新授权 GitHub repository，也不需要重新连接 Cloudflare。
+20. 核验第二次 deployment 后 Access 仍然生效。
+21. 记录 rollback / restore point 与非秘密 Provider state。
 
-## Pass Criteria
+## 通过标准
 
 只有以下全部成立才通过：
 
-- 没有 per-project platform reauthorization；
-- GitHub source 一直 private；
-- account-wide Access 一直 enabled；
-- minted Cloudflare credential 的真实 Provider policy / identity 已作为非秘密证据记录，并确认 routine CI authority 只限制到目标 Worker、角色为 `Editor`；
-- token 明文从未进入 model / Git / log；
-- deployment 与 revision verification 成功；
-- production 与 direct asset 匿名访问被 deny/challenge；
-- rollback 成功；
-- 未发生 paid-plan、domain、DNS 或 public-release 改动。
+- repository owner 为 `ChongLiuPhil`；
+- repository visibility 为 private；
+- Workers Builds 连接正确 repository；
+- production branch 为 `main`；
+- 第一次 restricted deployment 已验证；
+- Worker-scoped Access 或显式记录的 verified account-wide Access 已生效；
+- 匿名访问被拒绝 / challenge；
+- direct asset 继续受保护；
+- 第二次 push 自动部署新 revision；
+- 第二次 push 无需重新 Provider authorization；
+- Git / chat / log 中不存在 credential value；
+- 已记录 rollback / restore 证据；
+- `public_release: NOT AUTHORIZED`。
 
-## Evidence Record
+## 失败处理
 
-记录 project slug、immutable commit ID、非秘密 Worker identity、workflow run ID、deployed version/revision、HTTP result、Access reference、rollback version、准确日期，以及失败/恢复步骤。
+如果 Cloudflare 看不到 repository，只要求人类调整 Cloudflare GitHub App 对该 repository 的 access，然后重新读取 Provider state。
 
-不得记录 token 值、私钥、OTP、reader identity 或账户私有 Secret。
+如果 Worker 可以匿名访问，停止声称 private readiness，并要求人类启用/修复 Cloudflare Access。
 
-验收通过后，通过 reviewed PR 把 PPF 与 Starter 从 `live-new-project-acceptance-pending` 更新为带日期的 verified state。
+如果第二次 push 不能自动部署，即使第一次 deployment 成功，Project Bootstrap 仍未完成。
+
+不得通过让使用者把 Provider token 粘贴到聊天来解决这些问题。
+
+## 可选高级验收
+
+高级 `agent-provisioned-external-ci` Profile 继续保留自己的更严格验收要求，包括 Trusted Secret Broker 与 granular-token evidence。它们不是默认 Native 路线的前置条件。
