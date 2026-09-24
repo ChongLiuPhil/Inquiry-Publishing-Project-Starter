@@ -33,11 +33,12 @@ From any such entrypoint, the agent must reconstruct the whole public ecosystem 
    - PPF — source-centered publishing lifecycle and Continuous Web;
    - Vault Interface — provider-neutral public metadata contract;
    - Starter — composition, adoption, profile, and upgrade layer.
-5. For a downstream project, read `project-stack.yaml`, its selected profile, and the lock file.
-6. For every active AHICP or PPF component, fresh-read the pinned upstream manifest or template manifest before configuration or upgrade.
-7. Retrieve private project state only when the human has explicitly authorized that access.
-8. Before any external-state write, distinguish proposal, authorization, execution, verification, and durable write-back.
-9. Before any Cloudflare action, follow the shared Continuous Web and Cloudflare operational guide and any PPF provider-specific runbook relevant to the selected deployment profile.
+5. For a downstream project, read `project-stack.yaml`, its selected profile, the lock file, and—when present—`project-provisioning.yaml`.
+6. For a **new project**, read the canonical Project Provisioning Contract. If the request relies on platform standing authorization, read the private platform-authorization state only after that control-plane access is authorized.
+7. For every active AHICP or PPF component, fresh-read the pinned upstream manifest or template manifest before configuration or upgrade.
+8. Retrieve other private project state only when the human has explicitly authorized that access.
+9. Before any external-state write, distinguish proposal, authorization, execution, verification, and durable write-back.
+10. Before any Cloudflare action, follow the shared Continuous Web and Cloudflare operational guide and the PPF provider-specific contract for the selected deployment profile.
 
 Public-link traversal is a retrieval instruction. It is never authorization to access a private repository, private vault, provider account, credential, unpublished source, or deployment control plane.
 
@@ -53,6 +54,8 @@ full AHICP
 ```
 
 Reduced profiles remain available for legitimate cases, but selecting one is an explicit human deviation from the default baseline. An agent must not infer a reduced profile merely because a project appears simple.
+
+For a new full-stack project, the preferred infrastructure profile after platform bootstrap is `agent-provisioned-external-ci`: private GitHub source, account-wide Access-protected Worker, project-scoped deployment credential transferred by a trusted secret broker, GitHub Actions deployment, and previews disabled until their own protection is accepted. `workers-builds-native` remains supported when explicitly selected or already adopted.
 
 ## 4. Default privacy and publication posture
 
@@ -80,6 +83,9 @@ Before material configuration or upgrade work, the agent should be able to state
 - source privacy and Web visibility;
 - publication authorization state;
 - Cloudflare deployment profile and access policy;
+- project provisioning profile and `project-provisioning.yaml` state when applicable;
+- whether platform standing authorization is verified for the requested GitHub owner and Cloudflare scope;
+- whether the trusted secret broker and its isolated token-minting boundary are verified;
 - which actions are already authorized and which remain human-reserved;
 - which provider state still needs verification.
 
