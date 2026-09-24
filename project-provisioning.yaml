@@ -8,6 +8,7 @@ infrastructure:
   profile: agent-provisioned-external-ci
   github:
     owner: replace-with-approved-owner
+    owner_type: user
     repository: replace-with-project-repository
     visibility: private
   cloudflare:
