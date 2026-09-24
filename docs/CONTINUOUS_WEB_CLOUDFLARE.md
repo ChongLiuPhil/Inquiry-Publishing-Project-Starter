@@ -69,26 +69,33 @@ policy_ref identifies the intended policy. It is not a place to store credential
 
 Choose and record one profile before deployment:
 
-- **Agent-provisioned external CI — preferred for new projects after platform bootstrap.** A platform provisioner creates the Worker; a trusted broker installs an account-owned token scoped to that individual Worker with the Editor role into GitHub Actions. Token plaintext never enters model context.
-- **Workers Builds Native — provider-native alternative.** Use when native Git integration is explicitly preferred or already adopted; its current build credential follows the provider user-token model.
+- **Workers Builds Native — default for ordinary new projects.** The user may complete one short project-level GitHub ↔ Cloudflare connection. Cloudflare then owns the Git-triggered build/deploy connection and provider-managed build credential.
+- **Agent-provisioned external CI — optional advanced profile.** Use when the project explicitly needs an account-owned individual-Worker `Editor` deployment credential, reusable platform authorization, and the Trusted Secret Broker.
 - **Future/provider-specific profile** — use only after current provider documentation and a real test confirm its capability.
 
-PPF security-profile documents provide the reference trade-offs. Deployment credentials and reader access remain orthogonal.
+The default profile is intentionally optimized for practical setup simplicity rather than account-wide zero-touch provisioning. Deployment credential scope and reader access remain separate security decisions.
 
 ## 5. Required setup sequence
 
-1. Identify the exact GitHub source repository, output directory, canonical domain, visibility, retention policy, Cloudflare account, and target Worker/project.
-2. Confirm that the source repository is private when it contains unpublished original work.
-3. Select the build/deployment profile; for a new project use `agent-provisioned-external-ci` unless another profile was explicitly selected.
-4. Verify platform standing authorization and account-wide `all_workers` Access before creating a Worker.
-5. Create/reuse the private GitHub repository and restricted Worker through the authorized provisioner.
-6. For external CI, have the trusted Secret Broker install the project-scoped Worker credential directly into GitHub Actions; do not expose plaintext to the Agent.
-7. Configure build commands and output paths from repository-owned machine contracts.
-8. Keep previews disabled until their protection is separately accepted.
-9. Deploy restricted production only when durable project authorization covers restricted Web deployment.
-10. Verify the exact deployed revision, anonymous denial, and representative direct assets.
-11. Configure a custom domain only after separate domain/DNS authorization.
-12. Record verified non-secret provider state, deployment revision, access-policy reference, and rollback result in private project state.
+For an ordinary new project:
+
+1. Identify the exact personal GitHub repository, output directory, Cloudflare account, and target Worker/project.
+2. Confirm the source repository is private.
+3. Use `workers-builds-native` unless the human explicitly selected the advanced profile.
+4. Create or confirm the private repository under `ChongLiuPhil`.
+5. In Cloudflare Workers & Pages, import/connect that repository.
+6. If GitHub asks, authorize the Cloudflare Git integration for the target repository.
+7. Configure production branch `main`, root directory `/`, `bash scripts/cloudflare_build.sh`, and `npx wrangler deploy`.
+8. Keep preview/non-production builds disabled by default.
+9. Run the first deployment.
+10. Protect the Worker with Worker-scoped Cloudflare Access using **All traffic**, unless a verified account-wide Access policy already covers it.
+11. Verify the deployed revision, anonymous denial/challenge, authenticated reader access, and representative direct assets.
+12. Make one harmless source change and push to `main`.
+13. Verify Workers Builds automatically deploys the new revision without renewed GitHub or Cloudflare authorization.
+14. Configure a custom domain only after separate domain/DNS authorization.
+15. Record verified non-secret provider state and rollback evidence.
+
+If the advanced external-CI profile is selected, follow the pinned PPF External-CI and Trusted Secret Broker contracts instead.
 
 ## 6. Required AI-agent handoff format
 
@@ -105,19 +112,19 @@ Before any Cloudflare action that requires human account-owner interaction, the 
 
 Vague instructions such as “configure Cloudflare,” “enable Access,” or “set up DNS” are insufficient.
 
-## 7. GitHub + Cloudflare platform integration
+## 7. GitHub + Cloudflare project integration
 
-For the preferred new-project path, there is no per-project Cloudflare GitHub App authorization. Starter validates platform authorization and hands Provider execution to the pinned PPF `agent-provisioned-external-ci` implementation.
+For the default route, per-project Cloudflare Git authorization is allowed and expected when the Cloudflare GitHub App does not yet have access to the target repository.
 
-Read the current PPF runbooks:
+Read the current pinned PPF runbooks:
 
-- docs/AGENT_PROVISIONED_EXTERNAL_CI.md — minimum-human new-project profile;
-- docs/CLOUDFLARE_GITHUB_AUTHORIZATION.md — two platform-level authorizations plus the native alternative;
-- docs/CLOUDFLARE_SECURITY_PROFILES.md — provisioning/deployment credential boundaries;
-- docs/CLOUDFLARE_ACCESS_PROFILE.md — publication visibility to reader-access mapping;
-- docs/CLOUDFLARE_OBSERVED_UI_MAPPING.md — dated Cloudflare UI observations.
+- `docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md` — default per-project operator flow;
+- `docs/CLOUDFLARE_GITHUB_AUTHORIZATION.md` — Native default plus optional advanced authorization model;
+- `docs/CLOUDFLARE_SECURITY_PROFILES.md` — deployment-credential trade-offs;
+- `docs/CLOUDFLARE_ACCESS_PROFILE.md` — publication visibility to reader-access mapping;
+- `docs/AGENT_PROVISIONED_EXTERNAL_CI.md` — optional advanced profile only.
 
-If `workers-builds-native` is explicitly selected, follow its Cloudflare GitHub App authorization path. Do not apply those steps to an external-CI project merely out of habit.
+Do not require account-wide platform provisioning just to start an ordinary project. Conversely, do not weaken project privacy merely because a repository connection needs human consent.
 
 ## 8. Restricted reader-access setup
 
