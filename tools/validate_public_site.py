@@ -63,10 +63,17 @@ def validate(output: Path) -> None:
     if descriptor.get("public_landing") != public_url + "agent/" or descriptor.get("human_entry") != public_url or descriptor.get("public_delivery", {}).get("current_provider") != "cloudflare-workers":
         raise ValueError("Machine entry does not identify the approved Worker")
     provisioning = descriptor.get("project_provisioning", {})
-    if provisioning.get("preferred_profile") != "agent-provisioned-external-ci" or provisioning.get("secret_broker_required") is not True:
-        raise ValueError("Machine entry does not expose the preferred project provisioning contract")
-    if provisioning.get("status") != "implemented-reference-live-acceptance-pending":
-        raise ValueError("Machine entry lost the new-project live-acceptance evidence boundary")
+    if (
+        provisioning.get("preferred_profile") != "workers-builds-native"
+        or provisioning.get("default_setup_mode") != "human-assisted-once-per-project"
+        or provisioning.get("default_access_mode") != "worker-scoped-access"
+        or provisioning.get("secret_broker_required_for_default") is not False
+    ):
+        raise ValueError("Machine entry does not expose the guided per-project provisioning contract")
+    if provisioning.get("status") != "guided-per-project-default":
+        raise ValueError("Machine entry lost the guided per-project provisioning status")
+    if not str(provisioning.get("per_project_setup_contract", "")).endswith("/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md"):
+        raise ValueError("Machine entry does not expose the PPF per-project setup contract")
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
         raise ValueError("Machine entry must keep deployment-token plaintext out of model context")
     for path in (
