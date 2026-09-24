@@ -7,7 +7,9 @@
     "ecosystem": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml",
     "agent_retrieval_contract_en": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md",
     "agent_retrieval_contract_zh_cn": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md",
-    "llms": "https://inquirystack.philohub.workers.dev/llms.txt"
+    "llms": "https://inquirystack.philohub.workers.dev/llms.txt",
+    "project_provisioning_contract_en": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_CONTRACT.md",
+    "project_provisioning_contract_zh_cn": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md"
   },
   "default_baseline": [
     "full-ahicp",
@@ -19,12 +21,17 @@
     "original_source_visibility": "private",
     "unpublished_web_visibility": "restricted",
     "reader_access": "authenticated",
-    "public_cutover": "explicit-human-authorization"
+    "public_cutover": "explicit-human-authorization",
+    "infrastructure_profile": "agent-provisioned-external-ci",
+    "preview": "disabled-until-protected-preview-acceptance"
   },
   "authorization": {
     "public_links_grant_private_access": false,
     "secrets_in_chat": false,
-    "external_writes_require_authorization": true
+    "external_writes_require_authorization": true,
+    "platform_standing_authorization_reusable": true,
+    "public_release_requires_separate_human_approval": true,
+    "deployment_token_plaintext_in_model_context": false
   },
   "public_delivery": {
     "canonical_source_provider": "github",
@@ -38,5 +45,20 @@
     "source_lock": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/site/sources.lock.json",
     "target_active_worker_count": 1,
     "cloud_handoff": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_WEB_AGENT_HANDOFF.zh-CN.md"
+  },
+  "project_provisioning": {
+    "status": "implemented-reference-live-acceptance-pending",
+    "preferred_profile": "agent-provisioned-external-ci",
+    "request": "project-provisioning.yaml",
+    "platform_authorization": "private-control-plane-state",
+    "ppf_executable_authority": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework",
+    "secret_broker_required": true,
+    "human_reserved_gates": [
+      "public-release",
+      "reader-audience-expansion",
+      "custom-domain-or-dns-authority",
+      "provider-permission-scope-expansion",
+      "paid-plan-or-billing-change"
+    ]
   }
 }
