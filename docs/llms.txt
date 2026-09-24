@@ -15,12 +15,14 @@ https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/eco
 Canonical ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/ECOSYSTEM.md
 Machine-readable ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
 Agent retrieval contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md
+Project provisioning contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_CONTRACT.md
+Project provisioning acceptance: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_ACCEPTANCE.md
 Cloudflare public-delivery migration: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
 Cloudflare migration state: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml
 Cloudflare operational guide: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CONTINUOUS_WEB_CLOUDFLARE.md
 
 Current component: Inquiry Publishing Project Starter
-Role: composition, adoption, profile, and upgrade layer. It is not a fourth normative framework.
+Role: composition, adoption, profile, project-provisioning orchestration, and upgrade layer. It is not a fourth normative framework.
 
 Public component homepages:
 - AHICP: https://inquirystack.philohub.workers.dev/
@@ -30,6 +32,9 @@ Public component homepages:
 
 Default new-project baseline:
 full AHICP + full PPF + Vault Interface + project-owned content.
+Preferred new-project infrastructure profile after verified platform bootstrap: agent-provisioned-external-ci.
+The ordinary restricted setup may reuse verified platform standing authorization for private repository creation, restricted Worker creation, and restricted Web deployment. Public release, reader-audience expansion, domain/DNS authority, provider-scope expansion, paid-plan changes, and fallback direct secret entry remain human-reserved.
+Project deployment-token plaintext must never enter model context; the PPF external-CI profile uses a trusted Secret Broker.
 
 Privacy default:
 original or unpublished project source is private. Continuous Web may be enabled with restricted reader access. Do not retrieve private state without explicit human authorization. Never request or store passwords, API tokens, private keys, recovery codes, or other secrets in chat or Git.
