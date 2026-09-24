@@ -96,6 +96,7 @@ ecosystem:
       - restricted-web-deployment
     human_reserved:
       - public-release
+      - source-repository-public
       - reader-audience-expansion
       - custom-domain-or-dns-authority
       - provider-permission-scope-expansion
