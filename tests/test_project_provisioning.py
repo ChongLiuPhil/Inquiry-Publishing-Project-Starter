@@ -53,6 +53,10 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         errors = platform_errors(self.platform, self.request)
         self.assertIn("PLATFORM_AUTHORIZATION_NOT_READY", errors)
         self.assertIn("ACCOUNT_WIDE_ACCESS_NOT_VERIFIED", errors)
+        plan = build_plan(self.platform, self.request)
+        publication = plan["ppf_handoff"]["publication_materialization"]
+        self.assertEqual(publication["publication.web.authorization_state"], "not-authorized")
+        self.assertFalse(publication["deployment.web.enabled"])
 
     def test_ready_platform_yields_external_ci_handoff(self):
         platform = self.ready_platform()
@@ -67,6 +71,11 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertEqual(seed["deployment"]["credentialStrategy"], "project-scoped-account-token")
         self.assertTrue(seed["deployment"]["secretBroker"])
         self.assertFalse(seed["release"]["openSource"])
+        publication = plan["ppf_handoff"]["publication_materialization"]
+        self.assertEqual(publication["publication.web.authorization_state"], "authorized")
+        self.assertTrue(publication["deployment.web.enabled"])
+        self.assertEqual(publication["publication.web.visibility"], "restricted")
+        self.assertFalse(publication["public_release"])
         self.assertIn("public-release", plan["human_reserved_gates"])
 
     def test_broker_minting_authority_must_be_isolated(self):
