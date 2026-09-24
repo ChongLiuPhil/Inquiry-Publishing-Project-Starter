@@ -31,4 +31,4 @@ starter:
   project_provisioning:
     profile: workers-builds-native
     request_ref: project-provisioning.yaml
-    platform_authorization_ref: private-platform-state
+    platform_authorization_ref: optional-advanced-platform-state
