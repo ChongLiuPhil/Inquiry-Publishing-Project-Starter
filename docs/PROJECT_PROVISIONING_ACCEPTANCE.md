@@ -25,7 +25,7 @@ Use a disposable project slug and no user manuscript or local-computer material.
 6. Re-verify account-wide Access, then create Worker metadata.
 7. Confirm the new workers.dev endpoint is not anonymously readable before source deployment.
 8. Have the PPF provisioner emit the secret-broker request.
-9. Through the trusted broker, create the individual-Worker Editor credential and install GitHub Actions secrets without returning plaintext to the Agent.
+9. Through the trusted broker, discover and verify the current Cloudflare individual-Worker policy encoding, create the account-owned credential, prove through non-secret Provider policy/identity evidence that it targets exactly the intended Worker with `Editor`, and install GitHub Actions secrets without returning plaintext to the Agent.
 10. Run repository validation and the deployment workflow.
 11. Confirm the intended Git SHA/revision is deployed.
 12. Confirm anonymous production access is denied/challenged.
@@ -45,7 +45,7 @@ Acceptance passes only if:
 - no per-project platform reauthorization was needed;
 - GitHub source remained private;
 - account-wide Access stayed enabled;
-- routine CI authority was limited to the intended Worker;
+- the minted Cloudflare credential's actual Provider policy/identity was recorded as non-secret evidence and limited routine CI authority to exactly the intended Worker with `Editor`;
 - token plaintext never entered model/Git/logs;
 - deployment and revision verification succeeded;
 - anonymous production and direct-asset access were denied/challenged;

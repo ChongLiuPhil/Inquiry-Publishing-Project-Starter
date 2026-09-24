@@ -25,7 +25,7 @@ Repository CI、mock 与 Provider API 模拟均不能替代本验收。
 6. 再次验证 account-wide Access 后才创建 Worker metadata。
 7. Source deployment 前确认新 workers.dev endpoint 不可匿名读取。
 8. 让 PPF Provisioner 输出 Secret Broker request。
-9. Trusted broker 创建 individual-Worker Editor credential 并安装 GitHub Actions Secret；明文不得返回 Agent。
+9. Trusted broker discovery / verify 当前 Cloudflare individual-Worker policy encoding，创建 account-owned credential，并用非秘密 Provider policy / identity 证据证明它只命中目标 Worker、角色为 `Editor`；随后安装 GitHub Actions Secret，明文不得返回 Agent。
 10. 运行 repository validation 与 deployment workflow。
 11. 确认预期 Git SHA / revision 已部署。
 12. 确认 production 匿名访问被 deny/challenge。
@@ -45,7 +45,7 @@ Repository CI、mock 与 Provider API 模拟均不能替代本验收。
 - 没有 per-project platform reauthorization；
 - GitHub source 一直 private；
 - account-wide Access 一直 enabled；
-- routine CI authority 只限制到目标 Worker；
+- minted Cloudflare credential 的真实 Provider policy / identity 已作为非秘密证据记录，并确认 routine CI authority 只限制到目标 Worker、角色为 `Editor`；
 - token 明文从未进入 model / Git / log；
 - deployment 与 revision verification 成功；
 - production 与 direct asset 匿名访问被 deny/challenge；

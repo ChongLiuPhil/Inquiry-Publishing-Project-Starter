@@ -87,12 +87,16 @@ ecosystem:
     platform_authorization_template: templates/platform-authorization.yaml
     executable_provider_authority: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
     executable_provider_contract: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/AGENT_PROVISIONED_EXTERNAL_CI.md
+    trusted_secret_broker_contract: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/TRUSTED_SECRET_BROKER.md
+    secret_broker_orchestration: ppf-implemented
+    cloudflare_granular_token_issuer: live-acceptance-pending
     standing_authorization_can_cover:
       - create-private-repository
       - create-restricted-worker
       - restricted-web-deployment
     human_reserved:
       - public-release
+      - source-repository-public
       - reader-audience-expansion
       - custom-domain-or-dns-authority
       - provider-permission-scope-expansion

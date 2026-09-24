@@ -37,6 +37,7 @@ Starter 不实现 Cloudflare / GitHub Provisioning API。
 - `providers/infrastructure/coordinator.py`
 - `schema/project.infrastructure.schema.json`
 - `docs/AGENT_PROVISIONED_EXTERNAL_CI.md`
+- `docs/TRUSTED_SECRET_BROKER.md`
 
 Starter 负责选择 PPF Profile、创建 project-level request、检查 platform authorization、应用 Stack 模板，并保持人类决定边界。
 
@@ -203,7 +204,9 @@ Secret 永远不得进入：
 
 PPF Provisioner 只返回非秘密 `ppf/secret-broker-request/v1`。
 
-Secret Broker 是受信 execution boundary，不是 LLM prompt。
+PPF 现在已经实现原子 Secret Broker 编排与安全的 `ppf/secret-broker-result/v1` 契约：拒绝覆盖已有目标 Secret，验证 issuer 报告的 Worker/role scope；Broker transaction 失败时回滚本轮创建的 Secret，并 revoke 本轮新 mint 的 token。Cloudflare granular-token issuer adapter 仍为 `live-acceptance-pending`，必须先通过真实 Provider API 验证当前 individual-Worker `Editor` policy encoding。
+
+Secret Broker 是受信 execution boundary，不是 LLM prompt。Starter 不得把“Broker orchestration 已实现”误写成“Cloudflare token issuer 已 production-accepted”。
 
 ## 11. 完成标准
 
@@ -230,7 +233,7 @@ Secret Broker 是受信 execution boundary，不是 LLM prompt。
 
 契约、Schema、Planner、PPF Provisioner、Workflow 与 CI 只能证明 implementation readiness。
 
-第一个 production-grade acceptance 必须使用全新 test project，真实记录：
+第一个 production-grade acceptance 必须使用全新 test project，先记录非秘密 Provider 证据，证明 minted Cloudflare credential 只限制到目标既有 Worker 且角色为 `Editor`，然后真实记录：
 
 ```text
 project request
