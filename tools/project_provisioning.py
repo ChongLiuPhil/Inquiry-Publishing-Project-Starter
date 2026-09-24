@@ -65,8 +65,6 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
         errors.append("ACCOUNT_WIDE_ACCESS_NOT_VERIFIED")
     if cloudflare.get("worker_creation_authority") != "authorized":
         errors.append("WORKER_CREATION_AUTHORITY_NOT_AUTHORIZED")
-    if cloudflare.get("token_creation_authority") != "authorized":
-        errors.append("PROJECT_TOKEN_CREATION_AUTHORITY_NOT_AUTHORIZED")
     if broker.get("state") != "verified":
         errors.append("SECRET_BROKER_NOT_VERIFIED")
     if broker.get("plaintext_boundary") != "verified":
@@ -83,7 +81,15 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
         if standing.get(key) is not True:
             errors.append("STANDING_AUTHORIZATION_MISSING_" + key.upper())
 
-    for key in ("public_release", "reader_audience_expansion", "custom_domain_change", "paid_plan_change"):
+    for key in (
+        "public_release",
+        "source_repository_public",
+        "reader_audience_expansion",
+        "custom_domain_change",
+        "provider_permission_scope_expansion",
+        "paid_plan_change",
+        "direct_secret_input",
+    ):
         if standing.get(key) is not False:
             errors.append("RESERVED_HUMAN_GATE_MUST_REMAIN_FALSE_" + key.upper())
 
