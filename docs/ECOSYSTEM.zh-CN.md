@@ -35,9 +35,9 @@ AHICP（完整）
 
 `full-research-publication` 是新项目默认 profile。精简 profile 仍然保留，但 AI Agent 只有在使用者明确选择时才能使用；不能因为项目看起来简单就自动省略 AHICP 或 PPF。
 
-平台 bootstrap 已 verified 后，新项目首选 infrastructure profile 是 `agent-provisioned-external-ci`：private GitHub source、account-wide Access 保护的 Worker、trusted Secret Broker、使用 project-scoped Worker credential 的 GitHub Actions deployment，以及在独立保护验收前保持 disabled 的 Preview。Verified standing authorization 可以覆盖已批准 scope 内普通 private/restricted 项目的再次创建；public release、reader expansion、domain/DNS authority、Provider scope 扩大与 paid-plan change 仍由人保留。
+普通新项目首选 infrastructure profile 是 `workers-builds-native`：在个人 `ChongLiuPhil` GitHub 账号下保持 private repository，每项目完成一次短人工 Cloudflare Git connection，默认使用 Worker-scoped Access，并在 Preview 独立保护验收前保持 disabled。第一次 restricted deployment 后，还必须验证第二次 push 无需重新授权即可自动部署，才能把连接标记为 operationally verified。Public release、repository 公开、reader expansion、domain/DNS authority、Provider scope 扩大与 paid-plan change 仍由人保留。
 
-`workers-builds-native` 继续支持明确选择 provider-native Git integration 或已经采用它的项目。
+`agent-provisioned-external-ci` 继续作为高级可选 Profile；只有项目明确需要 one-Worker deployment credential 隔离并愿意维护额外 Platform Authorization / Trusted Secret Broker 时才采用。
 
 Vault Interface 是适配层，不替代 AHICP 或 PPF。
 
@@ -73,7 +73,7 @@ AI agent 从任意组件主页或仓库进入时，必须：
 2. 读取 canonical Starter ecosystem 与 AGENT_RETRIEVAL_CONTRACT；
 3. 恢复四个组件的责任和公共入口；
 4. 面对下游项目时读取所选 Starter profile、`project-stack.yaml`、lock，以及存在时的 `project-provisioning.yaml`；
-5. 面对新项目时读取 Project Provisioning Contract；若使用 standing authorization，只在 control-plane access 已获授权后读取私人 platform-authorization state；
+5. 面对新项目时读取 Project Provisioning Contract 与固定版本 PPF 的每项目 setup contract；只有显式选择高级 Profile 时才读取私人 platform-authorization state；
 6. fresh-read 每个 active 上游组件的固定 revision manifest；
 7. 其他私人项目状态仍只在相应访问已获授权后读取；
 8. 始终区分 proposal、authorization、execution、verification 与 durable write-back。
@@ -90,9 +90,9 @@ AI agent 从任意组件主页或仓库进入时，必须：
 
 ## Continuous Web 与 Cloudflare
 
-新项目编排契约见 [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)。详细 Cloudflare 操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。最小人类操作路径见 [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md)，Browser Agent / Work 交接见 [CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md](CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md)。
+新项目编排契约见 [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)。详细 Cloudflare 操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。默认执行路径是文档化的每项目 Workers Builds bootstrap；Browser Agent 与高级自动化 handoff 只作为可选实现辅助。
 
-Starter 只记录 Provisioning 意图与授权边界；真正可执行的 GitHub/Cloudflare Provider 逻辑由 PPF 保持权威。Project deployment token 明文绝不能进入语言模型。
+Starter 只记录 Provisioning 意图与授权边界；真正可执行的 GitHub/Cloudflare Provider 逻辑由 PPF 保持权威。Provider credential 明文绝不能进入语言模型；默认 Workers Builds 路线让 deployment credential 保持 Provider-managed。
 
 AI agent 在要求人类执行 Cloudflare 操作前，必须给出编号的操作者级步骤，指出准确目标账户/项目/域名和受影响层，解释凭据范围与数据传输，明确哪些秘密不得发送给 AI，定义完成证据，并给出回滚路径。
 

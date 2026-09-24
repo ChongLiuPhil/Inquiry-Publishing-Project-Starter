@@ -48,10 +48,10 @@ ecosystem:
     source_visibility: private-by-default-for-original-work
     web_visibility: restricted-by-default-for-unpublished-work
     cloudflare_access: required-for-private-or-transitional-publications
-    infrastructure_profile: agent-provisioned-external-ci
-    platform_authorization: reusable-standing-authorization-after-verified-bootstrap
-    secret_broker: required-for-project-scoped-deployment-credential
-    live_new_project_acceptance: pending
+    infrastructure_profile: workers-builds-native
+    platform_authorization: optional-for-advanced-external-ci
+    secret_broker: optional-advanced-external-ci-only
+    live_new_project_acceptance: per-project-verification-required
     deviations: require-explicit-human-selection
   components:
     ahicp:
@@ -75,11 +75,13 @@ ecosystem:
       ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/ecosystem.yaml
       role: composition, adoption, project-provisioning orchestration, and upgrade layer
   project_provisioning:
-    status: implemented-reference-live-acceptance-pending
-    default_github_owner: philohub
-    default_github_owner_type: organization
+    status: guided-per-project-default
+    default_github_owner: ChongLiuPhil
+    default_github_owner_type: user
     default_repository_visibility: private
-    preferred_infrastructure_profile: agent-provisioned-external-ci
+    preferred_infrastructure_profile: workers-builds-native
+    default_setup_mode: human-assisted-once-per-project
+    default_access_mode: worker-scoped-access
     contract_en: docs/PROJECT_PROVISIONING_CONTRACT.md
     contract_zh_cn: docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md
     acceptance_en: docs/PROJECT_PROVISIONING_ACCEPTANCE.md
@@ -88,15 +90,20 @@ ecosystem:
     request_template: templates/project-provisioning-request.yaml
     platform_authorization_schema: schema/platform-authorization.schema.json
     platform_authorization_template: templates/platform-authorization.yaml
+    platform_authorization_role: optional-advanced-profile-state
     executable_provider_authority: https://github.com/ChongLiuPhil/Personal-Publishing-Framework
-    executable_provider_contract: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/AGENT_PROVISIONED_EXTERNAL_CI.md
+    executable_provider_contract: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md
+    advanced_external_ci_contract: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/AGENT_PROVISIONED_EXTERNAL_CI.md
     trusted_secret_broker_contract: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/TRUSTED_SECRET_BROKER.md
-    secret_broker_orchestration: ppf-implemented
-    cloudflare_granular_token_issuer: live-acceptance-pending
-    standing_authorization_can_cover:
-      - create-private-repository
-      - create-restricted-worker
-      - restricted-web-deployment
+    secret_broker_orchestration: optional-advanced-ppf-implemented
+    cloudflare_granular_token_issuer: optional-advanced-live-acceptance-pending
+    ordinary_project_human_bootstrap:
+      - create-or-confirm-private-personal-repository
+      - authorize-cloudflare-git-for-target-repository-if-required
+      - connect-workers-builds
+      - protect-target-worker-with-access
+      - verify-first-restricted-deployment
+      - verify-second-push-auto-deploy-without-reauthorization
     human_reserved:
       - public-release
       - source-repository-public
@@ -105,7 +112,7 @@ ecosystem:
       - provider-permission-scope-expansion
       - paid-plan-or-billing-change
       - direct-secret-input-if-trusted-broker-unavailable
-    secret_rule: deployment-token-plaintext-never-enters-model-context
+    secret_rule: provider-credentials-never-enter-model-context
 
   privacy:
     original_unpublished_content: private-by-default
@@ -129,8 +136,11 @@ ecosystem:
     fetch_private_state: only-after-explicit-human-authorization
     public_links_do_not_grant_private_access: true
   cloudflare:
-    new_project_default_profile: agent-provisioned-external-ci
+    new_project_default_profile: workers-builds-native
     native_profile: workers-builds-native
+    advanced_profile: agent-provisioned-external-ci
+    default_project_access: worker-scoped-access
+    per_project_setup_guide: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md
     public_delivery_migration: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
     public_delivery_plan: templates/cloudflare-public-delivery.yaml
     operational_guide: docs/CONTINUOUS_WEB_CLOUDFLARE.md

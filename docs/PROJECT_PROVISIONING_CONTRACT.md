@@ -1,255 +1,260 @@
 # Project Provisioning Contract
 
 **Status:** canonical Starter orchestration contract  
-**Preferred infrastructure profile:** `agent-provisioned-external-ci`
+**Default infrastructure profile:** `workers-builds-native`  
+**Default setup mode:** `human-assisted-once-per-project`
 
-This contract defines how the Inquiry Publishing Stack turns a new project request into an adopted, private-by-default, deployable project while minimizing repeated human authorization.
+This contract defines the practical new-project path for the Inquiry Publishing Stack.
 
-Starter owns **composition and provisioning intent**. It does not duplicate provider implementation. PPF remains authoritative for executable GitHub/Cloudflare infrastructure adapters, reconciliation, deployment profiles, and verification.
+The default no longer assumes account-wide zero-touch provisioning. A small amount of human GitHub/Cloudflare configuration is explicitly allowed once for each project. After that project bootstrap, ordinary source pushes should deploy automatically.
 
-## 1. Goal
+The advanced `agent-provisioned-external-ci` + Trusted Secret Broker route remains available when a project explicitly selects it.
 
-After platform bootstrap, the ordinary new-project path should be:
+## 1. Default goal
+
+For an ordinary new project, the target flow is:
 
 ```text
 human project request
--> Starter validates platform standing authorization
--> private GitHub repository
+-> private repository under ChongLiuPhil
 -> full AHICP + full PPF + Vault Interface adoption
--> PPF project infrastructure manifest
--> account-wide Access precondition
--> Cloudflare Worker
--> trusted secret broker
--> GitHub Actions restricted deployment
--> live verification
--> durable non-secret write-back
+-> project infrastructure manifest
+-> one-time Cloudflare Git repository connection
+-> Workers Builds
+-> Worker-scoped Cloudflare Access
+-> first restricted deployment verification
+-> second push without reauthorization
+-> ordinary future pushes deploy automatically
 ```
 
-The human should not be asked to repeat provider authorization merely because another project is created inside already approved GitHub and Cloudflare scopes.
+The practical promise is:
 
-## 2. No second infrastructure control plane
+> **one short, documented project bootstrap; then automatic deployment on ordinary pushes.**
 
-Starter does not implement Cloudflare or GitHub provisioning APIs.
+It is not a claim that every future repository can be created and connected without human interaction.
 
-The executable provider authority is the PPF infrastructure layer:
+## 2. Default GitHub topology
 
-- `providers/infrastructure/provisioning.py`
-- `providers/infrastructure/coordinator.py`
-- `schema/project.infrastructure.schema.json`
-- `docs/AGENT_PROVISIONED_EXTERNAL_CI.md`
-- `docs/TRUSTED_SECRET_BROKER.md`
-
-Starter is responsible for selecting the PPF profile, creating the project-level request, checking platform authorization, applying the stack template, and preserving the human decision boundary.
-
-## 3. Platform authorization
-
-The reusable non-secret authorization state is represented by:
-
-- `schema/platform-authorization.schema.json`
-- `templates/platform-authorization.yaml`
-
-Platform authorization records only references and verified states. It must never contain API tokens, private keys, passwords, recovery codes, OTPs, or reader identities.
-
-A platform is `ready` only after all of these are verified:
-
-### GitHub
-
-- approved owner/organization scope;
-- provisioning principal authorized for that scope.
-
-### Cloudflare
-
-- provisioning principal authorized;
-- account-wide `all_workers` Access baseline verified;
-- Worker creation authority verified;
-- account-owned token minting authority is isolated inside the trusted Secret Broker / provisioning boundary and that isolation is verified.
-
-### Secret broker
-
-- a trusted broker implementation exists and has been verified to transfer a project deployment credential into GitHub Actions without exposing plaintext to the Agent/model.
-
-## 4. Standing authorization
-
-Platform authorization may include standing approval for low-risk, private-by-default project setup:
+Ordinary downstream projects default to:
 
 ```yaml
-standing_authorizations:
-  create_private_repositories: true
-  create_restricted_workers: true
-  restricted_web_deployment: true
-  public_release: false
-  source_repository_public: false
-  reader_audience_expansion: false
-  custom_domain_change: false
-  provider_permission_scope_expansion: false
-  paid_plan_change: false
-  direct_secret_input: false
+github:
+  owner: ChongLiuPhil
+  owner_type: user
+  visibility: private
 ```
 
-For the current platform topology, the approved GitHub scope is intended to be the `philohub` Organization. Once the Project Provisioner App installation for that Organization is verified, a later project does not need another human confirmation for:
+The repository may be created manually in GitHub before the Agent configures it. Automatic repository creation is an optimization, not a prerequisite.
 
-- creating its private repository under `philohub`;
-- creating a Worker protected by the verified account-wide Access baseline;
-- deploying a restricted/authenticated Continuous Web publication;
-- verifying that deployment.
+The default path therefore does not require a GitHub Organization or a platform-wide Project Provisioner App.
 
-It does **not** authorize:
+The repository must start private. Making it public is a separate human-reserved decision.
 
-- making the publication public;
-- publishing/open-sourcing the source repository;
-- adding or expanding readers;
-- selecting a new custom domain or changing DNS;
-- expanding provider permission scope;
-- enabling a paid plan.
+## 3. Default Cloudflare topology
 
-## 5. Project request
+The default PPF infrastructure profile is:
 
-A new project request uses:
+```text
+workers-builds-native
+```
+
+The project connects its private GitHub repository to Cloudflare Workers Builds. Cloudflare then owns the Git-triggered build/deploy connection and provider-managed build credential.
+
+Reference project settings:
+
+```text
+production branch: main
+root directory: /
+build command: bash scripts/cloudflare_build.sh
+deploy command: npx wrangler deploy
+preview / non-production builds: disabled by default
+```
+
+The exact provider UI may change. The Agent must follow current provider state and the pinned PPF setup contract rather than guessing from stale screenshots.
+
+## 4. One-time human project bootstrap
+
+The normal human bootstrap may include:
+
+1. create or confirm the private personal-account GitHub repository;
+2. authorize the Cloudflare Git integration for the target repository if GitHub asks;
+3. connect the repository to Workers Builds;
+4. confirm the intended production branch/build settings;
+5. protect the target Worker with Cloudflare Access;
+6. confirm the first restricted deployment.
+
+These steps are project-level authorization, not a failure of the system.
+
+The Agent should do every independent technical step it can, and return to the human only for the provider UI/consent steps that actually require the account holder.
+
+## 5. Private Web default
+
+New unpublished Web output defaults to:
+
+```text
+restricted + authenticated
+```
+
+The normal Access mode is:
+
+```text
+worker-scoped-access
+```
+
+If an account-wide `all_workers` policy is already enabled and verified, a project may record:
+
+```text
+account-wide-access
+```
+
+instead.
+
+A project must not be called private merely because the GitHub repository is private. The Worker itself must be protected, and anonymous access must actually be challenged or denied.
+
+Preview deployments remain disabled by default until their protection is separately verified.
+
+## 6. Project request
+
+A new project uses:
 
 - `schema/project-provisioning-request.schema.json`
 - `templates/project-provisioning-request.yaml`
+- root `project-provisioning.yaml`
 
 The default request declares:
 
 - `full-research-publication`;
-- GitHub owner `philohub` with `owner_type: organization`;
-- private GitHub source;
-- `agent-provisioned-external-ci`;
+- GitHub owner `ChongLiuPhil`;
+- `owner_type: user`;
+- private repository;
+- `workers-builds-native`;
+- `access_mode: worker-scoped-access`;
 - restricted Web;
 - previews disabled;
-- `shared-reader-access`;
 - no custom domain;
-- no public-release authorization.
+- `restricted_deployment_source: explicit-project-authorization`;
+- `project_bootstrap: human-assisted-once-per-project`;
+- `public_release: false`.
 
 The request contains no credential material.
 
-## 6. Project composition
+## 7. Planner semantics
 
-For the default full profile, Starter adopts:
+For the default Native profile, an unconfigured platform-authorization record does **not** block project planning.
+
+The default ready state is:
 
 ```text
-full AHICP
-+ full PPF
-+ Vault Interface
-+ project-owned content
+READY_FOR_PROJECT_BOOTSTRAP
 ```
 
-The Agent must still fresh-read the pinned upstream ownership manifests before writing project files.
+The generated PPF desired state uses:
 
-For PPF, the preferred new-project infrastructure profile is `agent-provisioned-external-ci`. Workers Builds Native remains available only after an explicit profile selection or for an existing project that already uses it.
+```text
+provider: cloudflare-workers-builds
+securityProfile: workers-builds-native
+credentialStrategy: provider-managed-user-token
+secretBroker: false
+accessMode: worker-scoped-access
+previewDeployments: false
+```
 
-## 7. Restricted deployment standing policy
+Platform standing authorization is required only if the project explicitly selects the advanced External-CI profile.
 
-If `standing_authorizations.restricted_web_deployment` is true and the request uses `restricted_deployment_source: platform-standing-authorization`, Starter may materialize the downstream PPF project so that restricted Continuous Web deployment is authorized without a new project-by-project approval.
+## 8. Verification after first setup
 
-That authorization is limited to the declared restricted/authenticated state.
+The first deployment is not sufficient on its own.
 
-It must **not** set or imply:
+Verify:
 
-- `visibility: public`;
-- public Access bypass;
-- source repository public;
-- custom domain authorization;
+- the GitHub repository remains private;
+- Cloudflare is connected to the intended repository;
+- the production branch is `main`;
+- the intended revision is deployed;
+- Worker Access protection is active;
+- anonymous production requests are challenged or denied;
+- an approved authenticated reader can access the site;
+- direct assets cannot bypass Access;
+- no provider credential value appears in Git, issues, PR text, logs, or model/chat context.
+
+Record only non-secret provider state.
+
+## 9. Second-push acceptance
+
+After the first deployment succeeds, make one harmless source change and push it to `main`.
+
+The project is operationally verified only if:
+
+```text
+push
+-> Workers Builds starts automatically
+-> build succeeds
+-> intended new revision deploys
+-> Access remains enforced
+-> no renewed GitHub or Cloudflare authorization is required
+```
+
+This is the important evidence that the one-time project bootstrap has actually become a reusable connection.
+
+## 10. Human-reserved gates
+
+The default project bootstrap never authorizes:
+
+- Web publication becoming public;
+- source repository becoming public/open source;
 - reader-audience expansion;
-- public canonical cutover.
+- custom-domain or DNS changes;
+- provider-permission scope expansion;
+- paid-plan or billing changes.
 
-Public release still needs a separate durable approval.
+Those remain explicit human decisions.
 
-## 8. Provisioning sequence
+## 11. Secret boundary
 
-An Agent should execute the following sequence:
+For the default Native profile, the user is not asked to copy a Cloudflare deployment token into GitHub Actions or chat. Workers Builds uses provider-managed credentials.
 
-1. Read Starter ecosystem and retrieval contract.
-2. Read this contract.
-3. Validate the platform authorization record.
-4. Validate the project provisioning request.
-5. Resolve the full Starter profile and pinned upstream sources.
-6. Create/adopt project files in the private repository.
-7. Fresh-read PPF's provisioning profile and infrastructure schema.
-8. Invoke the PPF provisioner.
-9. If PPF returns `SECRET_BROKER_REQUIRED`, send only that non-secret request to the trusted broker.
-10. Re-read GitHub secret metadata; never read the secret value.
-11. Materialize restricted deployment authorization only when covered by standing or explicit project authorization.
-12. Run CI/deployment.
-13. Verify repository privacy, account-wide Access, deployed revision, anonymous denial, assets, and rollback.
-14. Write non-secret IDs/status and verification evidence back to private project state.
-15. Stop before any human-reserved gate.
+No provider credential may be stored in:
 
-## 9. Human-reserved gates
-
-The Agent returns to the human only when the requested action is outside the standing platform/project authorization, including:
-
-- GitHub provisioning scope expansion;
-- Cloudflare provisioning scope expansion;
-- missing account-wide Access bootstrap;
-- missing trusted secret broker requiring direct secret input;
-- reader-audience addition or expansion;
-- public publication;
-- source repository public/open-source transition;
-- custom domain / DNS authority;
-- paid-plan change.
-
-A human gate is a resumable checkpoint. The Agent continues all other independent authorized work and resumes from fresh provider state after the gate is completed.
-
-## 10. Secret boundary
-
-Secrets never belong in:
-
-- Starter templates;
-- `project-stack.yaml`;
-- the provisioning request;
-- platform authorization YAML;
+- Git;
+- Starter/PPF YAML;
 - issues or PR bodies;
 - logs;
 - chat/model context.
 
-The PPF provisioner returns only a non-secret `ppf/secret-broker-request/v1`.
+If API-based automation is later used for provider configuration, credentials must remain inside an authorized provider/tool boundary.
 
-PPF now implements the atomic Secret Broker orchestration and safe `ppf/secret-broker-result/v1` contract. It refuses to overwrite existing target Secrets, verifies the issuer-reported Worker/role scope, rolls back transaction-created Secrets, and revokes a newly minted token when the broker transaction fails. The Cloudflare granular-token issuer adapter remains `live-acceptance-pending` until the exact current individual-Worker `Editor` policy encoding is verified against the live Provider API.
+## 12. Optional advanced External-CI profile
 
-The secret broker is a trusted execution boundary, not an LLM prompt. Starter must not treat “broker orchestration implemented” as equivalent to “Cloudflare token issuer production-accepted”.
-
-## 11. Completion criteria
-
-A project may be reported as **restricted-deployment verified** only when:
-
-- the intended private GitHub repository exists;
-- full-stack adoption state is recorded;
-- the intended Worker exists;
-- the account-wide Access baseline remains verified;
-- project deployment credential metadata is installed;
-- the intended Git revision is deployed;
-- anonymous production access is challenged/denied;
-- enabled previews, if any, are challenged/denied;
-- direct assets cannot bypass Access;
-- no secret value is present in Git/chat/logs;
-- rollback is recorded;
-- provider state has been written back without credential material.
-
-It must still report:
-
-`public_release: NOT AUTHORIZED`
-
-until explicit human approval exists.
-
-## 12. Evidence boundary
-
-The contract, schemas, planner, PPF provisioner, workflow, and CI can establish implementation readiness.
-
-They cannot establish live production acceptance for this new profile.
-
-The first production-grade acceptance must use one clean test project, first record non-secret Provider evidence proving the minted Cloudflare credential is scoped to exactly the intended existing Worker with `Editor`, and then record:
+A project may explicitly select:
 
 ```text
-project request
--> private repo
--> stack adoption
--> Worker
--> secret broker
--> GitHub Actions deploy
--> restricted anonymous denial
--> revision verification
--> durable write-back
+agent-provisioned-external-ci
 ```
 
-Only after that evidence exists should Starter describe the path as a verified automatic default.
+when stronger deployment-credential isolation is worth the additional infrastructure.
+
+That profile retains:
+
+- reusable platform authorization;
+- account-wide Access precondition;
+- GitHub Actions deployment;
+- account-owned individual-Worker `Editor` credential;
+- Trusted Secret Broker orchestration.
+
+Its Cloudflare granular-token issuer remains subject to live Provider acceptance. The advanced profile must not be used to make claims about the default Native path.
+
+## 13. Completion state
+
+A default project bootstrap is complete when it can truthfully record:
+
+```text
+github_repository: private
+infrastructure_profile: workers-builds-native
+cloudflare_git_connection: verified
+worker_access: verified-private
+first_restricted_deployment: verified
+second_push_auto_deploy: verified
+public_release: NOT AUTHORIZED
+```
+
+Starter owns composition and project-bootstrap orchestration. PPF remains authoritative for the executable GitHub/Cloudflare integration contract and operator instructions.

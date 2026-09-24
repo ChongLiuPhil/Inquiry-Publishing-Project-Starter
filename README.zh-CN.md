@@ -12,7 +12,7 @@ Starter 主要面向 AI 和配置工作；第一次了解体系时，不需要�
 
 **体系与 AI 配置入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`项目自动配置契约`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
 
-**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。Downstream repository 默认创建在 `philohub` GitHub Organization，使用 `owner_type: organization` 与 `visibility: private`；原创或未发布源文件继续保持 private。Continuous Web 可作为 restricted + authenticated 准备。平台一次性 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`：private GitHub repository、account-wide Access 保护的 Worker、trusted Secret Broker，以及使用 project-scoped Worker credential 的 GitHub Actions deployment。Public release 仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
+**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。Downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号下，使用 `owner_type: user` 与 `visibility: private`；原创或未发布源文件继续保持 private。默认 infrastructure profile 为 `workers-builds-native`：允许每个项目一次短而明确的人类 GitHub → Cloudflare bootstrap，给 Worker 配置 Access，然后验证第二次 push 无需重新授权即可自动部署。`agent-provisioned-external-ci` 继续作为高级可选 Profile。Public release 仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
 
 ## 权威边界
 
@@ -59,10 +59,10 @@ make provisioning-contract-check
 
 ```bash
 python tools/project_provisioning.py validate
-python tools/project_provisioning.py plan --platform /secure/path/platform-authorization.yaml --request project-provisioning.yaml --json
+python tools/project_provisioning.py plan --request project-provisioning.yaml --json
 ```
 
-Planner 不创建也不返回 deployment token。Starter 把经过校验的 desired-state seed 交给固定版本 PPF Provisioner；如果 PPF 返回 Secret Broker Request，由 trusted broker——而不是语言模型——创建 scoped Cloudflare credential 并直接写入 GitHub Actions Secret。
+默认 `workers-builds-native` Profile 即使没有账户级 Platform Authorization，也会生成 `READY_FOR_PROJECT_BOOTSTRAP`。随后按照固定版本 PPF 的每项目配置指南，把 private repository 连接到 Workers Builds、给 Worker 配置 Access、验证第一次 restricted deployment，再验证第二次 push 无需重新授权即可部署。Trusted Secret Broker 只属于高级可选 External-CI Profile。
 
 详见 [`docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) 与 [`docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md)。
 

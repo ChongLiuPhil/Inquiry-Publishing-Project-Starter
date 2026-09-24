@@ -24,7 +24,7 @@ This repository is the **composition, adoption, upgrade, and project-provisionin
 
 Starter is **not a fourth framework**. AHICP, PPF, and Vault Interface remain authoritative for their own specifications; Starter records how a project composes and adopts them, and when an authorized Agent may invoke the pinned PPF infrastructure provisioner.
 
-**Default for new projects:** full AHICP + full PPF + Vault Interface. Downstream repositories default to the `philohub` GitHub Organization with `owner_type: organization` and `visibility: private`; original or unpublished source remains private. Continuous Web may be prepared as restricted/authenticated. After one-time platform bootstrap, the preferred infrastructure profile is `agent-provisioned-external-ci`: private GitHub repository, account-wide Access-protected Worker, trusted Secret Broker, and GitHub Actions deployment using a project-scoped Worker credential. Public release remains a separate human decision. Reduced stack profiles require explicit human selection.
+**Default for new projects:** full AHICP + full PPF + Vault Interface. Downstream repositories default to the personal `ChongLiuPhil` GitHub account with `owner_type: user` and `visibility: private`; original or unpublished source remains private. The default infrastructure profile is `workers-builds-native`: allow one short human-assisted GitHub → Cloudflare bootstrap for the project, protect the Worker with Access, then verify that a second push deploys automatically without renewed authorization. `agent-provisioned-external-ci` remains an optional advanced profile. Public release remains a separate human decision. Reduced stack profiles require explicit human selection.
 
 
 ## Stack v2
@@ -82,10 +82,10 @@ New downstream projects also carry `project-provisioning.yaml`. The public schem
 
 ```bash
 python tools/project_provisioning.py validate
-python tools/project_provisioning.py plan --platform /secure/path/platform-authorization.yaml --request project-provisioning.yaml --json
+python tools/project_provisioning.py plan --request project-provisioning.yaml --json
 ```
 
-The plan never mints or returns a deployment token. Starter hands the validated desired-state seed to the pinned PPF provisioner. If PPF returns a Secret Broker request, a trusted broker—not the language model—creates the scoped Cloudflare credential and writes it directly to GitHub Actions secrets.
+For the default `workers-builds-native` profile, the plan returns `READY_FOR_PROJECT_BOOTSTRAP` without requiring account-wide platform authorization. Follow the pinned PPF per-project setup guide to connect the private repository to Workers Builds, protect the Worker with Access, verify the first restricted deployment, and then verify a second push without reauthorization. The Secret Broker is required only by the optional advanced external-CI profile.
 
 See [`docs/PROJECT_PROVISIONING_CONTRACT.md`](docs/PROJECT_PROVISIONING_CONTRACT.md) and [`docs/PROJECT_PROVISIONING_ACCEPTANCE.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.md).
 

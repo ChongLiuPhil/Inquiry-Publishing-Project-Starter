@@ -97,7 +97,8 @@
             "web_visibility",
             "preview_enabled",
             "access_policy_ref",
-            "custom_domain"
+            "custom_domain",
+            "access_mode"
           ],
           "properties": {
             "worker": {
@@ -115,6 +116,12 @@
             },
             "custom_domain": {
               "type": "null"
+            },
+            "access_mode": {
+              "enum": [
+                "worker-scoped-access",
+                "account-wide-access"
+              ]
             }
           }
         }
@@ -125,7 +132,8 @@
       "additionalProperties": false,
       "required": [
         "restricted_deployment_source",
-        "public_release"
+        "public_release",
+        "project_bootstrap"
       ],
       "properties": {
         "restricted_deployment_source": {
@@ -136,6 +144,12 @@
         },
         "public_release": {
           "const": false
+        },
+        "project_bootstrap": {
+          "enum": [
+            "human-assisted-once-per-project",
+            "platform-automated"
+          ]
         }
       }
     }

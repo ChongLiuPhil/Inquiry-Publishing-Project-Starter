@@ -19,7 +19,9 @@
       "mount": "/ppf/",
       "files": [
         "docs/index.html",
-        "docs/llms.txt"
+        "docs/llms.txt",
+        "docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md",
+        "docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md"
       ]
     },
     "vault_interface": {

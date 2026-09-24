@@ -1,251 +1,256 @@
-# 项目自动配置契约
+# 项目 Provisioning 契约
 
-**状态：** Starter 新项目基础设施编排的权威契约  
-**首选 Infrastructure Profile：** `agent-provisioned-external-ci`
+**状态：** Starter 新项目编排的权威契约  
+**默认基础设施 Profile：** `workers-builds-native`  
+**默认配置模式：** `human-assisted-once-per-project`
 
-本契约规定 Inquiry Publishing Stack 如何把一个新项目请求转化为已采用、private-by-default、可部署的项目，同时尽量减少重复的人类授权。
+本契约定义 Inquiry Publishing Stack 当前实际采用的新项目路径。
 
-Starter 负责**组合与 Provisioning 意图**；它不复制 Provider 实现。可执行 GitHub / Cloudflare infrastructure adapter、reconciliation、deployment profile 与验证由 PPF 负责。
+默认路线**不再假定账户级零人工 Provisioning 已经建立**。每个项目明确允许一次少量 GitHub / Cloudflare 人工配置；该项目 bootstrap 完成后，普通 source push 应自动构建并部署。
 
-## 1. 目标
+`agent-provisioned-external-ci` + Trusted Secret Broker 继续作为项目明确选择时使用的高级可选路线。
 
-平台 bootstrap 完成后，普通新项目应走：
+## 1. 默认目标
+
+普通新项目的目标流程：
 
 ```text
-人类项目请求
--> Starter 校验 platform standing authorization
--> private GitHub repository
+人提出项目请求
+-> ChongLiuPhil 个人账号下 private repository
 -> 完整 AHICP + 完整 PPF + Vault Interface
--> PPF project infrastructure manifest
--> account-wide Access 前置检查
--> Cloudflare Worker
--> trusted secret broker
--> GitHub Actions restricted deployment
--> live verification
--> 非秘密状态持久写回
+-> project infrastructure manifest
+-> 每项目一次 Cloudflare Git repository connection
+-> Workers Builds
+-> Worker-scoped Cloudflare Access
+-> 验证第一次 restricted deployment
+-> 第二次 push 无需重新授权
+-> 后续普通 push 自动部署
 ```
 
-只要项目仍处于已批准的 GitHub / Cloudflare scope 内，不应仅因为“又创建一个项目”就重复要求 Provider 授权。
+实际承诺是：
 
-## 2. 不建立第二套基础设施控制平面
+> **每个项目只做一次短而明确、有文档可照着完成的 bootstrap；之后普通 push 自动部署。**
 
-Starter 不实现 Cloudflare / GitHub Provisioning API。
+它不再声称所有未来 repository 都能完全零人工创建并接入 Provider。
 
-可执行 Provider authority 位于 PPF：
+## 2. 默认 GitHub 拓扑
 
-- `providers/infrastructure/provisioning.py`
-- `providers/infrastructure/coordinator.py`
-- `schema/project.infrastructure.schema.json`
-- `docs/AGENT_PROVISIONED_EXTERNAL_CI.md`
-- `docs/TRUSTED_SECRET_BROKER.md`
-
-Starter 负责选择 PPF Profile、创建 project-level request、检查 platform authorization、应用 Stack 模板，并保持人类决定边界。
-
-## 3. Platform Authorization
-
-可复用的非秘密授权状态由以下结构表示：
-
-- `schema/platform-authorization.schema.json`
-- `templates/platform-authorization.yaml`
-
-Platform authorization 只保存 reference 和 verified state，绝不能包含 API token、私钥、密码、恢复码、OTP 或 reader identity。
-
-平台只有在以下全部 verified 后才是 `ready`：
-
-### GitHub
-
-- 目标 owner / organization scope 已批准；
-- provisioning principal 已对该 scope 授权。
-
-### Cloudflare
-
-- provisioning principal 已授权；
-- account-wide `all_workers` Access baseline 已 verified；
-- Worker creation authority 已 verified；
-- account-owned token 的创建权限已隔离在 trusted Secret Broker / provisioning boundary，并且该隔离状态已 verified。
-
-### Secret Broker
-
-- trusted broker implementation 已存在并通过验证，可以把 project deployment credential 直接写入 GitHub Actions，而不把明文暴露给 Agent/model。
-
-## 4. Standing Authorization
-
-Platform authorization 可以预先批准低风险、private-by-default 的项目初始化：
+普通 downstream project 默认：
 
 ```yaml
-standing_authorizations:
-  create_private_repositories: true
-  create_restricted_workers: true
-  restricted_web_deployment: true
-  public_release: false
-  source_repository_public: false
-  reader_audience_expansion: false
-  custom_domain_change: false
-  provider_permission_scope_expansion: false
-  paid_plan_change: false
-  direct_secret_input: false
+github:
+  owner: ChongLiuPhil
+  owner_type: user
+  visibility: private
 ```
 
-对当前平台拓扑而言，预期批准的 GitHub scope 是 `philohub` Organization。该 Organization 的 Project Provisioner App installation 验证完成后，后续项目无需再次要求人类确认：
+使用者可以先在 GitHub 手动创建 repository，再由 Agent 配置。自动建仓属于优化，不是前置条件。
 
-- 在 `philohub` 下创建 private repository；
-- 创建由 account-wide Access 保护的 Worker；
-- 部署 restricted/authenticated Continuous Web；
-- 验证该部署。
+因此默认路线不要求 GitHub Organization，也不要求先建立账户级 Project Provisioner App。
 
-它**不**授权：
+新 repository 必须以 private 开始。改成 public 是另一项独立的人类保留决定。
 
-- publication 变成 public；
-- source repository 公开/open-source；
-- 新增或扩大 reader；
-- 新 Custom Domain 或 DNS 改动；
-- Provider permission scope 扩大；
-- 启用 paid plan。
+## 3. 默认 Cloudflare 拓扑
 
-## 5. Project Request
+默认 PPF infrastructure profile：
+
+```text
+workers-builds-native
+```
+
+项目把 private GitHub repository 连接到 Cloudflare Workers Builds。之后 Git-triggered build/deploy connection 与 build credential 由 Cloudflare 管理。
+
+参考配置：
+
+```text
+production branch: main
+root directory: /
+build command: bash scripts/cloudflare_build.sh
+deploy command: npx wrangler deploy
+preview / non-production builds: 默认关闭
+```
+
+Provider UI 可能变化。Agent 必须根据当前 Provider state 与固定版本 PPF setup contract 行动，不得照旧截图猜字段。
+
+## 4. 每项目一次人工 Bootstrap
+
+正常情况下，人类可能需要完成：
+
+1. 创建或确认个人账号下的 private GitHub repository；
+2. GitHub 提示时，为当前 repository 授权 Cloudflare Git integration；
+3. 把 repository 连接到 Workers Builds；
+4. 确认 production branch / build 配置；
+5. 给目标 Worker 启用 Cloudflare Access；
+6. 确认第一次 restricted deployment。
+
+这些属于允许存在的项目级授权，不代表体系失败。
+
+Agent 应继续完成所有不依赖人工 consent 的技术工作；只有 Provider UI / 账户所有者必须亲自完成的步骤才返回人类。
+
+## 5. 私人 Web 默认值
+
+新的未公开 Web output 默认：
+
+```text
+restricted + authenticated
+```
+
+普通 Access 模式：
+
+```text
+worker-scoped-access
+```
+
+如果账户已经存在并验证了 `all_workers` account-wide policy，也可以记录：
+
+```text
+account-wide-access
+```
+
+GitHub repository private 并不等于网页 private。Worker 本身必须受到 Access 保护，而且匿名访问必须真实被 challenge / deny。
+
+Preview 默认关闭，直到 Preview protection 独立通过验证。
+
+## 6. Project Request
 
 新项目使用：
 
 - `schema/project-provisioning-request.schema.json`
 - `templates/project-provisioning-request.yaml`
+- 根目录 `project-provisioning.yaml`
 
 默认 Request 声明：
 
 - `full-research-publication`；
-- GitHub owner 为 `philohub`，`owner_type: organization`；
-- private GitHub source；
-- `agent-provisioned-external-ci`；
+- GitHub owner `ChongLiuPhil`；
+- `owner_type: user`；
+- private repository；
+- `workers-builds-native`；
+- `access_mode: worker-scoped-access`；
 - restricted Web；
 - Preview disabled；
-- `shared-reader-access`；
 - 无 Custom Domain；
-- 无 public-release authorization。
+- `restricted_deployment_source: explicit-project-authorization`；
+- `project_bootstrap: human-assisted-once-per-project`；
+- `public_release: false`。
 
-Request 不包含 credential material。
+Request 不含 credential material。
 
-## 6. 项目组合
+## 7. Planner 语义
 
-默认 full profile：
+对默认 Native Profile，`platform-authorization.yaml` 保持 `unconfigured` **不会阻塞**项目规划。
+
+默认 ready state：
 
 ```text
-完整 AHICP
-+ 完整 PPF
-+ Vault Interface
-+ project-owned content
+READY_FOR_PROJECT_BOOTSTRAP
 ```
 
-写入项目文件前，Agent 仍必须 fresh-read 固定版本的 upstream ownership manifest。
+生成的 PPF desired state 使用：
 
-PPF 的新项目首选 infrastructure profile 是 `agent-provisioned-external-ci`。Workers Builds Native 继续保留给明确选择它的项目，或已有使用该 Profile 的项目。
+```text
+provider: cloudflare-workers-builds
+securityProfile: workers-builds-native
+credentialStrategy: provider-managed-user-token
+secretBroker: false
+accessMode: worker-scoped-access
+previewDeployments: false
+```
 
-## 7. Restricted Deployment Standing Policy
+只有项目显式选择高级 External-CI Profile 时，才要求 platform standing authorization。
 
-如果 `standing_authorizations.restricted_web_deployment` 为 true，且 Request 使用 `restricted_deployment_source: platform-standing-authorization`，Starter 可以在不再次逐项目询问的情况下物化 downstream PPF restricted Continuous Web authorization。
+## 8. 第一次配置后的验证
 
-该授权只覆盖声明的 restricted/authenticated 状态。
+Cloudflare 显示首次 deployment success 还不够。
 
-不得设置或暗示：
+必须核验：
 
-- `visibility: public`；
-- public Access bypass；
-- source repository public；
-- Custom Domain authorization；
-- reader-audience expansion；
-- public canonical cutover。
+- GitHub repository 仍为 private；
+- Cloudflare 连接到正确 repository；
+- production branch 为 `main`；
+- 部署的是预期 revision；
+- Worker Access protection 已生效；
+- 匿名 production 请求被 challenge / deny；
+- 已批准 reader 完成认证后可以正常访问；
+- direct asset 不能绕过 Access；
+- Git、Issue、PR 文本、日志与 model/chat context 都没有 Provider credential value。
 
-Public release 仍需单独的持久化人类批准。
+只记录非秘密 Provider state。
 
-## 8. Provisioning 顺序
+## 9. 第二次 Push 验收
 
-Agent 应按以下顺序：
+第一次部署通过后，对 source 做一次无害修改并 push 到 `main`。
 
-1. 读取 Starter ecosystem 与 retrieval contract。
-2. 读取本契约。
-3. 校验 platform authorization record。
-4. 校验 project provisioning request。
-5. 解析完整 Starter Profile 与固定 upstream source。
-6. 在 private repository 中创建/采用项目文件。
-7. Fresh-read PPF Provisioning Profile 与 infrastructure schema。
-8. 调用 PPF provisioner。
-9. 若 PPF 返回 `SECRET_BROKER_REQUIRED`，只把该非秘密 Request 交给 trusted broker。
-10. 回读 GitHub Secret metadata；绝不读取 Secret 值。
-11. 只有 standing authorization 或 explicit project authorization 覆盖时，才物化 restricted deployment authorization。
-12. 运行 CI / deployment。
-13. 验证 repository privacy、account-wide Access、deployed revision、anonymous denial、assets 与 rollback。
-14. 把非秘密 ID/status 与 verification evidence 写回 private project state。
-15. 遇到 human-reserved gate 前停止相应动作。
+只有出现以下结果，项目才算 operationally verified：
 
-## 9. Human-Reserved Gate
+```text
+push
+-> Workers Builds 自动启动
+-> build 成功
+-> 新 revision 成为 production
+-> Access 继续生效
+-> 不需要重新授权 GitHub 或 Cloudflare
+```
 
-只有请求超出 standing platform/project authorization 时才回到人类，包括：
+这一步证明“一次项目 bootstrap”真正转化成了可持续复用的连接。
 
-- GitHub provisioning scope 扩大；
-- Cloudflare provisioning scope 扩大；
-- 缺少 account-wide Access bootstrap；
-- trusted Secret Broker 不可用而必须 direct secret input；
-- reader-audience 新增/扩大；
-- public publication；
-- source repository public/open-source transition；
-- Custom Domain / DNS authority；
-- paid-plan change。
+## 10. 人类保留 Gate
 
-Human gate 是可续办 checkpoint。Agent 应继续其他互不依赖且已授权的工作；gate 完成后重新读取 Provider state 并继续。
+默认项目 bootstrap 永远不授权：
 
-## 10. Secret 边界
+- Web restricted → public；
+- source repository private → public / open source；
+- reader audience 扩大；
+- Custom Domain / DNS 变化；
+- Provider permission scope 扩大；
+- paid plan / billing 变化。
 
-Secret 永远不得进入：
+这些仍由人明确决定。
 
-- Starter template；
-- `project-stack.yaml`；
-- provisioning request；
-- platform authorization YAML；
-- issue / PR body；
-- log；
+## 11. Secret 边界
+
+默认 Native Profile 不要求使用者把 Cloudflare deployment token 复制到 GitHub Actions，更不能粘贴到聊天。Workers Builds 使用 Provider 管理的 credential。
+
+任何 Provider credential 都不得进入：
+
+- Git；
+- Starter / PPF YAML；
+- Issue / PR body；
+- 日志；
 - chat / model context。
 
-PPF Provisioner 只返回非秘密 `ppf/secret-broker-request/v1`。
+以后如果使用 API 自动管理 Provider，也必须让 credential 留在已授权的 Provider / tool boundary 内。
 
-PPF 现在已经实现原子 Secret Broker 编排与安全的 `ppf/secret-broker-result/v1` 契约：拒绝覆盖已有目标 Secret，验证 issuer 报告的 Worker/role scope；Broker transaction 失败时回滚本轮创建的 Secret，并 revoke 本轮新 mint 的 token。Cloudflare granular-token issuer adapter 仍为 `live-acceptance-pending`，必须先通过真实 Provider API 验证当前 individual-Worker `Editor` policy encoding。
+## 12. 可选高级 External-CI Profile
 
-Secret Broker 是受信 execution boundary，不是 LLM prompt。Starter 不得把“Broker orchestration 已实现”误写成“Cloudflare token issuer 已 production-accepted”。
-
-## 11. 完成标准
-
-只有以下全部满足，项目才可报告为 **restricted-deployment verified**：
-
-- 目标 private GitHub repository 已存在；
-- full-stack adoption state 已记录；
-- 目标 Worker 已存在；
-- account-wide Access baseline 仍 verified；
-- project deployment credential metadata 已安装；
-- 预期 Git revision 已部署；
-- production 匿名访问被 challenge / deny；
-- 若启用 Preview，匿名 Preview 也被 challenge / deny；
-- direct asset 不能绕过 Access；
-- Git/chat/log 中不存在 Secret 值；
-- rollback 已记录；
-- Provider state 已写回且不含 credential material。
-
-在明确 human approval 前仍必须报告：
-
-`public_release: NOT AUTHORIZED`
-
-## 12. Evidence Boundary
-
-契约、Schema、Planner、PPF Provisioner、Workflow 与 CI 只能证明 implementation readiness。
-
-第一个 production-grade acceptance 必须使用全新 test project，先记录非秘密 Provider 证据，证明 minted Cloudflare credential 只限制到目标既有 Worker 且角色为 `Editor`，然后真实记录：
+确实需要更强 deployment-credential isolation 的项目，可以显式选择：
 
 ```text
-project request
--> private repo
--> stack adoption
--> Worker
--> secret broker
--> GitHub Actions deploy
--> restricted anonymous denial
--> revision verification
--> durable write-back
+agent-provisioned-external-ci
 ```
 
-只有这些证据存在后，Starter 才能把此路径称为 verified automatic default。
+高级 Profile 保留：
+
+- reusable platform authorization；
+- account-wide Access 前置条件；
+- GitHub Actions deployment；
+- account-owned individual-Worker `Editor` credential；
+- Trusted Secret Broker 编排。
+
+其 Cloudflare granular-token issuer 仍需 live Provider acceptance。高级 Profile 的未完成项不得被混入默认 Native 路线的完成标准。
+
+## 13. 完成状态
+
+默认项目 bootstrap 完成时，应能真实记录：
+
+```text
+github_repository: private
+infrastructure_profile: workers-builds-native
+cloudflare_git_connection: verified
+worker_access: verified-private
+first_restricted_deployment: verified
+second_push_auto_deploy: verified
+public_release: NOT AUTHORIZED
+```
+
+Starter 负责组合与项目 bootstrap 编排；真正的 GitHub / Cloudflare 可执行 integration contract 与操作者步骤继续由 PPF 保持权威。

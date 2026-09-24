@@ -34,14 +34,16 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 5. For a downstream project, read project-stack.yaml, project-provisioning.yaml when present, selected profile, and lock state.
 6. Fresh-read pinned AHICP/PPF/Vault manifests before material configuration, provisioning, or upgrade.
 7. Default new projects to full AHICP + full PPF + Vault Interface.
-8. After verified platform bootstrap, prefer agent-provisioned-external-ci and reuse verified standing authorization inside the approved scope.
+8. Default ordinary new projects to workers-builds-native under the personal ChongLiuPhil account, with a human-assisted-once-per-project GitHub → Cloudflare bootstrap.
 9. Default original/unpublished source to private and unpublished Web to restricted authenticated access.
-10. Keep previews disabled until protected-preview acceptance.
-11. Separate platform provisioning authority from routine project deployment authority.
-12. Never expose deployment-token plaintext to model/chat/Git/logs; use the trusted Secret Broker.
-13. Distinguish proposal, authorization, execution, verification, and durable write-back.
-14. Ask the human only for real reserved gates: judgment, new sign-in/MFA or provider-scope authorization, public release, reader expansion, domain/DNS authority, paid-plan change, or fallback direct secret entry.
-15. For the four public framework sites, keep using the approved canonical Worker and read the migration plan for live cutover evidence.</pre>
+10. Use Worker-scoped Access by default; reuse verified account-wide Access only when it actually exists.
+11. Keep previews disabled until protected-preview acceptance.
+12. Verify the first restricted deployment, then require a second push to deploy automatically without renewed authorization.
+13. Treat agent-provisioned-external-ci + Trusted Secret Broker as an optional advanced profile, not a default prerequisite.
+14. Never expose provider credential plaintext to model/chat/Git/logs.
+15. Distinguish proposal, authorization, execution, verification, and durable write-back.
+16. Ask the human only for project-level repository/provider UI consent that actually requires the account holder, or for reserved gates such as public release, reader expansion, domain/DNS authority, provider-scope expansion, and paid-plan change.
+17. For the four public framework sites, keep using the approved canonical Worker and read the migration plan for live cutover evidence.</pre>
 </section>
 
 <section class="block">
@@ -70,15 +72,18 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 
 source repository: private by default
 unpublished/transitional Web: restricted + authenticated
-infrastructure profile: agent-provisioned-external-ci after verified platform bootstrap
+infrastructure profile: workers-builds-native
+project bootstrap: human-assisted-once-per-project
+GitHub owner: ChongLiuPhil (user)
+project Access: worker-scoped-access by default
 preview: disabled until protected-preview acceptance
 public cutover: explicit human authorization required</pre>
 </section>
 
 <section class="block">
 <h2>Authorization boundary</h2>
-<div class="warn">Public links are retrieval instructions only. Private access and external writes require the applicable project/platform authorization. Verified platform standing authorization may cover ordinary private-repository creation, restricted Worker creation, and restricted deployment inside the approved scope; it never authorizes public release.</div>
-<p>Never request passwords, API tokens, private keys, recovery codes, or other secrets in chat. Project deployment-token plaintext must stay inside the trusted Secret Broker and GitHub secret-write path. When a human must act in a provider UI, give exact numbered steps, the secret boundary, completion evidence, verification, and rollback.</p>
+<div class="warn">Public links are retrieval instructions only. The default project path permits one short human-assisted bootstrap for the private GitHub repository, Cloudflare Git connection, and Worker Access. That project-level consent never authorizes public release.</div>
+<p>Never request passwords, API tokens, private keys, recovery codes, or other secrets in chat. The default Workers Builds profile uses provider-managed credentials. If the optional advanced external-CI profile is selected, its Trusted Secret Broker keeps token plaintext outside model context. When a human must act in a provider UI, give exact numbered steps, the secret boundary, completion evidence, verification, and rollback.</p>
 </section>
 
 <section class="block">

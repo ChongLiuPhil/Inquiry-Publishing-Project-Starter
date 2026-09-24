@@ -71,36 +71,45 @@ def main():
             if provisioning_path.is_file():
                 request = load(root, "project-provisioning.yaml")
                 platform = copy.deepcopy(load(ROOT, "templates/platform-authorization.yaml"))
-                owner_type = request.get("infrastructure", {}).get("github", {}).get("owner_type")
-                owner = request.get("infrastructure", {}).get("github", {}).get("owner")
-                platform["status"] = "ready"
-                platform["github"].update({
-                    "owner_scope": owner,
-                    "principal_ref": "ci-synthetic-github-principal",
-                    "principal_type": "github-app-user-access" if owner_type == "user" else "github-app-installation",
-                    "authorization_state": "authorized",
-                })
-                platform["cloudflare"].update({
-                    "account_ref": "ci-synthetic-cloudflare-account",
-                    "principal_ref": "ci-synthetic-cloudflare-principal",
-                    "authorization_state": "authorized",
-                    "all_workers_access": "verified",
-                    "worker_creation_authority": "authorized",
-                })
-                platform["secret_broker"].update({
-                    "implementation_ref": "ci-synthetic-secret-broker",
-                    "state": "verified",
-                    "plaintext_boundary": "verified",
-                    "token_minting_authority": "isolated-authorized",
-                })
-                platform["standing_authorizations"].update({
-                    "create_private_repositories": True,
-                    "create_restricted_workers": True,
-                    "restricted_web_deployment": True,
-                })
+                profile = request.get("infrastructure", {}).get("profile")
+                if profile == "agent-provisioned-external-ci":
+                    owner_type = request.get("infrastructure", {}).get("github", {}).get("owner_type")
+                    owner = request.get("infrastructure", {}).get("github", {}).get("owner")
+                    platform["status"] = "ready"
+                    platform["github"].update({
+                        "owner_scope": owner,
+                        "principal_ref": "ci-synthetic-github-principal",
+                        "principal_type": "github-app-user-access" if owner_type == "user" else "github-app-installation",
+                        "authorization_state": "authorized",
+                    })
+                    platform["cloudflare"].update({
+                        "account_ref": "ci-synthetic-cloudflare-account",
+                        "principal_ref": "ci-synthetic-cloudflare-principal",
+                        "authorization_state": "authorized",
+                        "all_workers_access": "verified",
+                        "worker_creation_authority": "authorized",
+                    })
+                    platform["secret_broker"].update({
+                        "implementation_ref": "ci-synthetic-secret-broker",
+                        "state": "verified",
+                        "plaintext_boundary": "verified",
+                        "token_minting_authority": "isolated-authorized",
+                    })
+                    platform["standing_authorizations"].update({
+                        "create_private_repositories": True,
+                        "create_restricted_workers": True,
+                        "restricted_web_deployment": True,
+                    })
                 plan = build_plan(platform, request)
-                if plan.get("status") != "READY_FOR_PROVISIONER":
-                    errors.append("Starter provisioning plan is not ready under a synthetic verified platform baseline")
+                expected_status = (
+                    "READY_FOR_PROJECT_BOOTSTRAP"
+                    if profile == "workers-builds-native"
+                    else "READY_FOR_PROVISIONER"
+                )
+                if plan.get("status") != expected_status:
+                    errors.append(
+                        f"Starter provisioning plan status {plan.get('status')!r} != expected {expected_status!r}"
+                    )
                 else:
                     schema = fetch_yaml(component["source"], revision, "schema/project.infrastructure.schema.json")
                     desired = plan["ppf_handoff"]["desired_state_seed"]

@@ -65,30 +65,37 @@ deployment:
 
 policy_ref 只用于标识预期策略，绝不能用来存放真实凭据。
 
-## 4. 部署 profile
+## 4. 部署 Profile
 
 部署前必须选择并记录一种 Profile：
 
-- **Agent-Provisioned External CI — 平台 bootstrap 后新项目首选。** Platform Provisioner 创建 Worker；trusted broker 把只限制到该 individual Worker、角色为 Editor 的 account-owned token 直接写入 GitHub Actions；token 明文不进入模型。
-- **Workers Builds Native — provider-native 备选。** 明确重视原生 Git integration 或已有采用时使用；当前 build credential 使用 Provider user-token 模型。
-- **未来/Provider-specific Profile** — 只有当前文档与真实测试确认支持后才能采用。
+- **Workers Builds Native — 普通新项目默认。** 允许使用者每项目完成一次短 GitHub ↔ Cloudflare connection；之后 Git-triggered build/deploy 与 Provider-managed build credential 由 Cloudflare 负责。
+- **Agent-Provisioned External CI — 高级可选 Profile。** 只有项目明确需要 account-owned individual-Worker `Editor` deployment credential、可复用 Platform Authorization 与 Trusted Secret Broker 时采用。
+- **未来 / Provider-specific Profile** — 只有当前官方文档和真实测试确认支持后才能采用。
 
-PPF 的安全 profile 文档记录参考权衡。部署凭据安全与读者访问控制仍然是两个正交安全轴。
+默认 Profile 优先追求现实可用、配置简单，而不是把账户级零人工 Provisioning 当作前置条件。Deployment credential scope 与 reader access 仍是两个独立安全轴。
 
 ## 5. 必要配置顺序
 
-1. 确认准确的 GitHub 源仓库、输出目录、canonical domain、可见性、保留策略、Cloudflare account 与目标 Worker/project。
-2. 如果项目含有未发布原创内容，确认源仓库为 private。
-3. 选择 build/deployment Profile；新项目除非明确选择其他 Profile，否则采用 `agent-provisioned-external-ci`。
-4. 创建 Worker 前先验证 platform standing authorization 与 account-wide `all_workers` Access。
-5. 通过已授权 Provisioner 创建/复用 private GitHub repository 与 restricted Worker。
-6. External CI 由 trusted Secret Broker 把 project-scoped Worker credential 直接安装到 GitHub Actions；明文不得暴露给 Agent。
-7. 根据 repository machine contract 配置 build command 与 output path。
-8. Preview 在独立保护验收前保持 disabled。
-9. 只有 durable project authorization 覆盖 restricted Web deployment 时才部署 restricted production。
-10. 验证准确 deployed revision、anonymous denial 与代表性 direct asset。
-11. Custom Domain 只有独立 domain/DNS authorization 后才配置。
-12. 把已验证的非秘密 Provider state、deployment revision、access-policy reference 与 rollback result 写回 private project state。
+普通新项目：
+
+1. 确认准确的个人 GitHub repository、output directory、Cloudflare account 与目标 Worker/project。
+2. 确认 source repository 为 private。
+3. 除非人类明确选择高级 Profile，否则使用 `workers-builds-native`。
+4. 在 `ChongLiuPhil` 下创建或确认 private repository。
+5. 在 Cloudflare Workers & Pages 中 Import / Connect 该 repository。
+6. 如果 GitHub 提示，为目标 repository 授权 Cloudflare Git integration。
+7. 配置 production branch `main`、root `/`、`bash scripts/cloudflare_build.sh` 与 `npx wrangler deploy`。
+8. Preview / non-production build 默认关闭。
+9. 完成第一次 deployment。
+10. 给 Worker 启用 Worker-scoped Cloudflare Access，选择 **All traffic**；如果已有 verified account-wide Access 覆盖，则记录并复用。
+11. 验证 deployed revision、匿名 challenge / deny、已授权 reader 与代表性 direct asset。
+12. 对 source 做一次无害修改并 push 到 `main`。
+13. 确认 Workers Builds 自动部署新 revision，且不需要重新 GitHub / Cloudflare authorization。
+14. Custom Domain 只有另行获得 domain/DNS authorization 后才配置。
+15. 记录已验证的非秘密 Provider state 与 rollback evidence。
+
+如果显式选择高级 External-CI Profile，则改为遵循固定版本 PPF 的 External-CI / Trusted Secret Broker 契约。
 
 ## 6. AI Agent 必须采用的人类交接格式
 
@@ -105,19 +112,19 @@ PPF 的安全 profile 文档记录参考权衡。部署凭据安全与读者访�
 
 仅说“配置 Cloudflare”“启用 Access”“设置 DNS”都不够。
 
-## 7. GitHub + Cloudflare 平台集成
+## 7. GitHub + Cloudflare 项目集成
 
-首选新项目路径不需要 per-project Cloudflare GitHub App authorization。Starter 校验 platform authorization，并把 Provider execution 交给固定版本 PPF 的 `agent-provisioned-external-ci` 实现。
+默认路线允许并预期“每项目一次 Cloudflare Git authorization”：当 Cloudflare GitHub App 尚未访问目标 repository 时，由使用者在 Provider UI 完成授权。
 
-读取当前 PPF runbook：
+读取固定版本 PPF runbook：
 
-- docs/AGENT_PROVISIONED_EXTERNAL_CI.zh-CN.md：最小人类新项目 Profile；
-- docs/CLOUDFLARE_GITHUB_AUTHORIZATION.zh-CN.md：两项平台级授权与 Native 备选；
-- docs/CLOUDFLARE_SECURITY_PROFILES.zh-CN.md：Provisioning / deployment credential 边界；
-- docs/CLOUDFLARE_ACCESS_PROFILE.zh-CN.md：publication visibility → reader access；
-- docs/CLOUDFLARE_OBSERVED_UI_MAPPING.zh-CN.md：带日期 UI 观察。
+- `docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md`：默认每项目操作流程；
+- `docs/CLOUDFLARE_GITHUB_AUTHORIZATION.zh-CN.md`：Native 默认与高级可选授权模型；
+- `docs/CLOUDFLARE_SECURITY_PROFILES.zh-CN.md`：deployment credential 权衡；
+- `docs/CLOUDFLARE_ACCESS_PROFILE.zh-CN.md`：publication visibility → reader access；
+- `docs/AGENT_PROVISIONED_EXTERNAL_CI.zh-CN.md`：仅高级可选 Profile。
 
-只有明确选择 `workers-builds-native` 时才走 Cloudflare GitHub App 授权；不得因为旧习惯对 External-CI 项目套用该步骤。
+普通项目不得因为没有账户级 Provisioning 就被阻塞；也不得因为 repository connection 需要人工 consent 就放宽项目隐私。
 
 ## 8. Restricted reader access 配置
 

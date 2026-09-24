@@ -22,8 +22,10 @@
     "unpublished_web_visibility": "restricted",
     "reader_access": "authenticated",
     "public_cutover": "explicit-human-authorization",
-    "infrastructure_profile": "agent-provisioned-external-ci",
-    "preview": "disabled-until-protected-preview-acceptance"
+    "infrastructure_profile": "workers-builds-native",
+    "preview": "disabled-until-protected-preview-acceptance",
+    "project_bootstrap": "human-assisted-once-per-project",
+    "default_project_access": "worker-scoped-access"
   },
   "authorization": {
     "public_links_grant_private_access": false,
@@ -31,7 +33,8 @@
     "external_writes_require_authorization": true,
     "platform_standing_authorization_reusable": true,
     "public_release_requires_separate_human_approval": true,
-    "deployment_token_plaintext_in_model_context": false
+    "deployment_token_plaintext_in_model_context": false,
+    "platform_standing_authorization_required_for_default": false
   },
   "public_delivery": {
     "canonical_source_provider": "github",
@@ -47,29 +50,41 @@
     "cloud_handoff": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_WEB_AGENT_HANDOFF.zh-CN.md"
   },
   "project_provisioning": {
-    "status": "implemented-reference-live-acceptance-pending",
-    "preferred_profile": "agent-provisioned-external-ci",
+    "status": "guided-per-project-default",
+    "preferred_profile": "workers-builds-native",
     "request": "project-provisioning.yaml",
-    "platform_authorization": "private-control-plane-state",
+    "default_github_owner": "ChongLiuPhil",
+    "default_github_owner_type": "user",
+    "default_repository_visibility": "private",
+    "default_setup_mode": "human-assisted-once-per-project",
+    "default_access_mode": "worker-scoped-access",
+    "platform_authorization": "optional-advanced-profile-state",
     "ppf_executable_authority": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework",
-    "secret_broker_required": true,
+    "per_project_setup_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md",
+    "advanced_external_ci_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/AGENT_PROVISIONED_EXTERNAL_CI.md",
+    "secret_broker_required_for_default": false,
+    "secret_broker_orchestration": "optional-advanced-ppf-implemented",
+    "trusted_secret_broker_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/TRUSTED_SECRET_BROKER.md",
+    "cloudflare_granular_token_issuer": "optional-advanced-live-acceptance-pending",
+    "ordinary_project_human_bootstrap": [
+      "create-or-confirm-private-personal-repository",
+      "authorize-cloudflare-git-for-target-repository-if-required",
+      "connect-workers-builds",
+      "protect-target-worker-with-access",
+      "verify-first-restricted-deployment",
+      "verify-second-push-auto-deploy-without-reauthorization"
+    ],
     "human_reserved_gates": [
       "public-release",
+      "source-repository-public",
       "reader-audience-expansion",
       "custom-domain-or-dns-authority",
       "provider-permission-scope-expansion",
       "paid-plan-or-billing-change",
-      "source-repository-public",
       "direct-secret-input-if-trusted-broker-unavailable"
     ],
     "public_contract_en": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.md",
     "public_contract_zh_cn": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
-    "public_acceptance": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_ACCEPTANCE.md",
-    "secret_broker_orchestration": "ppf-implemented",
-    "trusted_secret_broker_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/TRUSTED_SECRET_BROKER.md",
-    "cloudflare_granular_token_issuer": "live-acceptance-pending",
-    "default_github_owner": "philohub",
-    "default_github_owner_type": "organization",
-    "default_repository_visibility": "private"
+    "public_acceptance": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_ACCEPTANCE.md"
   }
 }

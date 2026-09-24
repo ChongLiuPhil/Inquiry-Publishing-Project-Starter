@@ -39,7 +39,32 @@ def validate(instance: dict[str, Any], schema_path: Path, label: str) -> None:
 
 
 def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[str]:
+    """Return only the authorization blockers required by the selected profile.
+
+    Workers Builds Native deliberately permits a short human-assisted bootstrap
+    for each project, so it does not require platform standing authorization,
+    account-wide Access, or the Trusted Secret Broker.
+
+    The advanced external-CI profile retains the stronger reusable platform
+    authorization requirements.
+    """
     errors: list[str] = []
+    profile = request["infrastructure"]["profile"]
+    authorization = request["authorization"]
+
+    if authorization["public_release"] is not False:
+        errors.append("PUBLIC_RELEASE_MUST_NOT_BE_PREAUTHORIZED_BY_PROJECT_REQUEST")
+
+    if profile == "workers-builds-native":
+        if authorization.get("restricted_deployment_source") != "explicit-project-authorization":
+            errors.append("NATIVE_PROFILE_REQUIRES_EXPLICIT_PROJECT_AUTHORIZATION")
+        if authorization.get("project_bootstrap") != "human-assisted-once-per-project":
+            errors.append("NATIVE_PROFILE_REQUIRES_GUIDED_PROJECT_BOOTSTRAP")
+        return list(dict.fromkeys(errors))
+
+    if authorization.get("project_bootstrap") != "platform-automated":
+        errors.append("EXTERNAL_CI_REQUIRES_PLATFORM_AUTOMATED_BOOTSTRAP")
+
     if platform.get("status") != "ready":
         errors.append("PLATFORM_AUTHORIZATION_NOT_READY")
 
@@ -72,12 +97,11 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
     if broker.get("token_minting_authority") != "isolated-authorized":
         errors.append("SECRET_BROKER_TOKEN_MINTING_AUTHORITY_NOT_ISOLATED")
 
-    required_standing = (
+    for key in (
         "create_private_repositories",
         "create_restricted_workers",
         "restricted_web_deployment",
-    )
-    for key in required_standing:
+    ):
         if standing.get(key) is not True:
             errors.append("STANDING_AUTHORIZATION_MISSING_" + key.upper())
 
@@ -93,27 +117,58 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
         if standing.get(key) is not False:
             errors.append("RESERVED_HUMAN_GATE_MUST_REMAIN_FALSE_" + key.upper())
 
-    if request["authorization"]["restricted_deployment_source"] == "platform-standing-authorization":
+    if authorization["restricted_deployment_source"] == "platform-standing-authorization":
         if standing.get("restricted_web_deployment") is not True:
             errors.append("RESTRICTED_DEPLOYMENT_NOT_COVERED_BY_PLATFORM_AUTHORIZATION")
-    if request["authorization"]["public_release"] is not False:
-        errors.append("PUBLIC_RELEASE_MUST_NOT_BE_PREAUTHORIZED_BY_PROJECT_REQUEST")
     return list(dict.fromkeys(errors))
-
 
 def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
     errors = platform_errors(platform, request)
     profile = request["infrastructure"]["profile"]
+    guided_native = profile == "workers-builds-native"
     project = request["project"]
     infra = request["infrastructure"]
+    authorization = request["authorization"]
+
+    ready_status = "READY_FOR_PROJECT_BOOTSTRAP" if guided_native else "READY_FOR_PROVISIONER"
+    access_mode = infra["cloudflare"]["access_mode"]
+
+    completion_evidence = (
+        [
+            "private GitHub repository exists at intended personal-account identity",
+            "Cloudflare Git repository connection points to the intended repository",
+            "production branch is main and the production trigger is active",
+            "target Worker identity exists",
+            "Worker-scoped Access or an explicitly selected verified account-wide Access policy protects the project",
+            "first restricted deployment serves the intended source revision",
+            "anonymous production access is challenged or denied",
+            "direct assets cannot bypass access control",
+            "a second source push deploys automatically without renewed GitHub or Cloudflare authorization",
+            "non-secret provider state and rollback point are durably recorded",
+        ]
+        if guided_native
+        else [
+            "private GitHub repository exists at intended identity",
+            "account-wide Access remains verified",
+            "target Worker identity exists",
+            "project-scoped deployment credential is installed without exposing plaintext",
+            "authorized GitHub Actions deployment succeeds",
+            "deployed revision matches intended source revision",
+            "anonymous production access is challenged or denied",
+            "direct assets cannot bypass access control",
+            "non-secret provider state and rollback point are durably recorded",
+        ]
+    )
+
     plan = {
         "schema": "inquiry-publishing-stack/project-provisioning-plan/v1",
-        "status": "BLOCKED" if errors else "READY_FOR_PROVISIONER",
+        "status": "BLOCKED" if errors else ready_status,
         "project": project,
         "stack_profile": request["stack_profile"],
         "infrastructure_profile": profile,
         "blockers": errors,
-        "standing_authority_used": request["authorization"]["restricted_deployment_source"],
+        "authorization_source": authorization["restricted_deployment_source"],
+        "project_bootstrap": authorization["project_bootstrap"],
         "component_adoption": {
             "governance": "full-ahicp",
             "publishing": "full-ppf",
@@ -123,11 +178,13 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
         "ppf_handoff": {
             "authority": "ChongLiuPhil/Personal-Publishing-Framework",
             "profile": profile,
-            "required_contract": "docs/AGENT_PROVISIONED_EXTERNAL_CI.md"
-                if profile == "agent-provisioned-external-ci"
-                else "docs/CLOUDFLARE_GITHUB_AUTHORIZATION.md",
+            "required_contract": (
+                "docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md"
+                if guided_native
+                else "docs/AGENT_PROVISIONED_EXTERNAL_CI.md"
+            ),
             "desired_state_seed": {
-                "schemaVersion": 2 if profile == "agent-provisioned-external-ci" else 1,
+                "schemaVersion": 2,
                 "project": {"id": project["id"], "slug": infra["github"]["repository"]},
                 "github": {
                     "owner": infra["github"]["owner"],
@@ -141,24 +198,30 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
                     "worker": infra["cloudflare"]["worker"],
                     "applicationVisibility": "private",
                     "previewVisibility": "private",
-                    "accessMode": "account-wide-access",
+                    "accessMode": access_mode,
                     "publicBypass": False,
                     "customDomain": None,
                 },
                 "deployment": {
-                    "provider": "github-actions-cloudflare-workers"
-                        if profile == "agent-provisioned-external-ci"
-                        else "cloudflare-workers-builds",
+                    "provider": (
+                        "cloudflare-workers-builds"
+                        if guided_native
+                        else "github-actions-cloudflare-workers"
+                    ),
                     "productionBranch": "main",
-                    "previewDeployments": False if profile == "agent-provisioned-external-ci" else True,
+                    "previewDeployments": infra["cloudflare"]["preview_enabled"],
                     "previewProtection": True,
-                    "securityProfile": profile
-                        if profile == "agent-provisioned-external-ci"
-                        else "workers-builds-native",
-                    "credentialStrategy": "project-scoped-account-token"
-                        if profile == "agent-provisioned-external-ci"
-                        else "provider-managed-user-token",
-                    "secretBroker": profile == "agent-provisioned-external-ci",
+                    "securityProfile": (
+                        "workers-builds-native"
+                        if guided_native
+                        else "agent-provisioned-external-ci"
+                    ),
+                    "credentialStrategy": (
+                        "provider-managed-user-token"
+                        if guided_native
+                        else "project-scoped-account-token"
+                    ),
+                    "secretBroker": not guided_native,
                 },
                 "release": {"state": "private", "openSource": False},
                 "policy": {
@@ -176,15 +239,29 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
                 "publication.web.access.mode": "authenticated",
                 "publication.web.access.implementation": "cloudflare-access",
                 "publication.web.access.policy_ref": "shared-reader-access",
-                "deployment.web.integration_mode": "github-actions-external-ci"
-                    if profile == "agent-provisioned-external-ci"
-                    else "workers-builds-git",
+                "deployment.web.integration_mode": (
+                    "workers-builds-git"
+                    if guided_native
+                    else "github-actions-external-ci"
+                ),
                 "deployment.web.enabled": True if not errors else False,
                 "deployment.web.status": "staged",
                 "public_release": False,
-                "authorization_basis": request["authorization"]["restricted_deployment_source"],
+                "authorization_basis": authorization["restricted_deployment_source"],
             },
         },
+        "human_bootstrap_steps": (
+            [
+                "create-or-confirm-private-personal-github-repository",
+                "connect-repository-to-cloudflare-workers-builds",
+                "authorize-cloudflare-git-access-to-target-repository-if-prompted",
+                "protect-target-worker-with-cloudflare-access",
+                "verify-first-restricted-deployment",
+                "verify-second-push-auto-deploys-without-reauthorization",
+            ]
+            if guided_native
+            else []
+        ),
         "human_reserved_gates": [
             "public-release",
             "source-repository-public",
@@ -194,20 +271,9 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
             "paid-plan-or-billing-change",
             "direct-secret-input-if-trusted-broker-unavailable",
         ],
-        "completion_evidence": [
-            "private GitHub repository exists at intended identity",
-            "account-wide Access remains verified",
-            "target Worker identity exists",
-            "project-scoped deployment credential is installed without exposing plaintext",
-            "authorized GitHub Actions deployment succeeds",
-            "deployed revision matches intended source revision",
-            "anonymous production access is challenged or denied",
-            "direct assets cannot bypass access control",
-            "non-secret provider state and rollback point are durably recorded",
-        ],
+        "completion_evidence": completion_evidence,
     }
     return plan
-
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -248,7 +314,7 @@ def main(argv: list[str] | None = None) -> int:
             for blocker in plan["blockers"]:
                 print(f"blocker: {blocker}")
         else:
-            print("next: fresh-read pinned PPF/AHICP/Vault manifests, validate the PPF desired-state seed, then invoke the PPF provisioner.")
+            print("next: fresh-read pinned PPF/AHICP/Vault manifests, validate the PPF desired-state seed, then follow the selected PPF setup contract.")
     return 0 if not plan["blockers"] else 2
 
 

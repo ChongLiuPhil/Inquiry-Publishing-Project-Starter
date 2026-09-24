@@ -39,7 +39,7 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
         <div class="card"><h3>组合</h3><p>决定一个项目需要完整 AHICP、完整 PPF、Vault Interface，还是经过明确选择的精简组合。</p></div>
         <div class="card"><h3>采用</h3><p>记录项目实际接受了哪个上游版本，而不是假设“模板更新了，所以项目也自动同意了”。</p></div>
         <div class="card"><h3>升级</h3><p>比较上游的新版本和项目当前状态，区分可以自动更新的内容、需要合并的内容，以及必须保留的项目自有内容。</p></div>
-        <div class="card"><h3>Provision</h3><p>在平台 standing authorization 已验证时，让 AI 编排 private repository、restricted Worker、Secret Broker 与 GitHub Actions，而不重复索要账户级授权。</p></div>
+        <div class="card"><h3>Provision</h3><p>默认允许每项目一次短人工 GitHub → Cloudflare 配置；AI 负责其余可自动完成的工作，并验证后续 push 不再需要重复授权。</p></div>
         <div class="card"><h3>交接</h3><p>把采用与 Provisioning 状态写成机器可读信息，使新的 AI 能恢复组件关系、授权边界、版本和下一步，而不是重新猜测。</p></div>
       </div>
     </section>
@@ -76,21 +76,21 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
       <h2>新项目的默认配置</h2>
       <p>新项目默认采用 <strong>完整 AHICP + 完整 PPF + Vault Interface</strong>。只有使用者明确选择时，AI 才使用精简配置。项目“看起来简单”不是自动删掉某个组件的理由。</p>
       <p>原创或未发布源内容默认保持 private（私有）；未正式公开的网页默认 restricted + authenticated（受限并需要认证）。是否公开网页和是否公开源仓库是两个不同决定。</p>
-      <p>平台 bootstrap 已 verified 后，新项目基础设施首选 <code>agent-provisioned-external-ci</code>：private GitHub source、account-wide Access 保护的 Worker、trusted Secret Broker，以及使用 project-scoped Worker credential 的 GitHub Actions deployment。Preview 在独立保护验收前保持 disabled。</p>
+      <p>普通新项目基础设施首选 <code>workers-builds-native</code>：在个人 <code>ChongLiuPhil</code> GitHub 账号下保持 private repository，每项目完成一次 Cloudflare Git connection，并默认使用 Worker-scoped Access。Preview 在独立保护验收前保持 disabled。高级 <code>agent-provisioned-external-ci</code> 继续保留为可选方案。</p>
     </section>
 
     <section class="block">
-      <h2>一次平台授权，多项目复用</h2>
+      <h2>每项目一次配置，之后自动部署</h2>
       <div class="flow">
-        <div class="flow-row"><strong>1 · 平台 Bootstrap</strong><div>GitHub provisioning principal、Cloudflare provisioning principal、account-wide Access 与 trusted Secret Broker 只在平台层建立和验证。</div></div>
+        <div class="flow-row"><strong>1 · Private Repository</strong><div>项目默认创建在个人 <code>ChongLiuPhil</code> 账号下并保持 private；可以由使用者先手动创建。</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>2 · 新项目 Request</strong><div>项目只声明 full stack、private repository、restricted Web 与首选 infrastructure profile，不保存任何 secret。</div></div>
+        <div class="flow-row"><strong>2 · 一次 Git / Cloudflare 连接</strong><div>把当前 repository 连接到 Workers Builds；GitHub 提示时，只为目标 repository 授权 Cloudflare Git integration。</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>3 · AI Provisioning</strong><div>Starter 校验 standing authorization，fresh-read 固定 PPF 契约，再由 PPF Provisioner 创建/复用 repository 与 Worker，并通过 Secret Broker 安装部署凭据。</div></div>
+        <div class="flow-row"><strong>3 · 私人网页保护</strong><div>默认给目标 Worker 启用 Worker-scoped Access，并保持 Preview disabled；如果已有 verified account-wide Access，也可复用。</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>4 · 人类只保留真正的 Gate</strong><div>Public release、reader 扩大、domain/DNS、Provider 扩权、付费变化仍需人类决定；普通 private/restricted 项目创建不应重复授权。</div></div>
+        <div class="flow-row"><strong>4 · 第一次 + 第二次 Push 验证</strong><div>第一次确认 restricted deployment 与匿名拒绝；然后做第二次 push，确认 Workers Builds 自动部署且无需重新授权。</div></div>
       </div>
-      <p class="small">当前状态：实现与 CI 契约已建立，但首个全新项目的 External-CI live acceptance 仍需独立完成；在此之前不得把它描述成 production-accepted。</p>
+      <p class="small">默认目标不是账户级零人工，而是：每项目一次配置，随后普通 source push 自动部署。Public release、repository 公开、reader 扩大、domain/DNS、Provider 扩权与付费变化继续由人决定。</p>
     </section>
 
     <section class="block">
@@ -132,7 +132,7 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
         <div class="card"><h3>Compose</h3><p>Choose full AHICP, full PPF, Vault Interface, or an explicitly selected reduced composition.</p></div>
         <div class="card"><h3>Adopt</h3><p>Record the upstream version the project actually accepted instead of assuming that every template update is automatically adopted.</p></div>
         <div class="card"><h3>Upgrade</h3><p>Compare newer upstream versions with the project’s current state and distinguish automatic updates, merge-managed changes, and project-owned work.</p></div>
-        <div class="card"><h3>Provision</h3><p>When platform standing authorization is verified, orchestrate private repositories, restricted Workers, the trusted Secret Broker, and GitHub Actions without repeatedly asking for account-level consent.</p></div>
+        <div class="card"><h3>Provision</h3><p>Allow one short human GitHub → Cloudflare bootstrap per project, automate everything else that is safe, and verify later pushes no longer need repeated authorization.</p></div>
         <div class="card"><h3>Handoff</h3><p>Keep adoption and provisioning state machine-readable so a new AI can reconstruct component roles, authorization boundaries, versions, and the next safe action.</p></div>
       </div>
     </section>
@@ -169,21 +169,21 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
       <h2>Default for new projects</h2>
       <p>New projects default to <strong>full AHICP + full PPF + Vault Interface</strong>. An AI uses a reduced profile only after explicit user selection; a project that looks simple is not permission to silently drop a component.</p>
       <p>Original or unpublished source remains private by default. Unreleased web output remains restricted and authenticated by default. Public website access and public source-code access are separate decisions.</p>
-      <p>After verified platform bootstrap, the preferred new-project infrastructure profile is <code>agent-provisioned-external-ci</code>: private GitHub source, an account-wide Access-protected Worker, a trusted Secret Broker, and GitHub Actions deployment using a project-scoped Worker credential. Previews stay disabled until separately accepted as protected.</p>
+      <p>The preferred ordinary new-project infrastructure profile is <code>workers-builds-native</code>: keep the repository private under the personal <code>ChongLiuPhil</code> account, complete one project-level Cloudflare Git connection, and use Worker-scoped Access by default. Previews stay disabled until separately accepted as protected. <code>agent-provisioned-external-ci</code> remains an optional advanced profile.</p>
     </section>
 
     <section class="block">
-      <h2>Authorize the platform once; reuse it for later projects</h2>
+      <h2>Configure each project once; automate later pushes</h2>
       <div class="flow">
-        <div class="flow-row"><strong>1 · Platform bootstrap</strong><div>Establish and verify the GitHub provisioning principal, Cloudflare provisioning principal, account-wide Access baseline, and trusted Secret Broker at the platform layer.</div></div>
+        <div class="flow-row"><strong>1 · Private repository</strong><div>Default to the personal <code>ChongLiuPhil</code> account and keep the repository private. The user may create it manually first.</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>2 · New-project request</strong><div>The project declares the full stack, private repository, restricted Web, and preferred infrastructure profile—never secret values.</div></div>
+        <div class="flow-row"><strong>2 · One Git / Cloudflare connection</strong><div>Connect the target repository to Workers Builds; if GitHub prompts, authorize the Cloudflare Git integration for that repository.</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>3 · AI provisioning</strong><div>Starter validates standing authorization, fresh-reads the pinned PPF contract, and hands repository/Worker creation plus credential installation to the PPF provisioner and trusted broker.</div></div>
+        <div class="flow-row"><strong>3 · Protect the private Web</strong><div>Use Worker-scoped Access by default and keep previews disabled; reuse verified account-wide Access only when it already exists.</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>4 · Keep real decisions human</strong><div>Public release, reader expansion, domain/DNS changes, provider-scope expansion, and paid-plan changes remain human gates; another ordinary private/restricted project should not require reauthorization.</div></div>
+        <div class="flow-row"><strong>4 · Verify first and second pushes</strong><div>Verify the first restricted deployment and anonymous denial, then make a second push and confirm automatic deployment without renewed authorization.</div></div>
       </div>
-      <p class="small">Current evidence boundary: implementation and CI contracts exist, but the first clean External-CI new-project live acceptance is still pending. Until that passes, this path is not described as production-accepted.</p>
+      <p class="small">The default goal is not account-wide zero-touch provisioning. It is one short project setup followed by automatic deployment for ordinary source pushes. Public release, repository publication, reader expansion, domain/DNS changes, provider-scope expansion, and paid-plan changes remain human decisions.</p>
     </section>
 
     <section class="block">

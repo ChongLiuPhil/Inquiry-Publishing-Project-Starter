@@ -35,9 +35,9 @@ The project records actual adoption in project-stack.yaml; it does not create co
 
 The full-research-publication profile is the default new-project profile. Reduced profiles remain available, but an AI agent must use one only after explicit human selection. Apparent project simplicity is not authorization to silently omit AHICP or PPF.
 
-After verified platform bootstrap, the preferred new-project infrastructure profile is `agent-provisioned-external-ci`: private GitHub source, an account-wide Access-protected Worker, a trusted Secret Broker, GitHub Actions deployment with a project-scoped Worker credential, and previews disabled until their own protection is accepted. Verified standing authorization may cover ordinary creation of another private/restricted project inside the approved scopes. Public release, reader expansion, domain/DNS authority, provider-scope expansion, and paid-plan changes remain human-reserved.
+The preferred ordinary new-project infrastructure profile is `workers-builds-native`: a private repository under the personal `ChongLiuPhil` account, one short human-assisted Cloudflare Git connection for that project, Worker-scoped Access by default, and previews disabled until their own protection is accepted. After the first restricted deployment, a second push must auto-deploy without renewed authorization before the connection is considered operationally verified. Public release, repository publication, reader expansion, domain/DNS authority, provider-scope expansion, and paid-plan changes remain human-reserved.
 
-`workers-builds-native` remains supported for projects that explicitly choose provider-native Git integration or already use it.
+`agent-provisioned-external-ci` remains available as an optional advanced profile when one-Worker deployment-credential isolation is worth the additional platform authorization and Trusted Secret Broker infrastructure.
 
 The Vault Interface is an adapter, not a replacement for AHICP or PPF.
 
@@ -73,7 +73,7 @@ When an AI agent enters through any component homepage or repository, it must:
 2. read the canonical Starter ecosystem and [AGENT_RETRIEVAL_CONTRACT.md](AGENT_RETRIEVAL_CONTRACT.md);
 3. resolve the roles and public entrypoints of all four components;
 4. for a downstream project, read its selected Starter profile, `project-stack.yaml`, lock file, and `project-provisioning.yaml` when present;
-5. for a new project, read the Project Provisioning Contract and—only after authorized control-plane access—the private platform-authorization state when standing authorization is used;
+5. for a new project, read the Project Provisioning Contract and the pinned PPF per-project setup contract; read private platform-authorization state only if the optional advanced profile is explicitly selected;
 6. fresh-read each active upstream manifest at its pinned revision;
 7. inspect other private project state only after explicit authorization;
 8. preserve the distinction between proposal, authorization, execution, verification, and durable write-back.
@@ -90,9 +90,9 @@ Future domain or visibility changes remain separate decisions with verification 
 
 ## Continuous Web and Cloudflare
 
-The new-project orchestration contract is [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md). The detailed Cloudflare operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The minimal-human execution path is [CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md](CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md), and the browser-agent handoff is [CLOUDFLARE_WORK_AGENT_HANDOFF.md](CLOUDFLARE_WORK_AGENT_HANDOFF.md).
+The new-project orchestration contract is [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md). The detailed Cloudflare operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The default execution path is the documented per-project Workers Builds bootstrap; browser-agent and advanced automation handoffs remain optional implementation aids.
 
-Starter records provisioning intent and authorization boundaries; PPF remains authoritative for executable GitHub/Cloudflare provider logic. The language model must never receive the project deployment-token plaintext.
+Starter records provisioning intent and authorization boundaries; PPF remains authoritative for executable GitHub/Cloudflare provider logic. Provider credential plaintext must never enter the language model. The default Workers Builds path keeps its deployment credential provider-managed.
 
 Before asking a human to perform a Cloudflare action, an AI agent must give numbered operator-level steps, identify the exact target account/project/domain and affected layer, explain credential scope and data transmission, state what must not be shared with the AI, define verification evidence, and provide a rollback path.
 

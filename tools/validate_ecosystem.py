@@ -88,35 +88,46 @@ def main() -> int:
     if broker.get("token_minting_authority") != "unverified":
         raise SystemExit("public platform template must not claim token-minting authority")
     infra = request_template.get("infrastructure", {})
-    if infra.get("profile") != "agent-provisioned-external-ci":
-        raise SystemExit("new-project provisioning template must prefer agent-provisioned-external-ci")
+    if infra.get("profile") != "workers-builds-native":
+        raise SystemExit("new-project provisioning template must prefer workers-builds-native")
     github_request = infra.get("github", {})
-    if github_request.get("owner") != "philohub" or github_request.get("owner_type") != "organization":
-        raise SystemExit("new-project provisioning template must default to the philohub organization")
+    if github_request.get("owner") != "ChongLiuPhil" or github_request.get("owner_type") != "user":
+        raise SystemExit("new-project provisioning template must default to the ChongLiuPhil personal account")
     if github_request.get("visibility") != "private":
         raise SystemExit("new-project provisioning template must keep GitHub source private")
     cloudflare_request = infra.get("cloudflare", {})
     if cloudflare_request.get("web_visibility") != "restricted" or cloudflare_request.get("preview_enabled") is not False:
         raise SystemExit("new-project provisioning template must default to restricted Web with previews disabled")
-    if request_template.get("authorization", {}).get("public_release") is not False:
+    if cloudflare_request.get("access_mode") != "worker-scoped-access":
+        raise SystemExit("new-project provisioning template must default to Worker-scoped Access")
+    request_authorization = request_template.get("authorization", {})
+    if request_authorization.get("restricted_deployment_source") != "explicit-project-authorization":
+        raise SystemExit("native default must use explicit per-project restricted-deployment authorization")
+    if request_authorization.get("project_bootstrap") != "human-assisted-once-per-project":
+        raise SystemExit("native default must use guided per-project bootstrap")
+    if request_authorization.get("public_release") is not False:
         raise SystemExit("new-project provisioning template must not pre-authorize public release")
     provisioning = ecosystem.get("project_provisioning")
     if not isinstance(provisioning, dict):
         raise SystemExit("Starter ecosystem is missing project_provisioning")
-    if provisioning.get("default_github_owner") != "philohub" or provisioning.get("default_github_owner_type") != "organization":
-        raise SystemExit("Starter ecosystem must default downstream repositories to the philohub organization")
+    if provisioning.get("default_github_owner") != "ChongLiuPhil" or provisioning.get("default_github_owner_type") != "user":
+        raise SystemExit("Starter ecosystem must default downstream repositories to the ChongLiuPhil personal account")
     if provisioning.get("default_repository_visibility") != "private":
         raise SystemExit("Starter ecosystem must keep downstream repositories private by default")
-    if provisioning.get("preferred_infrastructure_profile") != "agent-provisioned-external-ci":
+    if provisioning.get("preferred_infrastructure_profile") != "workers-builds-native":
         raise SystemExit("Starter ecosystem has the wrong preferred provisioning profile")
-    if provisioning.get("status") != "implemented-reference-live-acceptance-pending":
-        raise SystemExit("Starter provisioning status must preserve the live-acceptance evidence boundary")
-    if provisioning.get("secret_rule") != "deployment-token-plaintext-never-enters-model-context":
-        raise SystemExit("Starter ecosystem is missing the deployment-token secret boundary")
-    if provisioning.get("secret_broker_orchestration") != "ppf-implemented":
-        raise SystemExit("Starter ecosystem must record implemented PPF Secret Broker orchestration")
-    if provisioning.get("cloudflare_granular_token_issuer") != "live-acceptance-pending":
-        raise SystemExit("Cloudflare granular-token issuer must remain live-acceptance-pending until provider acceptance exists")
+    if provisioning.get("default_setup_mode") != "human-assisted-once-per-project":
+        raise SystemExit("Starter ecosystem must default to guided per-project bootstrap")
+    if provisioning.get("default_access_mode") != "worker-scoped-access":
+        raise SystemExit("Starter ecosystem must default to Worker-scoped Access")
+    if provisioning.get("status") != "guided-per-project-default":
+        raise SystemExit("Starter provisioning status must identify the guided per-project default")
+    if provisioning.get("secret_rule") != "provider-credentials-never-enter-model-context":
+        raise SystemExit("Starter ecosystem is missing the provider credential secret boundary")
+    if provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
+        raise SystemExit("Starter ecosystem must expose the optional advanced PPF Secret Broker")
+    if provisioning.get("cloudflare_granular_token_issuer") != "optional-advanced-live-acceptance-pending":
+        raise SystemExit("advanced Cloudflare granular-token issuer evidence boundary drifted")
     if not str(provisioning.get("trusted_secret_broker_contract", "")).endswith("/docs/TRUSTED_SECRET_BROKER.md"):
         raise SystemExit("Starter ecosystem is missing the PPF Trusted Secret Broker contract")
     reserved = set(provisioning.get("human_reserved") or [])
@@ -188,20 +199,24 @@ def main() -> int:
     descriptor_provisioning = descriptor.get("project_provisioning")
     if not isinstance(descriptor_provisioning, dict):
         raise SystemExit("agent entry descriptor is missing project_provisioning")
-    if descriptor_provisioning.get("default_github_owner") != "philohub" or descriptor_provisioning.get("default_github_owner_type") != "organization":
-        raise SystemExit("agent entry descriptor must default downstream repositories to the philohub organization")
+    if descriptor_provisioning.get("default_github_owner") != "ChongLiuPhil" or descriptor_provisioning.get("default_github_owner_type") != "user":
+        raise SystemExit("agent entry descriptor must default downstream repositories to the ChongLiuPhil personal account")
     if descriptor_provisioning.get("default_repository_visibility") != "private":
         raise SystemExit("agent entry descriptor must keep downstream repositories private by default")
-    if descriptor_provisioning.get("preferred_profile") != "agent-provisioned-external-ci":
+    if descriptor_provisioning.get("preferred_profile") != "workers-builds-native":
         raise SystemExit("agent entry descriptor has the wrong provisioning profile")
-    if descriptor_provisioning.get("status") != "implemented-reference-live-acceptance-pending":
-        raise SystemExit("agent entry descriptor must preserve the provisioning evidence boundary")
-    if descriptor_provisioning.get("secret_broker_required") is not True:
-        raise SystemExit("agent entry descriptor must require the trusted Secret Broker")
-    if descriptor_provisioning.get("secret_broker_orchestration") != "ppf-implemented":
-        raise SystemExit("agent entry descriptor must expose implemented PPF Secret Broker orchestration")
-    if descriptor_provisioning.get("cloudflare_granular_token_issuer") != "live-acceptance-pending":
-        raise SystemExit("agent entry descriptor must preserve the Cloudflare token-issuer evidence boundary")
+    if descriptor_provisioning.get("default_setup_mode") != "human-assisted-once-per-project":
+        raise SystemExit("agent entry descriptor must expose guided per-project bootstrap")
+    if descriptor_provisioning.get("default_access_mode") != "worker-scoped-access":
+        raise SystemExit("agent entry descriptor must expose Worker-scoped Access")
+    if descriptor_provisioning.get("status") != "guided-per-project-default":
+        raise SystemExit("agent entry descriptor must identify the guided per-project default")
+    if descriptor_provisioning.get("secret_broker_required_for_default") is not False:
+        raise SystemExit("native default must not require the trusted Secret Broker")
+    if descriptor_provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
+        raise SystemExit("agent entry descriptor must expose the optional advanced PPF Secret Broker")
+    if descriptor_provisioning.get("cloudflare_granular_token_issuer") != "optional-advanced-live-acceptance-pending":
+        raise SystemExit("agent entry descriptor must preserve the advanced token-issuer evidence boundary")
     if not str(descriptor_provisioning.get("trusted_secret_broker_contract", "")).endswith("/docs/TRUSTED_SECRET_BROKER.md"):
         raise SystemExit("agent entry descriptor is missing the PPF Trusted Secret Broker contract")
     descriptor_reserved = set(descriptor_provisioning.get("human_reserved_gates") or [])
@@ -221,7 +236,7 @@ def main() -> int:
         raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
 
     agent_page = (ROOT / "docs/agent/index.html").read_text(encoding="utf-8")
-    for marker in ("Agent Retrieval Contract", "Project Provisioning", "agent-provisioned-external-ci", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
+    for marker in ("Agent Retrieval Contract", "Project Provisioning", "workers-builds-native", "human-assisted-once-per-project", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
         if marker not in agent_page:
             raise SystemExit(f"machine-entry page is missing {marker}")
 
@@ -234,9 +249,9 @@ def main() -> int:
         "template_source_commit",
         "project_adopted_commit",
         "adoption_state",
-        "agent-provisioned-external-ci",
-        "trusted Secret Broker",
-        "一次平台授权，多项目复用",
+        "workers-builds-native",
+        "每项目一次配置",
+        "第二次 push",
         "为什么它不是第四套规范",
     ]
     for marker in required_homepage_markers:

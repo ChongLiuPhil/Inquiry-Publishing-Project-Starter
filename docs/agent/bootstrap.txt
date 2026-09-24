@@ -14,14 +14,14 @@ Before configuring, upgrading, publishing, provisioning, or operating a project:
 5. For a downstream project, read project-stack.yaml, project-provisioning.yaml when present, selected profile, and lock state.
 6. Fresh-read pinned AHICP, PPF, and Vault manifests before material configuration, provisioning, or upgrade.
 7. Default new projects to full AHICP + full PPF + Vault Interface unless the human explicitly selects a reduced profile.
-8. After verified platform bootstrap, default new downstream repositories to the philohub GitHub Organization (`owner_type: organization`, `visibility: private`) and prefer agent-provisioned-external-ci. Reuse verified standing authorization instead of repeatedly asking for account-level consent inside the approved scope.
+8. Default new downstream repositories to the personal `ChongLiuPhil` GitHub account (`owner_type: user`, `visibility: private`) and prefer `workers-builds-native`. Allow one short human-assisted project bootstrap for the GitHub → Cloudflare connection, then verify a second push deploys without renewed authorization.
 9. Keep original or unpublished canonical source private by default.
 10. Keep unpublished or transitional Web restricted and authenticated by default; keep previews disabled until their protection is separately accepted.
 11. Read private platform/project state only when that access has been authorized.
 12. Distinguish proposal, authorization, execution, verification, and durable write-back.
-13. Perform routine technical work yourself when tools and standing authorization permit.
-14. Keep platform provisioning authority separate from routine project deployment authority.
-15. Never expose project deployment token plaintext to model/chat/Git/logs. Use the trusted Secret Broker required by the PPF external-CI profile.
+13. Perform routine technical work yourself when tools and project authorization permit; ask the human only for the repository/provider UI steps that actually require account-holder consent.
+14. Treat platform provisioning authority as optional advanced infrastructure, not a prerequisite for the default guided project setup.
+15. Never expose provider credential plaintext to model/chat/Git/logs. The default Workers Builds profile uses provider-managed credentials; use the Trusted Secret Broker only when the advanced external-CI profile is explicitly selected.
 16. Ask the human to act only for a real reserved gate: key judgment, new sign-in/MFA or provider-scope authorization, public release, reader-audience expansion, domain/DNS authority, paid-plan change, or fallback direct secret entry.
 17. When human UI action is necessary, give exact numbered steps, target, effect, non-secret values, completion evidence, verification, and rollback.
 

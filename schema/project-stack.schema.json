@@ -230,7 +230,10 @@
             },
             "platform_authorization_ref": {
               "type": "string",
-              "const": "private-platform-state"
+              "enum": [
+                "optional-advanced-platform-state",
+                "private-platform-state"
+              ]
             }
           }
         }

@@ -5,18 +5,20 @@ project:
   purpose: null
 stack_profile: full-research-publication
 infrastructure:
-  profile: agent-provisioned-external-ci
+  profile: workers-builds-native
   github:
-    owner: philohub
-    owner_type: organization
+    owner: ChongLiuPhil
+    owner_type: user
     repository: replace-with-project-repository
     visibility: private
   cloudflare:
     worker: replace-with-project-worker
     web_visibility: restricted
     preview_enabled: false
+    access_mode: worker-scoped-access
     access_policy_ref: shared-reader-access
     custom_domain: null
 authorization:
-  restricted_deployment_source: platform-standing-authorization
+  restricted_deployment_source: explicit-project-authorization
+  project_bootstrap: human-assisted-once-per-project
   public_release: false

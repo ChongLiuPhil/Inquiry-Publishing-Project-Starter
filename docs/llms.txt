@@ -33,10 +33,10 @@ Public component homepages:
 
 Default new-project baseline:
 full AHICP + full PPF + Vault Interface + project-owned content.
-Preferred new-project infrastructure profile after verified platform bootstrap: agent-provisioned-external-ci.
-Default downstream GitHub owner: philohub organization; repository visibility: private.
-The ordinary restricted setup may reuse verified platform standing authorization for private repository creation, restricted Worker creation, and restricted Web deployment. Public release, reader-audience expansion, domain/DNS authority, provider-scope expansion, paid-plan changes, and fallback direct secret entry remain human-reserved.
-Project deployment-token plaintext must never enter model context; the PPF external-CI profile uses a trusted Secret Broker. Broker orchestration is implemented in PPF and returns only non-secret results. The Cloudflare granular-token issuer remains live-acceptance-pending until the exact current individual-Worker Editor policy encoding is verified through an authorized Provider pilot.
+Preferred ordinary new-project infrastructure profile: workers-builds-native.
+Default downstream GitHub owner: personal account ChongLiuPhil; owner type: user; repository visibility: private.
+The ordinary setup uses one human-assisted project bootstrap: create/confirm the private repository, authorize/connect it to Cloudflare Workers Builds, protect the Worker with Access, verify the first restricted deployment, then verify a second push without renewed authorization. Public release, source-repository publication, reader-audience expansion, domain/DNS authority, provider-scope expansion, and paid-plan changes remain human-reserved.
+Provider credential plaintext must never enter model context. The default Workers Builds Native profile uses provider-managed credentials and does not require the Trusted Secret Broker. The PPF external-CI + Broker path remains an optional advanced profile; its Cloudflare granular-token issuer is still live-acceptance-pending.
 
 Privacy default:
 original or unpublished project source is private. Continuous Web may be enabled with restricted reader access. Do not retrieve private state without explicit human authorization. Never request or store passwords, API tokens, private keys, recovery codes, or other secrets in chat or Git.
