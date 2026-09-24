@@ -1,0 +1,24 @@
+schema: inquiry-publishing-stack/platform-authorization/v1
+status: unconfigured
+github:
+  owner_scope: null
+  principal_ref: null
+  authorization_state: unverified
+cloudflare:
+  account_ref: null
+  principal_ref: null
+  authorization_state: unverified
+  all_workers_access: unverified
+  worker_creation_authority: unverified
+  token_creation_authority: unverified
+secret_broker:
+  implementation_ref: null
+  state: unverified
+standing_authorizations:
+  create_private_repositories: false
+  create_restricted_workers: false
+  restricted_web_deployment: false
+  public_release: false
+  reader_audience_expansion: false
+  custom_domain_change: false
+  paid_plan_change: false
