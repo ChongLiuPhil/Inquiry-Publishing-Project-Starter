@@ -53,6 +53,11 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
         errors.append("GITHUB_PROVISIONING_PRINCIPAL_NOT_AUTHORIZED")
     if github.get("owner_scope") != req_github.get("owner"):
         errors.append("GITHUB_OWNER_OUTSIDE_APPROVED_SCOPE")
+    principal_type = github.get("principal_type")
+    if req_github.get("owner_type") == "user" and principal_type == "github-app-installation":
+        errors.append("GITHUB_USER_REPOSITORY_REQUIRES_USER_ACCESS_OR_CONNECTOR")
+    if principal_type not in {"github-app-user-access", "github-app-installation", "authorized-provider-connector"}:
+        errors.append("GITHUB_PROVISIONING_PRINCIPAL_TYPE_NOT_VERIFIED")
 
     if cloudflare.get("authorization_state") != "authorized":
         errors.append("CLOUDFLARE_PROVISIONING_PRINCIPAL_NOT_AUTHORIZED")
@@ -120,6 +125,7 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
                 "project": {"id": project["id"], "slug": infra["github"]["repository"]},
                 "github": {
                     "owner": infra["github"]["owner"],
+                    "ownerType": infra["github"]["owner_type"],
                     "repository": infra["github"]["repository"],
                     "repositoryVisibility": "private",
                     "productionBranch": "main",
