@@ -61,7 +61,7 @@ A platform is `ready` only after all of these are verified:
 - provisioning principal authorized;
 - account-wide `all_workers` Access baseline verified;
 - Worker creation authority verified;
-- account-owned token creation authority verified.
+- account-owned token minting authority is isolated inside the trusted Secret Broker / provisioning boundary and that isolation is verified.
 
 ### Secret broker
 
@@ -77,9 +77,12 @@ standing_authorizations:
   create_restricted_workers: true
   restricted_web_deployment: true
   public_release: false
+  source_repository_public: false
   reader_audience_expansion: false
   custom_domain_change: false
+  provider_permission_scope_expansion: false
   paid_plan_change: false
+  direct_secret_input: false
 ```
 
 This means a later project does not need another human confirmation for:
