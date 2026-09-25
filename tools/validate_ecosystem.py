@@ -320,7 +320,7 @@ def main() -> int:
         "content-only",
         "human-assisted-once-per-project",
         "worker-scoped-access",
-        "第二次 push",
+        "第二次 content-only push",
         "高级可选 Profile",
     ):
         if required not in retrieval_zh:
@@ -346,6 +346,7 @@ def main() -> int:
         "adoption_state",
         "workers-builds-native",
         "private-project-quota-saver",
+        "GitHub Actions production Web build",
         "每项目一次配置",
         "第二次 push",
         "为什么它不是第四套规范",
