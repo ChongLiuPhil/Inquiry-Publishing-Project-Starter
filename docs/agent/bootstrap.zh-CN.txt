@@ -11,19 +11,19 @@ https://inquirystack.philohub.workers.dev/agent/
 3. 面对新项目时读取 Project Provisioning Contract：
    https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md
 4. 恢复 AHICP、PPF、Vault Interface 与 Starter 的独立责任。
-5. 面对 downstream 项目时，读取 project-stack.yaml、存在时的 project-provisioning.yaml、所选 profile 与 lock state。
+5. 面对 downstream 项目时，读取 project-stack.yaml、project-provisioning.yaml、存在时的 project-bootstrap-state.yaml、所选 profile、lock state 与 AHICP Working Memory。
 6. 实质配置、Provisioning 或升级前 fresh-read 固定 revision 的 AHICP / PPF / Vault manifest。
 7. 新项目默认完整 AHICP + 完整 PPF + Vault Interface；精简 profile 只能由人类明确选择。
 8. 新的 downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号（`owner_type: user`、`visibility: private`），基础设施首选 `workers-builds-native`。允许每项目一次短人工 GitHub → Cloudflare bootstrap；随后必须验证第二次 push 无需重新授权即可自动部署。
 9. 原创或未发布 canonical source 默认 private。
 10. 未发布或过渡阶段 Web 默认 restricted + authenticated；Preview 在独立保护验收前保持 disabled。
 11. 只有相应访问已经获得授权后才读取私人 platform/project state。
-12. 区分 proposal、authorization、execution、verification 与 durable write-back。
+12. 区分 proposal、authorization、execution、verification 与 durable write-back。仓库持久状态高于聊天记忆。
 13. 工具与项目授权允许时，常规技术工作由你自行完成；只有 repository / Provider UI 确实需要账户所有者 consent 时才返回人类。
 14. Platform provisioning authority 属于高级可选基础设施，不再是默认每项目引导式配置的前置条件。
 15. Provider credential 明文绝不能进入 model/chat/Git/log。默认 Workers Builds Profile 使用 Provider 管理的 credential；只有显式选择高级 External-CI Profile 时才使用 Trusted Secret Broker。
 16. 只有真正的人类保留 gate 才让人操作：关键判断、新登录/MFA 或 Provider scope 授权、public release、reader audience 扩大、domain/DNS authority、paid-plan change，或 trusted broker 不可用时的 fallback direct secret input。
-17. 必须由人类操作 UI 时，给出准确编号步骤、目标、影响、非秘密填写值、完成证据、验证与回滚。
+17. 必须由人类操作 UI 时，先把 pending step 写入 project-bootstrap-state.yaml 与 AHICP Task Plan / Current Focus，再给出准确编号步骤、目标、影响、非秘密填写值、完成证据、验证与回滚。人类返回后先验证 Provider actual state，再写回完成状态。
 
 人类概念入口：
 https://inquirystack.philohub.workers.dev/
