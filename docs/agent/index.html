@@ -29,7 +29,7 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 <h2>Required bootstrap</h2>
 <pre>1. Read the canonical Starter ecosystem.
 2. Read the Agent Retrieval Contract.
-3. For a new project, read the Project Provisioning Contract.
+3. For a new project, read the Project Provisioning Contract and Project Memory / Write-Back Contract.
 4. Resolve all four component roles and public entrypoints.
 5. For a downstream project, read project-stack.yaml, project-provisioning.yaml when present, selected profile, and lock state.
 6. Fresh-read pinned AHICP/PPF/Vault manifests before material configuration, provisioning, or upgrade.
@@ -41,7 +41,7 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 12. Verify the first restricted deployment, then require a second push to deploy automatically without renewed authorization.
 13. Treat agent-provisioned-external-ci + Trusted Secret Broker as an optional advanced profile, not a default prerequisite.
 14. Never expose provider credential plaintext to model/chat/Git/logs.
-15. Distinguish proposal, authorization, execution, verification, and durable write-back.
+15. Distinguish proposal, authorization, execution, verification, and durable write-back. Before human provider-UI handoff, persist the pending step in project-bootstrap-state.yaml and AHICP Working Memory; after the human returns, verify actual provider state before writing completion back.
 16. Ask the human only for project-level repository/provider UI consent that actually requires the account holder, or for reserved gates such as public release, reader expansion, domain/DNS authority, provider-scope expansion, and paid-plan change.
 17. For the four public framework sites, keep using the approved canonical Worker and read the migration plan for live cutover evidence.</pre>
 </section>
@@ -52,6 +52,8 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 <div class="resource"><strong>Agent Retrieval Contract</strong><a href="../AGENT_RETRIEVAL_CONTRACT.md">English contract</a></div>
 <div class="resource"><strong>Agent 调取契约</strong><a href="../AGENT_RETRIEVAL_CONTRACT.zh-CN.md">中文契约</a></div>
 <div class="resource"><strong>Project Provisioning</strong><a href="../PROJECT_PROVISIONING_CONTRACT.md">English contract</a></div>
+<div class="resource"><strong>Project memory / write-back</strong><a href="../PROJECT_MEMORY_WRITEBACK.md">Durable state contract</a></div>
+<div class="resource"><strong>项目记忆 / 写回</strong><a href="../PROJECT_MEMORY_WRITEBACK.zh-CN.md">持久状态契约</a></div>
 <div class="resource"><strong>项目自动配置</strong><a href="../PROJECT_PROVISIONING_CONTRACT.zh-CN.md">中文契约</a></div>
 <div class="resource"><strong>Live acceptance</strong><a href="../PROJECT_PROVISIONING_ACCEPTANCE.md">acceptance contract</a></div>
 <div class="resource"><strong>Machine discovery</strong><a href="../llms.txt">llms.txt</a></div>
@@ -73,6 +75,8 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 source repository: private by default
 unpublished/transitional Web: restricted + authenticated
 infrastructure profile: workers-builds-native
+project bootstrap state: project-bootstrap-state.yaml
+repository state outranks chat memory
 project bootstrap: human-assisted-once-per-project
 GitHub owner: ChongLiuPhil (user)
 project Access: worker-scoped-access by default
