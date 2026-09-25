@@ -64,7 +64,7 @@ python tools/project_provisioning.py plan --request project-provisioning.yaml --
 
 默认 `workers-builds-native` Profile 即使没有账户级 Platform Authorization，也会生成 `READY_FOR_PROJECT_BOOTSTRAP`。随后按照固定版本 PPF 的每项目配置指南，把 private repository 连接到 Workers Builds、给 Worker 配置 Access、验证第一次 restricted deployment，再验证第二次 push 无需重新授权即可部署。Trusted Secret Broker 只属于高级可选 External-CI Profile。
 
-详见 [`docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) 与 [`docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md)。
+每个新项目还必须携带 `project-bootstrap-state.yaml`，用于记录实际、非秘密的 GitHub / Cloudflare bootstrap 状态。人类交接与验证结果必须写回该状态文件以及 AHICP Working Memory；聊天不是权威持久层。详见 [`docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md`](docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md)、[`docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) 与 [`docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md)。
 
 ## Ownership 规则
 
