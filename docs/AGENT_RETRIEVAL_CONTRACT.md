@@ -55,7 +55,7 @@ full AHICP
 
 Reduced profiles remain available for legitimate cases, but selecting one is an explicit human deviation from the default baseline. An agent must not infer a reduced profile merely because a project appears simple.
 
-For an ordinary new full-stack project, the preferred infrastructure profile is `workers-builds-native`: use the personal `ChongLiuPhil` GitHub account, keep the repository private, use `human-assisted-once-per-project` for the GitHub → Cloudflare connection, protect the Worker with `worker-scoped-access` by default, keep previews disabled until separately accepted, and require a second push to deploy automatically without renewed authorization. `agent-provisioned-external-ci` remains an optional advanced profile; only that advanced profile requires reusable platform standing authorization, account-wide Access as a provisioning precondition, and the trusted Secret Broker.
+For an ordinary new full-stack project, the preferred infrastructure profile is `workers-builds-native` with `private-project-quota-saver`: use the personal `ChongLiuPhil` GitHub account, keep the repository private, use `human-assisted-once-per-project` for the GitHub → Cloudflare connection, protect the Worker with `worker-scoped-access` by default, keep previews disabled until separately accepted, and require a second push to deploy automatically without renewed authorization. In the quota-saver profile, content-only changes do not start GitHub Actions, configuration pull requests use one lightweight contract job, `main` does not trigger a duplicate GitHub Web build, heavy GitHub workflows are manual, and Cloudflare Workers Builds owns the automatic production Web build. `agent-provisioned-external-ci` remains an optional advanced profile; only that advanced profile requires reusable platform standing authorization, account-wide Access as a provisioning precondition, and the trusted Secret Broker.
 
 ## 4. Default privacy and publication posture
 
@@ -83,13 +83,15 @@ Before material configuration or upgrade work, the agent should be able to state
 - source privacy and Web visibility;
 - publication authorization state;
 - Cloudflare deployment profile and access policy;
-- project provisioning profile, bootstrap mode, and `project-provisioning.yaml` state when applicable;
-- for the default Native profile: repository owner/visibility, Workers Builds repository connection, actual Access mode, first restricted deployment verification, and second-push no-reauthorization verification;
+- project provisioning profile, CI cost profile, bootstrap mode, and `project-provisioning.yaml` state when applicable;
+- for the default Native profile: repository owner/visibility, Workers Builds repository connection, actual Access mode, `private-project-quota-saver` behavior, first restricted deployment verification, and second-push no-reauthorization verification;
 - only for the optional advanced External-CI profile: whether platform standing authorization covers the requested GitHub owner and Cloudflare scope, and whether the trusted Secret Broker plus isolated token-minting boundary are verified;
 - which actions are already authorized and which remain human-reserved;
 - which provider state still needs verification.
 
 If those facts cannot be reconstructed, treat the situation as a configuration defect rather than guessing.
+
+For private downstream projects, GitHub Actions is not an iterative debugging environment. Batch related edits, run available Agent-side preflight checks, inspect the complete diff, and trigger only the intended thin CI. If a run fails, inspect the complete failure set, batch the fixes, and prefer re-running only failed work. Do not create content-only Actions runs or enable paid Actions usage without explicit human authorization.
 
 ## 6. Public-delivery migration rule
 
