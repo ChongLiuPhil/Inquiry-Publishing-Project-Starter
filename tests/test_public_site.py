@@ -74,9 +74,17 @@ class PublicSiteTests(unittest.TestCase):
                             "preferred_profile": "workers-builds-native",
                             "default_setup_mode": "human-assisted-once-per-project",
                             "default_access_mode": "worker-scoped-access",
+                            "default_ci_cost_profile": "private-project-quota-saver",
                             "secret_broker_required_for_default": False,
                             "status": "guided-per-project-default",
                             "per_project_setup_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md",
+                            "ci_cost_policy": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/CI_COST_POLICY.md",
+                            "private_project_github_actions": {
+                                "content_only_changes": "none",
+                                "configuration_pull_request": "light-contract-check",
+                                "main_push": "none",
+                                "heavy_validation": "manual",
+                            },
                         },
                     }).encode()
                 return b'Public fixture text\n'
@@ -91,13 +99,17 @@ class PublicSiteTests(unittest.TestCase):
             descriptor = json.loads((out / "agent/entry.json").read_text())
             self.assertEqual(descriptor["public_landing"], MACHINE_ENTRY)
             self.assertEqual(descriptor["project_provisioning"]["preferred_profile"], "workers-builds-native")
+            self.assertEqual(descriptor["project_provisioning"]["default_ci_cost_profile"], "private-project-quota-saver")
+            self.assertEqual(descriptor["project_provisioning"]["private_project_github_actions"]["content_only_changes"], "none")
             self.assertTrue((out / "PROJECT_PROVISIONING_CONTRACT.md").is_file())
             self.assertTrue((out / "PROJECT_PROVISIONING_ACCEPTANCE.md").is_file())
             start_zh = (out / "start/index.html").read_text(encoding="utf-8")
             start_en = (out / "start/index.en.html").read_text(encoding="utf-8")
             self.assertIn("workers-builds-native", start_zh)
+            self.assertIn("private-project-quota-saver", start_zh)
             self.assertIn("第二次 push", start_zh)
             self.assertIn("workers-builds-native", start_en)
+            self.assertIn("private-project-quota-saver", start_en)
             self.assertIn("second push", start_en)
             self.assertNotIn("平台 bootstrap 已验证后", start_zh)
             self.assertNotIn("agent-provisioned-external-ci", start_en)
