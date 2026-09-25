@@ -75,12 +75,40 @@ def validate(output: Path) -> None:
         raise ValueError("Machine entry lost the guided per-project provisioning status")
     expected_actions = {
         "content_only_changes": "none",
-        "configuration_pull_request": "light-contract-check",
+        "configuration_pull_request": {
+            "target_branch": "main",
+            "class": "light-contract-check",
+            "timeout_minutes": 5,
+        },
         "main_push": "none",
         "heavy_validation": "manual",
+        "artifact_policy": {
+            "automatic_success_upload": False,
+            "manual_publication_retention_days": 1,
+            "diagnostic_retention_days": 1,
+        },
+        "retry": "failed-job-or-workflow-only",
     }
     if provisioning.get("private_project_github_actions") != expected_actions:
         raise ValueError("Machine entry lost the private-project GitHub Actions quota policy")
+    expected_tiers = {
+        "ordinary_private": {
+            "mode": "quota-saver-native",
+            "infrastructure_profile": "workers-builds-native",
+            "ci_cost_profile": "private-project-quota-saver",
+        },
+        "hardened_external_ci": {
+            "mode": "hardened-external-ci",
+            "infrastructure_profile": "agent-provisioned-external-ci",
+            "ci_cost_profile": "external-ci-required",
+        },
+        "public_framework": {
+            "mode": "full-ci",
+            "ci_cost_profile": "full-validation",
+        },
+    }
+    if provisioning.get("ci_profile_tiers") != expected_tiers:
+        raise ValueError("Machine entry lost the CI profile tier contract")
     if not str(provisioning.get("ci_cost_policy", "")).endswith("/docs/CI_COST_POLICY.md"):
         raise ValueError("Machine entry does not expose the PPF CI cost policy")
     if not str(provisioning.get("per_project_setup_contract", "")).endswith("/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md"):
