@@ -87,7 +87,7 @@ python tools/project_provisioning.py plan --request project-provisioning.yaml --
 
 For the default `workers-builds-native` profile, the plan returns `READY_FOR_PROJECT_BOOTSTRAP` without requiring account-wide platform authorization. Follow the pinned PPF per-project setup guide to connect the private repository to Workers Builds, protect the Worker with Access, verify the first restricted deployment, and then verify a second push without reauthorization. The Secret Broker is required only by the optional advanced external-CI profile.
 
-See [`docs/PROJECT_PROVISIONING_CONTRACT.md`](docs/PROJECT_PROVISIONING_CONTRACT.md) and [`docs/PROJECT_PROVISIONING_ACCEPTANCE.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.md).
+Every new project also carries `project-bootstrap-state.yaml`, which records actual non-secret GitHub/Cloudflare bootstrap state. Human handoffs and verified results must be written through to this state plus AHICP Working Memory; chat is not authoritative persistence. See [`docs/PROJECT_MEMORY_WRITEBACK.md`](docs/PROJECT_MEMORY_WRITEBACK.md), [`docs/PROJECT_PROVISIONING_CONTRACT.md`](docs/PROJECT_PROVISIONING_CONTRACT.md), and [`docs/PROJECT_PROVISIONING_ACCEPTANCE.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.md).
 
 
 ## Upgrade safety
