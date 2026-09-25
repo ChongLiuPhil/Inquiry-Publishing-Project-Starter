@@ -22,7 +22,7 @@ The public `platform-authorization.yaml` template may remain `unconfigured` for 
 2. Apply the full Starter composition and pinned upstream revisions.
 3. Validate the generated PPF `project.infrastructure.json`.
 4. Confirm the infrastructure profile is `workers-builds-native` and the CI cost profile is `private-project-quota-saver`.
-5. Confirm content-only changes do not match any automatic GitHub Actions workflow and configuration PRs match only the lightweight project contract check.
+5. Confirm content-only changes do not match any automatic GitHub Actions workflow and configuration PRs targeting `main` match only the lightweight project contract check.
 6. In Cloudflare Workers & Pages, import/connect the intended GitHub repository.
 7. If GitHub asks, authorize the Cloudflare Git integration for that repository.
 8. Configure the Cloudflare Worker/application name to exactly match `wrangler.jsonc.name`, then configure production branch `main`, root `/`, the pinned PPF build command, and deploy command.
@@ -55,9 +55,10 @@ The project passes only when all of these are true:
 - production branch is `main`;
 - `ci_cost_profile` is `private-project-quota-saver`;
 - content-only changes do not trigger automatic GitHub Actions;
-- configuration PRs are limited to the lightweight contract gate;
+- configuration PRs targeting `main` are limited to the lightweight contract gate;
 - main pushes do not duplicate the production Web build in GitHub Actions;
 - heavy GitHub workflows are manual;
+- automatic success artifacts are not uploaded and manual publication artifacts default to one-day retention;
 - Zero Trust is enabled when Worker-level Access is used;
 - the first restricted deployment is verified;
 - Worker-scoped Access or explicitly recorded verified account-wide Access is active;

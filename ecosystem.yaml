@@ -84,6 +84,31 @@ ecosystem:
     default_setup_mode: human-assisted-once-per-project
     default_access_mode: worker-scoped-access
     default_ci_cost_profile: private-project-quota-saver
+    ci_cost_profiles:
+      ordinary_private:
+        mode: quota-saver-native
+        infrastructure_profile: workers-builds-native
+        ci_cost_profile: private-project-quota-saver
+      hardened_external_ci:
+        mode: hardened-external-ci
+        infrastructure_profile: agent-provisioned-external-ci
+        ci_cost_profile: external-ci-required
+      public_framework:
+        mode: full-ci
+        ci_cost_profile: full-validation
+    private_project_github_actions:
+      content_only_changes: none
+      configuration_pull_request:
+        target_branch: main
+        class: light-contract-check
+        timeout_minutes: 5
+      main_push: none
+      heavy_validation: manual
+      artifact_policy:
+        automatic_success_upload: false
+        manual_publication_retention_days: 1
+        diagnostic_retention_days: 1
+      retry: failed-job-or-workflow-only
     contract_en: docs/PROJECT_PROVISIONING_CONTRACT.md
     contract_zh_cn: docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md
     acceptance_en: docs/PROJECT_PROVISIONING_ACCEPTANCE.md

@@ -100,6 +100,19 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertTrue(
             any("second source push" in item for item in plan["completion_evidence"])
         )
+        ci_policy = plan["ci_execution_policy"]
+        self.assertEqual(ci_policy["class"], "ordinary-private-quota-saver")
+        self.assertEqual(ci_policy["automatic_github_actions"]["configuration_pull_request"]["target_branch"], "main")
+        self.assertEqual(ci_policy["artifact_policy"]["manual_publication_retention_days"], 1)
+
+    def test_native_full_validation_is_distinct_from_quota_saver(self):
+        request = copy.deepcopy(self.request)
+        request["infrastructure"]["ci_cost_profile"] = "full-validation"
+        plan = build_plan(self.platform, request)
+        self.assertEqual(plan["status"], "READY_FOR_PROJECT_BOOTSTRAP")
+        self.assertEqual(plan["ci_execution_policy"]["class"], "full-validation")
+        self.assertFalse(any("content-only changes do not trigger" in item for item in plan["completion_evidence"]))
+        self.assertTrue(any("full-validation" in item for item in plan["completion_evidence"]))
 
     def test_native_profile_requires_explicit_project_authorization(self):
         request = copy.deepcopy(self.request)
@@ -138,6 +151,8 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertEqual(seed["deployment"]["credentialStrategy"], "project-scoped-account-token")
         self.assertTrue(seed["deployment"]["secretBroker"])
         self.assertEqual(seed["deployment"]["ciCostProfile"], "external-ci-required")
+        self.assertEqual(plan["ci_execution_policy"]["class"], "hardened-external-ci")
+        self.assertEqual(plan["ci_execution_policy"]["trusted_secret_broker"], "required")
 
     def test_broker_minting_authority_must_be_isolated_for_advanced_profile(self):
         request = self.advanced_request()

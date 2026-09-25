@@ -82,13 +82,16 @@ The exact provider UI may change. The Agent must follow current provider state a
 The pinned PPF `private-project-quota-saver` policy is part of the default project state:
 
 - content-only changes do not start GitHub Actions;
-- configuration/infrastructure pull requests use one lightweight contract check only;
+- configuration/infrastructure pull requests targeting `main` use one lightweight contract check only;
 - pushes to `main` do not run a duplicate GitHub Actions Web build;
 - full Web validation, Cloudflare contract validation, publication artifacts, and advanced external deployment are manual;
+- automatic success artifacts are not uploaded, and manual publication artifacts default to one-day retention;
 - Cloudflare Workers Builds owns the only automatic production Web build;
 - non-production Cloudflare builds and previews remain disabled by default.
 
 The Agent must batch related edits, run all available Agent-side preflight checks, inspect the complete diff, and then trigger only the intended thin CI. GitHub Actions must not be used as the iterative debugging loop. If the private-repository Actions quota is exhausted, optional/manual GitHub heavy validation stays deferred unless the human explicitly authorizes paid usage.
+
+CI/cost profiles are intentionally layered: ordinary private projects use `private-project-quota-saver`; hardened `agent-provisioned-external-ci` projects use `external-ci-required`; public framework repositories use `full-validation` as the machine-readable full-CI profile.
 
 ## 4. One-time human project bootstrap
 

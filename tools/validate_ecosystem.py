@@ -124,6 +124,24 @@ def main() -> int:
         raise SystemExit("Starter ecosystem must default to Worker-scoped Access")
     if provisioning.get("default_ci_cost_profile") != "private-project-quota-saver":
         raise SystemExit("Starter ecosystem must default private projects to quota-saver CI")
+    expected_ci_profiles = {
+        "ordinary_private": {"mode": "quota-saver-native", "infrastructure_profile": "workers-builds-native", "ci_cost_profile": "private-project-quota-saver"},
+        "hardened_external_ci": {"mode": "hardened-external-ci", "infrastructure_profile": "agent-provisioned-external-ci", "ci_cost_profile": "external-ci-required"},
+        "public_framework": {"mode": "full-ci", "ci_cost_profile": "full-validation"},
+    }
+    if provisioning.get("ci_cost_profiles") != expected_ci_profiles:
+        raise SystemExit("Starter ecosystem must distinguish all three CI cost profiles")
+    private_actions = provisioning.get("private_project_github_actions") or {}
+    if private_actions.get("configuration_pull_request", {}).get("target_branch") != "main":
+        raise SystemExit("private-project light PR gate must target main only")
+    if private_actions.get("configuration_pull_request", {}).get("timeout_minutes") != 5:
+        raise SystemExit("private-project light PR gate timeout must be five minutes")
+    if private_actions.get("artifact_policy", {}).get("automatic_success_upload") is not False:
+        raise SystemExit("private-project automatic success artifacts must stay disabled")
+    if private_actions.get("artifact_policy", {}).get("manual_publication_retention_days") != 1:
+        raise SystemExit("private-project manual publication artifact retention must be one day")
+    if private_actions.get("retry") != "failed-job-or-workflow-only":
+        raise SystemExit("private-project retry policy must prefer failed work only")
     if provisioning.get("status") != "guided-per-project-default":
         raise SystemExit("Starter provisioning status must identify the guided per-project default")
     expected_bootstrap_steps = {
@@ -248,12 +266,16 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must expose Worker-scoped Access")
     if descriptor_provisioning.get("default_ci_cost_profile") != "private-project-quota-saver":
         raise SystemExit("agent entry descriptor must expose private-project-quota-saver")
+    if descriptor_provisioning.get("ci_profile_tiers") != expected_ci_profiles:
+        raise SystemExit("agent entry descriptor must expose all three CI cost profiles")
     action_policy = descriptor_provisioning.get("private_project_github_actions") or {}
     expected_action_policy = {
         "content_only_changes": "none",
-        "configuration_pull_request": "light-contract-check",
+        "configuration_pull_request": {"target_branch": "main", "class": "light-contract-check", "timeout_minutes": 5},
         "main_push": "none",
         "heavy_validation": "manual",
+        "artifact_policy": {"automatic_success_upload": False, "manual_publication_retention_days": 1, "diagnostic_retention_days": 1},
+        "retry": "failed-job-or-workflow-only",
     }
     if action_policy != expected_action_policy:
         raise SystemExit("agent entry descriptor has the wrong private-project GitHub Actions policy")

@@ -12,7 +12,7 @@ Starter 主要面向 AI 和配置工作；第一次了解体系时，不需要�
 
 **体系与 AI 配置入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`项目自动配置契约`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
 
-**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。Downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号下，使用 `owner_type: user` 与 `visibility: private`；原创或未发布源文件继续保持 private。默认 infrastructure profile 为 `workers-builds-native` + `private-project-quota-saver`：允许每个项目一次短而明确的人类 GitHub → Cloudflare bootstrap，给 Worker 配置 Access；自动 main Web build 交给 Cloudflare Workers Builds；content-only 改动不启动 GitHub Actions；配置 PR 只跑一个轻量 gate；heavy GitHub workflow 手动执行。然后验证第二次 push 无需重新授权即可自动部署。`agent-provisioned-external-ci` 继续作为高级可选 Profile。Public release 与任何付费 Actions / billing 变化仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
+**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。Downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号下，使用 `owner_type: user` 与 `visibility: private`；原创或未发布源文件继续保持 private。默认 infrastructure profile 为 `workers-builds-native` + `private-project-quota-saver`：允许每个项目一次短而明确的人类 GitHub → Cloudflare bootstrap，给 Worker 配置 Access；自动 main Web build 交给 Cloudflare Workers Builds；content-only 改动不启动 GitHub Actions；只有目标分支为 `main` 的配置 PR 自动跑一个轻量 gate；heavy GitHub workflow 手动执行；自动成功 run 不上传 artifact，手动 publication artifact 默认保留 1 天。然后验证第二次 push 无需重新授权即可自动部署。`agent-provisioned-external-ci` 继续作为高级可选 Profile。Public release 与任何付费 Actions / billing 变化仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
 
 ## 权威边界
 
