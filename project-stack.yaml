@@ -15,8 +15,8 @@ components:
     source: ChongLiuPhil/Personal-Publishing-Framework
     adoption_state: active
     profile: quarto-book-cloudflare
-    template_source_commit: 10b956f2f0f0863e868bc9c623f184bdca7a71c5
-    project_adopted_commit: 10b956f2f0f0863e868bc9c623f184bdca7a71c5
+    template_source_commit: edca57de2e520e5991a6f62159062f8b44281e87
+    project_adopted_commit: edca57de2e520e5991a6f62159062f8b44281e87
   portfolio_interface:
     framework: vault-interface
     source: ChongLiuPhil/Vault-interface
