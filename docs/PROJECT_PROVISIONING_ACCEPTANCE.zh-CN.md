@@ -41,6 +41,16 @@
 22. 核验第二次 deployment 后 Access 仍然生效。
 23. 记录 rollback / restore point 与非秘密 Provider state。
 
+## 验收过程中必须持久写回
+
+验收同时也是一次“项目记忆是否完整”的测试。
+
+每个需要人类操作 UI 的步骤开始前，Agent 必须先把 `project-bootstrap-state.yaml` 中对应 human step 标记为 `waiting-human`，记录操作者指南引用，并在 AHICP Task Plan / Current Focus 写明 blocker 与恢复条件。
+
+人类操作完成后，Agent 必须验证实际 Provider state，然后才能把该步骤写成 `completed` 或 `not-required`。所有 verified 非秘密 evidence 写回 Bootstrap State；重要里程碑追加到 AHICP Work Log。
+
+如果 Provider 配好了，但仓库记忆仍写着 pending；或者完成状态只存在于聊天里，则验收失败。
+
 ## 通过标准
 
 只有以下全部成立才通过：
