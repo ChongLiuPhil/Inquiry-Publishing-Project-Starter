@@ -6,8 +6,10 @@ import unittest
 import yaml
 
 from tools.project_provisioning import (
+    BOOTSTRAP_SCHEMA,
     PLATFORM_SCHEMA,
     REQUEST_SCHEMA,
+    build_bootstrap_state_seed,
     build_plan,
     load_yaml,
     platform_errors,
@@ -22,6 +24,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
     def setUp(self):
         self.platform = load_yaml(ROOT / "templates/platform-authorization.yaml")
         self.request = load_yaml(ROOT / "templates/project-provisioning-request.yaml")
+        self.bootstrap = load_yaml(ROOT / "templates/project-bootstrap-state.yaml")
 
     def advanced_request(self):
         request = copy.deepcopy(self.request)
@@ -64,6 +67,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
     def test_templates_validate(self):
         validate(self.platform, PLATFORM_SCHEMA, "platform")
         validate(self.request, REQUEST_SCHEMA, "request")
+        validate(self.bootstrap, BOOTSTRAP_SCHEMA, "bootstrap")
 
     def test_default_native_profile_does_not_require_platform_bootstrap(self):
         self.assertEqual(platform_errors(self.platform, self.request), [])
@@ -97,6 +101,33 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertTrue(
             any("second source push" in item for item in plan["completion_evidence"])
         )
+
+    def test_default_plan_persists_bootstrap_and_working_memory_contract(self):
+        plan = build_plan(self.platform, self.request)
+        durable = plan["durable_project_memory"]
+        self.assertEqual(durable["bootstrap_state_ref"], "project-bootstrap-state.yaml")
+        self.assertEqual(durable["memory_writeback_contract"], "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md")
+        self.assertFalse(durable["chat_memory_is_authoritative"])
+        self.assertTrue(durable["write_before_human_handoff"])
+        self.assertTrue(durable["verify_then_write_after_human_action"])
+
+        seed = durable["bootstrap_state_seed"]
+        validate(seed, BOOTSTRAP_SCHEMA, "bootstrap-seed")
+        self.assertEqual(seed["source"]["owner"], "ChongLiuPhil")
+        self.assertEqual(seed["source"]["repository"], self.request["infrastructure"]["github"]["repository"])
+        self.assertEqual(seed["cloudflare"]["worker"], self.request["infrastructure"]["cloudflare"]["worker"])
+        self.assertEqual(seed["cloudflare"]["access_mode"], "worker-scoped-access")
+        self.assertEqual(seed["human_steps"]["connect_workers_builds"]["status"], "pending")
+        self.assertEqual(seed["memory_writeback"]["last_sync"], "pending")
+        self.assertEqual(seed["secret_material"], "forbidden")
+
+    def test_bootstrap_seed_is_machine_valid_for_advanced_profile(self):
+        request = self.advanced_request()
+        seed = build_bootstrap_state_seed(request)
+        validate(seed, BOOTSTRAP_SCHEMA, "advanced-bootstrap-seed")
+        self.assertEqual(seed["profile"], "agent-provisioned-external-ci")
+        self.assertEqual(seed["human_steps"]["connect_workers_builds"]["status"], "not-required")
+        self.assertTrue(seed["memory_writeback"]["required"])
 
     def test_native_profile_requires_explicit_project_authorization(self):
         request = copy.deepcopy(self.request)
