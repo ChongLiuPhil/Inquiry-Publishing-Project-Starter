@@ -1,0 +1,353 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/schema/project-bootstrap-state.schema.json",
+  "title": "Inquiry Publishing Stack project bootstrap state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "project",
+    "profile",
+    "status",
+    "source",
+    "cloudflare",
+    "human_steps",
+    "evidence",
+    "memory_writeback",
+    "secret_material"
+  ],
+  "properties": {
+    "schema": {
+      "const": "inquiry-publishing-stack/project-bootstrap-state/v1"
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        }
+      }
+    },
+    "profile": {
+      "enum": [
+        "workers-builds-native",
+        "agent-provisioned-external-ci"
+      ]
+    },
+    "status": {
+      "enum": [
+        "not-started",
+        "waiting-human",
+        "in-progress",
+        "blocked",
+        "first-deployment-verified",
+        "operationally-verified"
+      ]
+    },
+    "last_updated": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "owner_type",
+        "repository",
+        "visibility",
+        "default_branch",
+        "repository_state"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner_type": {
+          "enum": [
+            "user",
+            "organization"
+          ]
+        },
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visibility": {
+          "const": "private"
+        },
+        "default_branch": {
+          "const": "main"
+        },
+        "repository_state": {
+          "enum": [
+            "not-created",
+            "created-private",
+            "verified-private",
+            "blocked"
+          ]
+        }
+      }
+    },
+    "cloudflare": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "worker",
+        "worker_name_alignment",
+        "git_connection",
+        "zero_trust",
+        "access_mode",
+        "access_state",
+        "first_deployment",
+        "second_push_auto_deploy",
+        "public_release"
+      ],
+      "properties": {
+        "worker": {
+          "type": "string",
+          "minLength": 1
+        },
+        "worker_name_alignment": {
+          "enum": [
+            "unverified",
+            "verified",
+            "mismatch"
+          ]
+        },
+        "git_connection": {
+          "enum": [
+            "not-configured",
+            "waiting-human",
+            "connected",
+            "verified",
+            "blocked"
+          ]
+        },
+        "zero_trust": {
+          "enum": [
+            "not-checked",
+            "setup-required",
+            "verified"
+          ]
+        },
+        "access_mode": {
+          "enum": [
+            "worker-scoped-access",
+            "account-wide-access"
+          ]
+        },
+        "access_state": {
+          "enum": [
+            "not-configured",
+            "waiting-human",
+            "verified-private",
+            "blocked"
+          ]
+        },
+        "first_deployment": {
+          "enum": [
+            "not-run",
+            "pending",
+            "verified",
+            "failed"
+          ]
+        },
+        "second_push_auto_deploy": {
+          "enum": [
+            "not-run",
+            "pending",
+            "verified",
+            "failed"
+          ]
+        },
+        "public_release": {
+          "const": "not-authorized"
+        }
+      }
+    },
+    "human_steps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "create_or_confirm_private_repository",
+        "reuse_or_connect_git_account",
+        "authorize_repository_access",
+        "connect_workers_builds",
+        "verify_worker_name",
+        "enable_zero_trust_if_needed",
+        "protect_worker_with_access",
+        "verify_first_restricted_deployment",
+        "verify_second_push_auto_deploy"
+      ],
+      "properties": {
+        "create_or_confirm_private_repository": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "reuse_or_connect_git_account": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "authorize_repository_access": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "connect_workers_builds": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "verify_worker_name": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "enable_zero_trust_if_needed": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "protect_worker_with_access": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "verify_first_restricted_deployment": {
+          "$ref": "#/$defs/humanStep"
+        },
+        "verify_second_push_auto_deploy": {
+          "$ref": "#/$defs/humanStep"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "github_repository_url",
+        "cloudflare_worker_url",
+        "repository_connection_ref",
+        "access_application_ref",
+        "first_deployment_revision",
+        "second_deployment_revision",
+        "rollback_ref"
+      ],
+      "properties": {
+        "github_repository_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cloudflare_worker_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repository_connection_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "access_application_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "first_deployment_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "second_deployment_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rollback_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "memory_writeback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "current_focus_ref",
+        "task_plan_ref",
+        "work_log_ref",
+        "last_sync"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "current_focus_ref": {
+          "const": "docs/working-memory/current-focus.zh-CN.md"
+        },
+        "task_plan_ref": {
+          "const": "docs/working-memory/task-plan.zh-CN.md"
+        },
+        "work_log_ref": {
+          "const": "docs/working-memory/work-log.zh-CN.md"
+        },
+        "last_sync": {
+          "enum": [
+            "pending",
+            "synchronized",
+            "not-applicable-no-ahicp"
+          ]
+        }
+      }
+    },
+    "secret_material": {
+      "const": "forbidden"
+    }
+  },
+  "$defs": {
+    "humanStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "guide_ref",
+        "completion_evidence",
+        "completed_at"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "not-required",
+            "waiting-human",
+            "completed",
+            "blocked"
+          ]
+        },
+        "guide_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "completion_evidence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "completed_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}
