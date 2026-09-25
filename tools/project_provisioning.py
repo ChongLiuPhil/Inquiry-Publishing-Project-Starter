@@ -125,6 +125,7 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
 def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
     errors = platform_errors(platform, request)
     profile = request["infrastructure"]["profile"]
+    ci_cost_profile = request["infrastructure"]["ci_cost_profile"]
     guided_native = profile == "workers-builds-native"
     project = request["project"]
     infra = request["infrastructure"]
@@ -144,6 +145,8 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
             "anonymous production access is challenged or denied",
             "direct assets cannot bypass access control",
             "a second source push deploys automatically without renewed GitHub or Cloudflare authorization",
+            "content-only changes do not trigger automatic GitHub Actions",
+            "main pushes do not duplicate the production Web build in GitHub Actions",
             "non-secret provider state and rollback point are durably recorded",
         ]
         if guided_native
@@ -166,6 +169,7 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
         "project": project,
         "stack_profile": request["stack_profile"],
         "infrastructure_profile": profile,
+        "ci_cost_profile": ci_cost_profile,
         "blockers": errors,
         "authorization_source": authorization["restricted_deployment_source"],
         "project_bootstrap": authorization["project_bootstrap"],
@@ -222,6 +226,7 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
                         else "project-scoped-account-token"
                     ),
                     "secretBroker": not guided_native,
+                    "ciCostProfile": ci_cost_profile,
                 },
                 "release": {"state": "private", "openSource": False},
                 "policy": {
