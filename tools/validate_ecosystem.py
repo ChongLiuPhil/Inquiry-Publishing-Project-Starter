@@ -257,6 +257,31 @@ def main() -> int:
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
         raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
 
+    retrieval_en = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.md").read_text(encoding="utf-8")
+    retrieval_zh = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
+    for required in (
+        "workers-builds-native",
+        "human-assisted-once-per-project",
+        "worker-scoped-access",
+        "second push",
+        "optional advanced profile",
+    ):
+        if required not in retrieval_en:
+            raise SystemExit(f"English Agent Retrieval Contract is missing guided-default marker: {required}")
+    for required in (
+        "workers-builds-native",
+        "human-assisted-once-per-project",
+        "worker-scoped-access",
+        "第二次 push",
+        "高级可选 Profile",
+    ):
+        if required not in retrieval_zh:
+            raise SystemExit(f"Chinese Agent Retrieval Contract is missing guided-default marker: {required}")
+    if "preferred infrastructure profile after platform bootstrap is `agent-provisioned-external-ci`" in retrieval_en:
+        raise SystemExit("English Agent Retrieval Contract still prefers external CI by default")
+    if "平台 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`" in retrieval_zh:
+        raise SystemExit("Chinese Agent Retrieval Contract still prefers external CI by default")
+
     agent_page = (ROOT / "docs/agent/index.html").read_text(encoding="utf-8")
     for marker in ("Agent Retrieval Contract", "Project Provisioning", "workers-builds-native", "human-assisted-once-per-project", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
         if marker not in agent_page:
