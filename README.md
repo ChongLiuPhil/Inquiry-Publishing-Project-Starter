@@ -78,7 +78,7 @@ The adoption plan reports active/deferred component state, authoritative reposit
 
 ## Project provisioning
 
-New downstream projects also carry `project-provisioning.yaml`. The public schemas/templates define only non-secret intent; actual platform authorization remains private control-plane state.
+New downstream projects also carry `project-provisioning.yaml`. The public schemas/templates define only non-secret intent. The default `workers-builds-native` path does not require platform standing authorization; private platform-authorization state is consulted only when an optional advanced profile relies on it.
 
 ```bash
 python tools/project_provisioning.py validate

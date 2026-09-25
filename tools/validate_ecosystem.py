@@ -143,6 +143,28 @@ def main() -> int:
     if not required_reserved.issubset(reserved):
         raise SystemExit("Starter ecosystem is missing one or more human-reserved provisioning gates")
 
+    access_plan_path = ROOT / "templates/cloudflare-access-plan.yaml"
+    if not access_plan_path.exists():
+        raise SystemExit("missing Cloudflare access plan")
+    access_plan = yaml.safe_load(access_plan_path.read_text(encoding="utf-8"))
+    if access_plan.get("default_access_mode") != "worker-scoped-access":
+        raise SystemExit("Cloudflare access plan must default to Worker-scoped Access")
+    project_bootstrap = access_plan.get("project_bootstrap", {})
+    if project_bootstrap.get("mode") != "human-assisted-once-per-project":
+        raise SystemExit("Cloudflare access plan must use guided per-project bootstrap")
+    if project_bootstrap.get("default_path") != "cloudflare-dashboard":
+        raise SystemExit("Cloudflare access plan must default to the Dashboard connection path")
+    if project_bootstrap.get("requires_api_token") is not False:
+        raise SystemExit("default Cloudflare project bootstrap must not require an API token")
+    reservations = set(access_plan.get("human_reservations") or [])
+    if "first-api-token-creation" in reservations:
+        raise SystemExit("Cloudflare access plan must not require API-token creation by default")
+    if "api-token-creation-only-if-api-automation-selected" not in reservations:
+        raise SystemExit("Cloudflare access plan must make API-token creation conditional on API automation")
+    verification = set(access_plan.get("verification") or [])
+    if "second-push-auto-deploys-without-reauthorization" not in verification:
+        raise SystemExit("Cloudflare access plan must verify second-push automatic deployment")
+
     migration_plan_path = ROOT / "templates/cloudflare-public-delivery.yaml"
     migration_guide_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md"
     migration_guide_zh_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md"
@@ -234,6 +256,31 @@ def main() -> int:
         raise SystemExit("machine entry must preserve separate human public-release approval")
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
         raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
+
+    retrieval_en = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.md").read_text(encoding="utf-8")
+    retrieval_zh = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
+    for required in (
+        "workers-builds-native",
+        "human-assisted-once-per-project",
+        "worker-scoped-access",
+        "second push",
+        "optional advanced profile",
+    ):
+        if required not in retrieval_en:
+            raise SystemExit(f"English Agent Retrieval Contract is missing guided-default marker: {required}")
+    for required in (
+        "workers-builds-native",
+        "human-assisted-once-per-project",
+        "worker-scoped-access",
+        "第二次 push",
+        "高级可选 Profile",
+    ):
+        if required not in retrieval_zh:
+            raise SystemExit(f"Chinese Agent Retrieval Contract is missing guided-default marker: {required}")
+    if "preferred infrastructure profile after platform bootstrap is `agent-provisioned-external-ci`" in retrieval_en:
+        raise SystemExit("English Agent Retrieval Contract still prefers external CI by default")
+    if "平台 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`" in retrieval_zh:
+        raise SystemExit("Chinese Agent Retrieval Contract still prefers external CI by default")
 
     agent_page = (ROOT / "docs/agent/index.html").read_text(encoding="utf-8")
     for marker in ("Agent Retrieval Contract", "Project Provisioning", "workers-builds-native", "human-assisted-once-per-project", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):

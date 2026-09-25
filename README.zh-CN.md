@@ -55,7 +55,7 @@ make provisioning-contract-check
 
 ## 项目自动配置
 
-新的 downstream 项目还记录 `project-provisioning.yaml`。公共 Schema / Template 只描述非秘密意图；真实 Platform Authorization 属于 private control-plane state。
+新的 downstream 项目还记录 `project-provisioning.yaml`。公共 Schema / Template 只描述非秘密意图。默认 `workers-builds-native` 路线不要求 platform standing authorization；只有显式选择依赖它的高级 Profile 时，才读取 private platform-authorization state。
 
 ```bash
 python tools/project_provisioning.py validate

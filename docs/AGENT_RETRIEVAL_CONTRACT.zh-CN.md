@@ -55,7 +55,7 @@ Agent 可能从以下任意入口进入：
 
 精简 profile 仍然可用，但必须由使用者明确选择。Agent 不得因为项目“看起来简单”就自动省略 AHICP 或 PPF。
 
-新建完整 Stack 项目在平台 bootstrap 完成后，首选 infrastructure profile 为 `agent-provisioned-external-ci`：private GitHub source、account-wide Access 保护的 Worker、trusted Secret Broker 传递的 project-scoped deployment credential、GitHub Actions deployment，以及在独立验收前保持 disabled 的 Preview。`workers-builds-native` 继续支持明确选择或已经采用它的项目。
+普通新建完整 Stack 项目首选 infrastructure profile 为 `workers-builds-native`：使用个人 `ChongLiuPhil` GitHub 账号、repository 保持 private，以 `human-assisted-once-per-project` 完成 GitHub → Cloudflare 连接，默认采用 `worker-scoped-access`，Preview 在独立验收前保持 disabled，并要求第二次 push 能在无需重新授权的情况下自动部署。`agent-provisioned-external-ci` 继续作为高级可选 Profile；只有这个高级 Profile 才要求 reusable platform standing authorization、作为 Provisioning 前置条件的 account-wide Access，以及 trusted Secret Broker。
 
 ## 4. 默认隐私与发布姿态
 
@@ -83,9 +83,9 @@ Agent 可能从以下任意入口进入：
 - 源仓库隐私与 Web 可见性；
 - 当前发布授权状态；
 - Cloudflare deployment profile 与 access policy；
-- 适用时的 project provisioning profile 与 `project-provisioning.yaml` 状态；
-- platform standing authorization 是否覆盖当前 GitHub owner 与 Cloudflare scope；
-- trusted Secret Broker 及其隔离的 token-minting boundary 是否 verified；
+- 适用时的 project provisioning profile、bootstrap mode 与 `project-provisioning.yaml` 状态；
+- 对默认 Native Profile：repository owner / visibility、Workers Builds repository connection、实际 Access mode、第一次 restricted deployment 验证、第二次 push 无需重新授权验证；
+- 只有高级可选 External-CI Profile 才报告：platform standing authorization 是否覆盖当前 GitHub owner / Cloudflare scope，以及 trusted Secret Broker 与隔离 token-minting boundary 是否 verified；
 - 哪些操作已经授权、哪些仍由人保留；
 - 哪些 Provider actual state 仍需验证。
 

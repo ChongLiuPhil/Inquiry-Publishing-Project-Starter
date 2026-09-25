@@ -55,7 +55,7 @@ full AHICP
 
 Reduced profiles remain available for legitimate cases, but selecting one is an explicit human deviation from the default baseline. An agent must not infer a reduced profile merely because a project appears simple.
 
-For a new full-stack project, the preferred infrastructure profile after platform bootstrap is `agent-provisioned-external-ci`: private GitHub source, account-wide Access-protected Worker, project-scoped deployment credential transferred by a trusted secret broker, GitHub Actions deployment, and previews disabled until their own protection is accepted. `workers-builds-native` remains supported when explicitly selected or already adopted.
+For an ordinary new full-stack project, the preferred infrastructure profile is `workers-builds-native`: use the personal `ChongLiuPhil` GitHub account, keep the repository private, use `human-assisted-once-per-project` for the GitHub → Cloudflare connection, protect the Worker with `worker-scoped-access` by default, keep previews disabled until separately accepted, and require a second push to deploy automatically without renewed authorization. `agent-provisioned-external-ci` remains an optional advanced profile; only that advanced profile requires reusable platform standing authorization, account-wide Access as a provisioning precondition, and the trusted Secret Broker.
 
 ## 4. Default privacy and publication posture
 
@@ -83,9 +83,9 @@ Before material configuration or upgrade work, the agent should be able to state
 - source privacy and Web visibility;
 - publication authorization state;
 - Cloudflare deployment profile and access policy;
-- project provisioning profile and `project-provisioning.yaml` state when applicable;
-- whether platform standing authorization is verified for the requested GitHub owner and Cloudflare scope;
-- whether the trusted secret broker and its isolated token-minting boundary are verified;
+- project provisioning profile, bootstrap mode, and `project-provisioning.yaml` state when applicable;
+- for the default Native profile: repository owner/visibility, Workers Builds repository connection, actual Access mode, first restricted deployment verification, and second-push no-reauthorization verification;
+- only for the optional advanced External-CI profile: whether platform standing authorization covers the requested GitHub owner and Cloudflare scope, and whether the trusted Secret Broker plus isolated token-minting boundary are verified;
 - which actions are already authorized and which remain human-reserved;
 - which provider state still needs verification.
 
