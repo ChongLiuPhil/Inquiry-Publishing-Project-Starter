@@ -1,0 +1,84 @@
+schema: inquiry-publishing-stack/project-bootstrap-state/v1
+project:
+  id: replace-with-project-id
+profile: workers-builds-native
+status: not-started
+last_updated: null
+source:
+  owner: ChongLiuPhil
+  owner_type: user
+  repository: replace-with-project-repository
+  visibility: private
+  default_branch: main
+  repository_state: not-created
+cloudflare:
+  worker: replace-with-project-worker
+  worker_name_alignment: unverified
+  git_connection: not-configured
+  zero_trust: not-checked
+  access_mode: worker-scoped-access
+  access_state: not-configured
+  first_deployment: not-run
+  second_push_auto_deploy: not-run
+  public_release: not-authorized
+human_steps:
+  create_or_confirm_private_repository:
+    status: pending
+    guide_ref: ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md#1
+    completion_evidence: null
+    completed_at: null
+  reuse_or_connect_git_account:
+    status: pending
+    guide_ref: ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md#2
+    completion_evidence: null
+    completed_at: null
+  authorize_repository_access:
+    status: pending
+    guide_ref: ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md#2
+    completion_evidence: null
+    completed_at: null
+  connect_workers_builds:
+    status: pending
+    guide_ref: ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md#2
+    completion_evidence: null
+    completed_at: null
+  verify_worker_name:
+    status: pending
+    guide_ref: ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md#2
+    completion_evidence: null
+    completed_at: null
+  enable_zero_trust_if_needed:
+    status: pending
+    guide_ref: ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md#3
+    completion_evidence: null
+    completed_at: null
+  protect_worker_with_access:
+    status: pending
+    guide_ref: ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md#3
+    completion_evidence: null
+    completed_at: null
+  verify_first_restricted_deployment:
+    status: pending
+    guide_ref: starter:docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md
+    completion_evidence: null
+    completed_at: null
+  verify_second_push_auto_deploy:
+    status: pending
+    guide_ref: starter:docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md
+    completion_evidence: null
+    completed_at: null
+evidence:
+  github_repository_url: null
+  cloudflare_worker_url: null
+  repository_connection_ref: null
+  access_application_ref: null
+  first_deployment_revision: null
+  second_deployment_revision: null
+  rollback_ref: null
+memory_writeback:
+  required: true
+  current_focus_ref: docs/working-memory/current-focus.zh-CN.md
+  task_plan_ref: docs/working-memory/task-plan.zh-CN.md
+  work_log_ref: docs/working-memory/work-log.zh-CN.md
+  last_sync: pending
+secret_material: forbidden
