@@ -35,7 +35,7 @@ The project records actual adoption in project-stack.yaml; it does not create co
 
 The full-research-publication profile is the default new-project profile. Reduced profiles remain available, but an AI agent must use one only after explicit human selection. Apparent project simplicity is not authorization to silently omit AHICP or PPF.
 
-The preferred ordinary new-project infrastructure profile is `workers-builds-native`: a private repository under the personal `ChongLiuPhil` account, one short human-assisted Cloudflare Git connection for that project, Worker-scoped Access by default, and previews disabled until their own protection is accepted. After the first restricted deployment, a second push must auto-deploy without renewed authorization before the connection is considered operationally verified. Public release, repository publication, reader expansion, domain/DNS authority, provider-scope expansion, and paid-plan changes remain human-reserved.
+The preferred ordinary new-project infrastructure profile is `workers-builds-native` with `private-project-quota-saver`: a private repository under the personal `ChongLiuPhil` account, one short human-assisted Cloudflare Git connection for that project, Worker-scoped Access by default, and previews disabled until their own protection is accepted. Content-only changes do not start GitHub Actions; configuration PRs use one lightweight contract gate; `main` does not run a duplicate GitHub Web build; heavy GitHub workflows are manual; Cloudflare Workers Builds owns the automatic production Web build. After the first restricted deployment, a second content-only push must auto-deploy without renewed authorization or duplicate GitHub Actions production build before the connection is considered operationally verified. Public release, repository publication, reader expansion, domain/DNS authority, provider-scope expansion, paid Actions usage, and billing changes remain human-reserved.
 
 `agent-provisioned-external-ci` remains available as an optional advanced profile when one-Worker deployment-credential isolation is worth the additional platform authorization and Trusted Secret Broker infrastructure.
 
@@ -73,7 +73,7 @@ When an AI agent enters through any component homepage or repository, it must:
 2. read the canonical Starter ecosystem and [AGENT_RETRIEVAL_CONTRACT.md](AGENT_RETRIEVAL_CONTRACT.md);
 3. resolve the roles and public entrypoints of all four components;
 4. for a downstream project, read its selected Starter profile, `project-stack.yaml`, lock file, and `project-provisioning.yaml` when present;
-5. for a new project, read the Project Provisioning Contract and the pinned PPF per-project setup contract; read private platform-authorization state only if the optional advanced profile is explicitly selected;
+5. for a new project, read the Project Provisioning Contract, the pinned PPF per-project setup contract, and the pinned PPF CI Cost Policy; read private platform-authorization state only if the optional advanced profile is explicitly selected;
 6. fresh-read each active upstream manifest at its pinned revision;
 7. inspect other private project state only after explicit authorization;
 8. preserve the distinction between proposal, authorization, execution, verification, and durable write-back.
