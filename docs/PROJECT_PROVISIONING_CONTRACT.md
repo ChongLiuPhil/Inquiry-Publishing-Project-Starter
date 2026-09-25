@@ -2,7 +2,8 @@
 
 **Status:** canonical Starter orchestration contract  
 **Default infrastructure profile:** `workers-builds-native`  
-**Default setup mode:** `human-assisted-once-per-project`
+**Default setup mode:** `human-assisted-once-per-project`  
+**Default CI cost profile:** `private-project-quota-saver`
 
 This contract defines the practical new-project path for the Inquiry Publishing Stack.
 
@@ -52,10 +53,11 @@ The repository must start private. Making it public is a separate human-reserved
 
 ## 3. Default Cloudflare topology
 
-The default PPF infrastructure profile is:
+The default PPF infrastructure profile and CI cost profile are:
 
 ```text
 workers-builds-native
+private-project-quota-saver
 ```
 
 The project connects its private GitHub repository to Cloudflare Workers Builds. Cloudflare then owns the Git-triggered build/deploy connection and provider-managed build credential.
@@ -74,6 +76,19 @@ preview / non-production builds: disabled by default
 If the Git account is already connected to Cloudflare, reuse that account connection. A new project should not repeat OAuth merely because it is new. If the private repository is not visible, authorize or expand the Cloudflare GitHub App's access only for the target repository where practical.
 
 The exact provider UI may change. The Agent must follow current provider state and the pinned PPF setup contract rather than guessing from stale screenshots.
+
+### Private-project CI cost default
+
+The pinned PPF `private-project-quota-saver` policy is part of the default project state:
+
+- content-only changes do not start GitHub Actions;
+- configuration/infrastructure pull requests use one lightweight contract check only;
+- pushes to `main` do not run a duplicate GitHub Actions Web build;
+- full Web validation, Cloudflare contract validation, publication artifacts, and advanced external deployment are manual;
+- Cloudflare Workers Builds owns the only automatic production Web build;
+- non-production Cloudflare builds and previews remain disabled by default.
+
+The Agent must batch related edits, run all available Agent-side preflight checks, inspect the complete diff, and then trigger only the intended thin CI. GitHub Actions must not be used as the iterative debugging loop. If the private-repository Actions quota is exhausted, optional/manual GitHub heavy validation stays deferred unless the human explicitly authorizes paid usage.
 
 ## 4. One-time human project bootstrap
 
@@ -133,6 +148,7 @@ The default request declares:
 - `owner_type: user`;
 - private repository;
 - `workers-builds-native`;
+- `ci_cost_profile: private-project-quota-saver`;
 - `access_mode: worker-scoped-access`;
 - restricted Web;
 - previews disabled;
@@ -160,6 +176,7 @@ provider: cloudflare-workers-builds
 securityProfile: workers-builds-native
 credentialStrategy: provider-managed-user-token
 secretBroker: false
+ciCostProfile: private-project-quota-saver
 accessMode: worker-scoped-access
 previewDeployments: false
 ```
@@ -196,6 +213,7 @@ push
 -> build succeeds
 -> intended new revision deploys
 -> Access remains enforced
+-> no duplicate GitHub Actions production Web build starts
 -> no renewed GitHub or Cloudflare authorization is required
 ```
 
@@ -210,7 +228,8 @@ The default project bootstrap never authorizes:
 - reader-audience expansion;
 - custom-domain or DNS changes;
 - provider-permission scope expansion;
-- paid-plan or billing changes.
+- paid-plan or billing changes;
+- enabling paid GitHub Actions usage, increasing an Actions budget, or otherwise changing billing to bypass the quota.
 
 Those remain explicit human decisions.
 
@@ -255,6 +274,7 @@ A default project bootstrap is complete when it can truthfully record:
 ```text
 github_repository: private
 infrastructure_profile: workers-builds-native
+ci_cost_profile: private-project-quota-saver
 cloudflare_git_connection: verified
 worker_access: verified-private
 first_restricted_deployment: verified
