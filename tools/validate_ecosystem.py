@@ -56,9 +56,14 @@ def main() -> int:
         "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md",
         "schema/platform-authorization.schema.json",
         "schema/project-provisioning-request.schema.json",
+        "schema/project-bootstrap-state.schema.json",
         "templates/platform-authorization.yaml",
         "templates/project-provisioning-request.yaml",
+        "templates/project-bootstrap-state.yaml",
         "project-provisioning.yaml",
+        "project-bootstrap-state.yaml",
+        "docs/PROJECT_MEMORY_WRITEBACK.md",
+        "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md",
     )
     for relative in required_agent_files:
         if not (ROOT / relative).exists():
@@ -66,18 +71,42 @@ def main() -> int:
 
     platform_schema = json.loads((ROOT / "schema/platform-authorization.schema.json").read_text(encoding="utf-8"))
     request_schema = json.loads((ROOT / "schema/project-provisioning-request.schema.json").read_text(encoding="utf-8"))
+    bootstrap_schema = json.loads((ROOT / "schema/project-bootstrap-state.schema.json").read_text(encoding="utf-8"))
     platform_template = yaml.safe_load((ROOT / "templates/platform-authorization.yaml").read_text(encoding="utf-8"))
     request_template = yaml.safe_load((ROOT / "templates/project-provisioning-request.yaml").read_text(encoding="utf-8"))
+    bootstrap_template = yaml.safe_load((ROOT / "templates/project-bootstrap-state.yaml").read_text(encoding="utf-8"))
     project_request = yaml.safe_load((ROOT / "project-provisioning.yaml").read_text(encoding="utf-8"))
+    project_bootstrap_state = yaml.safe_load((ROOT / "project-bootstrap-state.yaml").read_text(encoding="utf-8"))
     for label, instance, schema in (
         ("platform authorization template", platform_template, platform_schema),
         ("project provisioning template", request_template, request_schema),
         ("root project provisioning request", project_request, request_schema),
+        ("project bootstrap template", bootstrap_template, bootstrap_schema),
+        ("root project bootstrap state", project_bootstrap_state, bootstrap_schema),
     ):
         errors = sorted(Draft202012Validator(schema).iter_errors(instance), key=lambda e: list(e.path))
         if errors:
             where = ".".join(str(x) for x in errors[0].path) or "<root>"
             raise SystemExit(f"{label} is invalid at {where}: {errors[0].message}")
+    for label, bootstrap_state in (
+        ("project bootstrap template", bootstrap_template),
+        ("root project bootstrap state", project_bootstrap_state),
+    ):
+        if bootstrap_state.get("secret_material") != "forbidden":
+            raise SystemExit(f"{label} must prohibit secret material")
+        memory = bootstrap_state.get("memory_writeback", {})
+        if memory.get("required") is not True or memory.get("last_sync") != "pending":
+            raise SystemExit(f"{label} must require pending working-memory writeback")
+        for key, expected in (
+            ("current_focus_ref", "docs/working-memory/current-focus.zh-CN.md"),
+            ("task_plan_ref", "docs/working-memory/task-plan.zh-CN.md"),
+            ("work_log_ref", "docs/working-memory/work-log.zh-CN.md"),
+        ):
+            if memory.get(key) != expected:
+                raise SystemExit(f"{label} has wrong {key}")
+        if bootstrap_state.get("status") != "not-started":
+            raise SystemExit(f"{label} must begin at not-started")
+
     if platform_template.get("status") != "unconfigured":
         raise SystemExit("public platform-authorization template must not claim live provider authorization")
     standing = platform_template.get("standing_authorizations", {})
@@ -133,6 +162,17 @@ def main() -> int:
     }
     if not expected_bootstrap_steps.issubset(set(provisioning.get("ordinary_project_human_bootstrap") or [])):
         raise SystemExit("Starter ecosystem is missing current guided-bootstrap prerequisites")
+    if provisioning.get("bootstrap_state_schema") != "schema/project-bootstrap-state.schema.json":
+        raise SystemExit("Starter ecosystem is missing project-bootstrap-state schema")
+    if provisioning.get("bootstrap_state_template") != "templates/project-bootstrap-state.yaml":
+        raise SystemExit("Starter ecosystem is missing project-bootstrap-state template")
+    if provisioning.get("durable_bootstrap_state") != "project-bootstrap-state.yaml":
+        raise SystemExit("Starter ecosystem is missing durable project bootstrap state")
+    if provisioning.get("memory_writeback_contract_zh_cn") != "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md":
+        raise SystemExit("Starter ecosystem is missing project-memory writeback contract")
+    if provisioning.get("repository_memory_is_authoritative") is not True or provisioning.get("chat_memory_is_authoritative") is not False:
+        raise SystemExit("Starter ecosystem must make repository memory authoritative over chat")
+
     if provisioning.get("secret_rule") != "provider-credentials-never-enter-model-context":
         raise SystemExit("Starter ecosystem is missing the provider credential secret boundary")
     if provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
@@ -246,6 +286,15 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must identify the guided per-project default")
     if not expected_bootstrap_steps.issubset(set(descriptor_provisioning.get("ordinary_project_human_bootstrap") or [])):
         raise SystemExit("agent entry descriptor is missing current guided-bootstrap prerequisites")
+    if descriptor_provisioning.get("durable_bootstrap_state") != "project-bootstrap-state.yaml":
+        raise SystemExit("agent entry descriptor must expose durable bootstrap state")
+    if descriptor_provisioning.get("memory_writeback_contract") != "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md":
+        raise SystemExit("agent entry descriptor must expose project-memory writeback contract")
+    if descriptor_provisioning.get("repository_memory_is_authoritative") is not True or descriptor_provisioning.get("chat_memory_is_authoritative") is not False:
+        raise SystemExit("agent entry descriptor must make repository memory authoritative")
+    if descriptor_provisioning.get("write_before_human_handoff") is not True or descriptor_provisioning.get("verify_then_write_after_human_action") is not True:
+        raise SystemExit("agent entry descriptor must enforce provider-state writeback around human handoff")
+
     if descriptor_provisioning.get("secret_broker_required_for_default") is not False:
         raise SystemExit("native default must not require the trusted Secret Broker")
     if descriptor_provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
@@ -269,6 +318,16 @@ def main() -> int:
         raise SystemExit("machine entry must preserve separate human public-release approval")
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
         raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
+
+    memory_en = (ROOT / "docs/PROJECT_MEMORY_WRITEBACK.md").read_text(encoding="utf-8")
+    memory_zh = (ROOT / "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md").read_text(encoding="utf-8")
+    for label, text_value, required_values in (
+        ("English project-memory contract", memory_en, ("project-bootstrap-state.yaml", "write-before-handoff", "repository state outranks chat")),
+        ("Chinese project-memory contract", memory_zh, ("project-bootstrap-state.yaml", "交给人操作以前必须先写回", "仓库状态高于聊天")),
+    ):
+        for required in required_values:
+            if required not in text_value:
+                raise SystemExit(f"{label} is missing persistence marker: {required}")
 
     contract_en = (ROOT / "docs/PROJECT_PROVISIONING_CONTRACT.md").read_text(encoding="utf-8")
     contract_zh = (ROOT / "docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
