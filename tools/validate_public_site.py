@@ -72,6 +72,15 @@ def validate(output: Path) -> None:
         raise ValueError("Machine entry does not expose the guided per-project provisioning contract")
     if provisioning.get("status") != "guided-per-project-default":
         raise ValueError("Machine entry lost the guided per-project provisioning status")
+    if (
+        provisioning.get("durable_bootstrap_state") != "project-bootstrap-state.yaml"
+        or provisioning.get("memory_writeback_contract") != "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md"
+        or provisioning.get("repository_memory_is_authoritative") is not True
+        or provisioning.get("chat_memory_is_authoritative") is not False
+        or provisioning.get("write_before_human_handoff") is not True
+        or provisioning.get("verify_then_write_after_human_action") is not True
+    ):
+        raise ValueError("Machine entry does not expose durable project-memory writeback")
     if not str(provisioning.get("per_project_setup_contract", "")).endswith("/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md"):
         raise ValueError("Machine entry does not expose the PPF per-project setup contract")
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
@@ -84,6 +93,8 @@ def validate(output: Path) -> None:
         "PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
         "PROJECT_PROVISIONING_ACCEPTANCE.md",
         "PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md",
+        "PROJECT_MEMORY_WRITEBACK.md",
+        "PROJECT_MEMORY_WRITEBACK.zh-CN.md",
         "HUMAN_GUIDE.md",
         "HUMAN_GUIDE.zh-CN.md",
         "ahicp/HUMAN_GUIDE.md",
