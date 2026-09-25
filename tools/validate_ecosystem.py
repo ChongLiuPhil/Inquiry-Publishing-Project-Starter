@@ -122,6 +122,17 @@ def main() -> int:
         raise SystemExit("Starter ecosystem must default to Worker-scoped Access")
     if provisioning.get("status") != "guided-per-project-default":
         raise SystemExit("Starter provisioning status must identify the guided per-project default")
+    expected_bootstrap_steps = {
+        "reuse-existing-cloudflare-git-account-connection-if-available",
+        "authorize-cloudflare-github-app-repository-access-if-needed",
+        "connect-workers-builds",
+        "ensure-worker-application-name-matches-wrangler-jsonc-name",
+        "enable-cloudflare-zero-trust-once-if-needed",
+        "protect-target-worker-with-access",
+        "verify-second-push-auto-deploy-without-reauthorization",
+    }
+    if not expected_bootstrap_steps.issubset(set(provisioning.get("ordinary_project_human_bootstrap") or [])):
+        raise SystemExit("Starter ecosystem is missing current guided-bootstrap prerequisites")
     if provisioning.get("secret_rule") != "provider-credentials-never-enter-model-context":
         raise SystemExit("Starter ecosystem is missing the provider credential secret boundary")
     if provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
@@ -233,6 +244,8 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must expose Worker-scoped Access")
     if descriptor_provisioning.get("status") != "guided-per-project-default":
         raise SystemExit("agent entry descriptor must identify the guided per-project default")
+    if not expected_bootstrap_steps.issubset(set(descriptor_provisioning.get("ordinary_project_human_bootstrap") or [])):
+        raise SystemExit("agent entry descriptor is missing current guided-bootstrap prerequisites")
     if descriptor_provisioning.get("secret_broker_required_for_default") is not False:
         raise SystemExit("native default must not require the trusted Secret Broker")
     if descriptor_provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
@@ -257,14 +270,19 @@ def main() -> int:
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
         raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
 
+    contract_en = (ROOT / "docs/PROJECT_PROVISIONING_CONTRACT.md").read_text(encoding="utf-8")
+    contract_zh = (ROOT / "docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
     acceptance_en = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.md").read_text(encoding="utf-8")
     acceptance_zh = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md").read_text(encoding="utf-8")
-    for required in ("wrangler.jsonc.name", "Zero Trust", "Git-account connection"):
-        if required not in acceptance_en:
-            raise SystemExit(f"English provisioning acceptance is missing current Cloudflare prerequisite: {required}")
-    for required in ("wrangler.jsonc.name", "Zero Trust", "Git account"):
-        if required not in acceptance_zh:
-            raise SystemExit(f"Chinese provisioning acceptance is missing current Cloudflare prerequisite: {required}")
+    for label, text_value, required_values in (
+        ("English provisioning contract", contract_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection")),
+        ("English provisioning acceptance", acceptance_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection")),
+        ("Chinese provisioning contract", contract_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account")),
+        ("Chinese provisioning acceptance", acceptance_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account")),
+    ):
+        for required in required_values:
+            if required not in text_value:
+                raise SystemExit(f"{label} is missing current Cloudflare prerequisite: {required}")
 
     retrieval_en = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.md").read_text(encoding="utf-8")
     retrieval_zh = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
