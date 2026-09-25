@@ -63,12 +63,15 @@ The project connects its private GitHub repository to Cloudflare Workers Builds.
 Reference project settings:
 
 ```text
+Worker/application name: exactly wrangler.jsonc.name
 production branch: main
 root directory: /
 build command: bash scripts/cloudflare_build.sh
 deploy command: npx wrangler deploy
 preview / non-production builds: disabled by default
 ```
+
+If the Git account is already connected to Cloudflare, reuse that account connection. A new project should not repeat OAuth merely because it is new. If the private repository is not visible, authorize or expand the Cloudflare GitHub App's access only for the target repository where practical.
 
 The exact provider UI may change. The Agent must follow current provider state and the pinned PPF setup contract rather than guessing from stale screenshots.
 
@@ -77,11 +80,13 @@ The exact provider UI may change. The Agent must follow current provider state a
 The normal human bootstrap may include:
 
 1. create or confirm the private personal-account GitHub repository;
-2. authorize the Cloudflare Git integration for the target repository if GitHub asks;
-3. connect the repository to Workers Builds;
-4. confirm the intended production branch/build settings;
-5. protect the target Worker with Cloudflare Access;
-6. confirm the first restricted deployment.
+2. reuse the existing Cloudflare Git-account connection when it already works;
+3. if the target private repository is not visible, authorize or expand the Cloudflare GitHub App's repository access for that repository;
+4. connect the repository to Workers Builds and set the Worker/application name to exactly match `wrangler.jsonc.name`;
+5. confirm the intended production branch/build settings;
+6. if Cloudflare Zero Trust has never been enabled on the account, complete that one-time account prerequisite; later projects reuse it;
+7. protect the target Worker with Cloudflare Access, preferably reusing an already-approved authentication policy;
+8. confirm the first restricted deployment.
 
 These steps are project-level authorization, not a failure of the system.
 
