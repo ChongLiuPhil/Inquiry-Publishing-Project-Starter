@@ -82,13 +82,16 @@ Provider UI 可能变化。Agent 必须根据当前 Provider state 与固定版�
 固定版本 PPF 的 `private-project-quota-saver` 是默认项目状态的一部分：
 
 - content-only 改动不启动 GitHub Actions；
-- 配置/基础设施 Pull Request 只运行一个轻量 contract check；
+- 只有目标分支为 `main` 的配置/基础设施 Pull Request 自动运行一个轻量 contract check；
 - push 到 `main` 不再运行重复的 GitHub Actions Web build；
 - full Web validation、Cloudflare contract validation、publication artifact 与高级 External-CI deployment 都改为手动；
+- 自动成功 run 不上传 artifact，手动 publication artifact 默认只保留 1 天；
 - Cloudflare Workers Builds 是唯一自动 production Web build；
 - Cloudflare non-production build 与 Preview 默认关闭。
 
 Agent 必须先批量完成相关编辑、运行所有可用 Agent-side preflight、检查完整 diff，然后只触发预定的薄 CI。不得把 GitHub Actions 当作迭代调试循环。Private repository Actions quota 已耗尽时，可选/手动 GitHub heavy validation 延后；除非人类明确授权，不得通过开启付费 usage 来绕过 quota。
+
+CI / 成本 Profile 明确分层：普通 private project 使用 `private-project-quota-saver`；高安全 `agent-provisioned-external-ci` 使用 `external-ci-required`；public framework repository 使用 `full-validation` 作为机器可读的 full-CI Profile。
 
 ## 4. 每项目一次人工 Bootstrap
 

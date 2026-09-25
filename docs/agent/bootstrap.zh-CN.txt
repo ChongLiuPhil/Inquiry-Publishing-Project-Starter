@@ -14,7 +14,7 @@ https://inquirystack.philohub.workers.dev/agent/
 5. 面对 downstream 项目时，读取 project-stack.yaml、存在时的 project-provisioning.yaml、所选 profile 与 lock state。
 6. 实质配置、Provisioning 或升级前 fresh-read 固定 revision 的 AHICP / PPF / Vault manifest。
 7. 新项目默认完整 AHICP + 完整 PPF + Vault Interface；精简 profile 只能由人类明确选择。
-8. 新的 downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号（`owner_type: user`、`visibility: private`），基础设施首选 `workers-builds-native` + `private-project-quota-saver`。允许每项目一次短人工 GitHub → Cloudflare bootstrap；随后必须验证第二次 push 无需重新授权即可自动部署。Content-only 改动不得启动 GitHub Actions；配置 PR 只运行一个轻量 contract check；main 的 Web build/deploy 交给 Cloudflare Workers Builds；重型 GitHub workflow 手动运行。
+8. 新的 downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号（`owner_type: user`、`visibility: private`），基础设施首选 `workers-builds-native` + `private-project-quota-saver`。允许每项目一次短人工 GitHub → Cloudflare bootstrap；随后必须验证第二次 push 无需重新授权即可自动部署。Content-only 改动不得启动 GitHub Actions；只有目标分支为 main 的配置 PR 自动运行一个轻量 contract check；main 的 Web build/deploy 交给 Cloudflare Workers Builds；重型 GitHub workflow 手动运行；自动成功 run 不上传 artifact，手动 publication artifact 保留 1 天。普通 private quota-saver、高安全 External-CI、public framework full CI 必须保持为不同 Profile。
 9. 原创或未发布 canonical source 默认 private。
 10. 未发布或过渡阶段 Web 默认 restricted + authenticated；Preview 在独立保护验收前保持 disabled。
 11. 只有相应访问已经获得授权后才读取私人 platform/project state。

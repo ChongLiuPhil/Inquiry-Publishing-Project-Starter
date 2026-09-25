@@ -22,7 +22,7 @@
 2. 应用完整 Starter 组合与固定 upstream revisions。
 3. 校验生成的 PPF `project.infrastructure.json`。
 4. 确认 infrastructure profile 是 `workers-builds-native`，CI cost profile 是 `private-project-quota-saver`。
-5. 确认 content-only 改动不匹配任何自动 GitHub Actions workflow；配置 PR 只匹配轻量 project contract check。
+5. 确认 content-only 改动不匹配任何自动 GitHub Actions workflow；只有目标分支为 `main` 的配置 PR 匹配轻量 project contract check。
 6. 在 Cloudflare Workers & Pages 中 Import / Connect 目标 GitHub repository。
 7. 如果 GitHub 提示，为该 repository 授权 Cloudflare Git integration。
 8. 把 Cloudflare Worker / application name 配置为与 `wrangler.jsonc.name` 完全一致，然后配置 production branch `main`、root `/`、固定 PPF build command 与 deploy command。
@@ -55,9 +55,10 @@
 - production branch 为 `main`；
 - `ci_cost_profile` 为 `private-project-quota-saver`；
 - content-only 改动不触发自动 GitHub Actions；
-- 配置 PR 只使用轻量 contract gate；
+- 只有目标分支为 `main` 的配置 PR 使用轻量 contract gate；
 - main push 不在 GitHub Actions 重复 production Web build；
 - heavy GitHub workflow 为手动；
+- 自动成功 run 不上传 artifact，手动 publication artifact 默认只保留 1 天；
 - 使用 Worker-level Access 时 Zero Trust 已启用；
 - 第一次 restricted deployment 已验证；
 - Worker-scoped Access 或显式记录的 verified account-wide Access 已生效；
