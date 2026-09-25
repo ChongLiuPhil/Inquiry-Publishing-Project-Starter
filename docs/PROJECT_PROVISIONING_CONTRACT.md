@@ -248,7 +248,21 @@ That profile retains:
 
 Its Cloudflare granular-token issuer remains subject to live Provider acceptance. The advanced profile must not be used to make claims about the default Native path.
 
-## 13. Completion state
+## 13. Durable project memory and write-back
+
+The configuration described by this contract must be persisted in the project repository; it must not live only in an Agent conversation.
+
+Every full-stack project carries:
+
+- `project-provisioning.yaml` for intended configuration;
+- `project-bootstrap-state.yaml` for actual GitHub / Cloudflare bootstrap state and non-secret evidence;
+- AHICP Current Focus / Task Plan / Work Log for the current blocker, next action, and milestone history.
+
+Before sending the human to a provider UI, the Agent writes the pending human step into `project-bootstrap-state.yaml` and AHICP Task Plan. After the human returns, the Agent verifies provider state first, then writes the verified result back.
+
+The canonical persistence rules are in `docs/PROJECT_MEMORY_WRITEBACK.md`. Repository-backed state outranks chat memory.
+
+## 14. Completion state
 
 A default project bootstrap is complete when it can truthfully record:
 
