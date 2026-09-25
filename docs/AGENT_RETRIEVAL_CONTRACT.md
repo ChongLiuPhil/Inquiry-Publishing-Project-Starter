@@ -33,11 +33,11 @@ From any such entrypoint, the agent must reconstruct the whole public ecosystem 
    - PPF — source-centered publishing lifecycle and Continuous Web;
    - Vault Interface — provider-neutral public metadata contract;
    - Starter — composition, adoption, profile, and upgrade layer.
-5. For a downstream project, read `project-stack.yaml`, its selected profile, the lock file, and—when present—`project-provisioning.yaml`.
-6. For a **new project**, read the canonical Project Provisioning Contract. If the request relies on platform standing authorization, read the private platform-authorization state only after that control-plane access is authorized.
+5. For a downstream project, read `project-stack.yaml`, its selected profile, the lock file, `project-provisioning.yaml`, and—when present—`project-bootstrap-state.yaml`; then read AHICP Current Focus / Task Plan for the current resume point.
+6. For a **new project**, read the canonical Project Provisioning Contract and Project Memory / Write-Back Contract. If the request relies on platform standing authorization, read the private platform-authorization state only after that control-plane access is authorized.
 7. For every active AHICP or PPF component, fresh-read the pinned upstream manifest or template manifest before configuration or upgrade.
 8. Retrieve other private project state only when the human has explicitly authorized that access.
-9. Before any external-state write, distinguish proposal, authorization, execution, verification, and durable write-back.
+9. Before any external-state write, distinguish proposal, authorization, execution, verification, and durable write-back. Before a human provider-UI handoff, persist the pending step; after the human returns, verify provider actual state before writing completion back.
 10. Before any Cloudflare action, follow the shared Continuous Web and Cloudflare operational guide and the PPF provider-specific contract for the selected deployment profile.
 
 Public-link traversal is a retrieval instruction. It is never authorization to access a private repository, private vault, provider account, credential, unpublished source, or deployment control plane.
@@ -83,7 +83,8 @@ Before material configuration or upgrade work, the agent should be able to state
 - source privacy and Web visibility;
 - publication authorization state;
 - Cloudflare deployment profile and access policy;
-- project provisioning profile, bootstrap mode, and `project-provisioning.yaml` state when applicable;
+- project provisioning profile, bootstrap mode, `project-provisioning.yaml`, and `project-bootstrap-state.yaml` actual operational state when applicable;
+- the current AHICP Working Memory blocker / next action, without treating chat memory as authoritative;
 - for the default Native profile: repository owner/visibility, Workers Builds repository connection, actual Access mode, first restricted deployment verification, and second-push no-reauthorization verification;
 - only for the optional advanced External-CI profile: whether platform standing authorization covers the requested GitHub owner and Cloudflare scope, and whether the trusted Secret Broker plus isolated token-minting boundary are verified;
 - which actions are already authorized and which remain human-reserved;
