@@ -15,6 +15,8 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 PLATFORM_SCHEMA = ROOT / "schema/platform-authorization.schema.json"
 REQUEST_SCHEMA = ROOT / "schema/project-provisioning-request.schema.json"
+BOOTSTRAP_SCHEMA = ROOT / "schema/project-bootstrap-state.schema.json"
+BOOTSTRAP_TEMPLATE = ROOT / "templates/project-bootstrap-state.yaml"
 
 
 def load_yaml(path: Path) -> dict[str, Any]:
@@ -122,6 +124,114 @@ def platform_errors(platform: dict[str, Any], request: dict[str, Any]) -> list[s
             errors.append("RESTRICTED_DEPLOYMENT_NOT_COVERED_BY_PLATFORM_AUTHORIZATION")
     return list(dict.fromkeys(errors))
 
+def build_bootstrap_state_seed(request: dict[str, Any]) -> dict[str, Any]:
+    infra = request["infrastructure"]
+    profile = infra["profile"]
+    native = profile == "workers-builds-native"
+    step_status = "pending" if native else "not-required"
+    guide = "ppf:docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md"
+    acceptance = "starter:docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md"
+    return {
+        "schema": "inquiry-publishing-stack/project-bootstrap-state/v1",
+        "project": {"id": request["project"]["id"]},
+        "profile": profile,
+        "status": "not-started",
+        "last_updated": None,
+        "source": {
+            "owner": infra["github"]["owner"],
+            "owner_type": infra["github"]["owner_type"],
+            "repository": infra["github"]["repository"],
+            "visibility": "private",
+            "default_branch": "main",
+            "repository_state": "not-created",
+        },
+        "cloudflare": {
+            "worker": infra["cloudflare"]["worker"],
+            "worker_name_alignment": "unverified",
+            "git_connection": "not-configured",
+            "zero_trust": "not-checked",
+            "access_mode": infra["cloudflare"]["access_mode"],
+            "access_state": "not-configured",
+            "first_deployment": "not-run",
+            "second_push_auto_deploy": "not-run",
+            "public_release": "not-authorized",
+        },
+        "human_steps": {
+            "create_or_confirm_private_repository": {
+                "status": step_status,
+                "guide_ref": guide + "#1",
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "reuse_or_connect_git_account": {
+                "status": step_status,
+                "guide_ref": guide + "#2",
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "authorize_repository_access": {
+                "status": step_status,
+                "guide_ref": guide + "#2",
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "connect_workers_builds": {
+                "status": step_status,
+                "guide_ref": guide + "#2",
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "verify_worker_name": {
+                "status": step_status,
+                "guide_ref": guide + "#2",
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "enable_zero_trust_if_needed": {
+                "status": step_status,
+                "guide_ref": guide + "#3",
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "protect_worker_with_access": {
+                "status": step_status,
+                "guide_ref": guide + "#3",
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "verify_first_restricted_deployment": {
+                "status": step_status,
+                "guide_ref": acceptance,
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+            "verify_second_push_auto_deploy": {
+                "status": step_status,
+                "guide_ref": acceptance,
+                "completion_evidence": None,
+                "completed_at": None,
+            },
+        },
+        "evidence": {
+            "github_repository_url": None,
+            "cloudflare_worker_url": None,
+            "repository_connection_ref": None,
+            "access_application_ref": None,
+            "first_deployment_revision": None,
+            "second_deployment_revision": None,
+            "rollback_ref": None,
+        },
+        "memory_writeback": {
+            "required": True,
+            "current_focus_ref": "docs/working-memory/current-focus.zh-CN.md",
+            "task_plan_ref": "docs/working-memory/task-plan.zh-CN.md",
+            "work_log_ref": "docs/working-memory/work-log.zh-CN.md",
+            "last_sync": "pending",
+        },
+        "secret_material": "forbidden",
+    }
+
+
 def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
     errors = platform_errors(platform, request)
     profile = request["infrastructure"]["profile"]
@@ -169,6 +279,20 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
         "blockers": errors,
         "authorization_source": authorization["restricted_deployment_source"],
         "project_bootstrap": authorization["project_bootstrap"],
+        "durable_project_memory": {
+            "bootstrap_state_ref": "project-bootstrap-state.yaml",
+            "bootstrap_state_schema": "schema/project-bootstrap-state.schema.json",
+            "memory_writeback_contract": "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md",
+            "working_memory": {
+                "current_focus": "docs/working-memory/current-focus.zh-CN.md",
+                "task_plan": "docs/working-memory/task-plan.zh-CN.md",
+                "work_log": "docs/working-memory/work-log.zh-CN.md",
+            },
+            "write_before_human_handoff": True,
+            "verify_then_write_after_human_action": True,
+            "chat_memory_is_authoritative": False,
+            "bootstrap_state_seed": build_bootstrap_state_seed(request),
+        },
         "component_adoption": {
             "governance": "full-ahicp",
             "publishing": "full-ppf",
@@ -289,8 +413,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         platform = load_yaml(args.platform)
         request = load_yaml(args.request)
+        bootstrap_template = load_yaml(BOOTSTRAP_TEMPLATE)
         validate(platform, PLATFORM_SCHEMA, "platform")
         validate(request, REQUEST_SCHEMA, "request")
+        validate(bootstrap_template, BOOTSTRAP_SCHEMA, "bootstrap-template")
         if args.command == "validate":
             print("Project provisioning schemas and templates are valid.")
             return 0
