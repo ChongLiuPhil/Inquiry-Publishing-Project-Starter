@@ -244,7 +244,21 @@ agent-provisioned-external-ci
 
 其 Cloudflare granular-token issuer 仍需 live Provider acceptance。高级 Profile 的未完成项不得被混入默认 Native 路线的完成标准。
 
-## 13. 完成状态
+## 13. 持久项目记忆与 Write-Back
+
+本契约涉及的配置必须进入项目仓库，不能只停留在 Agent 对话中。
+
+每个完整栈项目都携带：
+
+- `project-provisioning.yaml`：记录预期配置；
+- `project-bootstrap-state.yaml`：记录实际 GitHub / Cloudflare bootstrap 状态与非秘密 evidence；
+- AHICP Current Focus / Task Plan / Work Log：记录当前 blocker、下一步动作与里程碑历史。
+
+Agent 在把人类交给 Provider UI 操作以前，必须先把 pending human step 写入 `project-bootstrap-state.yaml` 与 AHICP Task Plan。人类完成后，Agent 先验证 Provider actual state，再把 verified result 写回。
+
+权威持久化规则见 `docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md`。仓库状态高于聊天记忆。
+
+## 14. 完成状态
 
 默认项目 bootstrap 完成时，应能真实记录：
 
