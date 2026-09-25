@@ -7,9 +7,10 @@ Before configuring, adopting, upgrading, publishing, or operating a project, rea
 3. docs/AGENT_RETRIEVAL_CONTRACT.md
 4. docs/AI_ADOPTION_WORKFLOW.md
 5. docs/PROJECT_PROVISIONING_CONTRACT.md for every new project or when project infrastructure provisioning is in scope
-6. docs/CONTINUOUS_WEB_CLOUDFLARE.md whenever Continuous Web or Cloudflare is in scope
-7. docs/CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md when a human/account-owner action is required
-8. docs/CLOUDFLARE_WORK_AGENT_HANDOFF.md when a browser-capable agent is executing provider UI work
+6. docs/PROJECT_MEMORY_WRITEBACK.md whenever project setup, human handoff, or provider-state persistence is in scope
+7. docs/CONTINUOUS_WEB_CLOUDFLARE.md whenever Continuous Web or Cloudflare is in scope
+8. docs/CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.md when a human/account-owner action is required
+9. docs/CLOUDFLARE_WORK_AGENT_HANDOFF.md when a browser-capable agent is executing provider UI work
 
 The default new-project baseline is **full AHICP + full PPF + Vault Interface + project-owned content**. Use the full-research-publication profile unless the human explicitly selects a reduced profile. For ordinary new projects, prefer `workers-builds-native` under the personal `ChongLiuPhil` account and allow one short human-assisted GitHub → Cloudflare bootstrap. Do not silently omit a component. After the project connection is verified, ordinary pushes should not trigger repeated authorization.
 
@@ -17,6 +18,6 @@ Original unpublished content, credentials, private working memory, and private c
 
 From any public component entrypoint, reconstruct the four-component ecosystem before cross-component configuration. Public links authorize retrieval of public information only; they do not authorize private-state access.
 
-Before any Cloudflare operation, explain the exact target, affected layer, data flow, credential scope, human approval boundary, verification checks, and rollback. The default Workers Builds profile uses provider-managed credentials; never request provider tokens, passwords, private keys, recovery codes, or other secrets in chat. When human UI interaction is required, provide numbered operator-level steps rather than a generic instruction. The Trusted Secret Broker is required only when the optional advanced external-CI profile is explicitly selected.
+Before any Cloudflare operation, explain the exact target, affected layer, data flow, credential scope, human approval boundary, verification checks, and rollback. The default Workers Builds profile uses provider-managed credentials; never request provider tokens, passwords, private keys, recovery codes, or other secrets in chat. Before asking the human to act in a provider UI, write the pending step to `project-bootstrap-state.yaml` and AHICP Working Memory; after the human returns, verify provider state before writing completion back. When human UI interaction is required, provide numbered operator-level steps rather than a generic instruction. The Trusted Secret Broker is required only when the optional advanced external-CI profile is explicitly selected.
 
-Preserve proposal, authorization, execution, verification, and durable write-back as distinct stages.
+Preserve proposal, authorization, execution, verification, and durable write-back as distinct stages. Repository-backed project state is authoritative; chat memory is never the sole persistence layer.
