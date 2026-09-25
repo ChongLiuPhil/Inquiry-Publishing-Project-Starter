@@ -16,7 +16,7 @@
 整个体系有意区分两个入口角色：
 
 - **先从 AHICP 了解体系：** [AHICP 公共主页](https://inquirystack.philohub.workers.dev/) 提供完整使用指南，解释这套体系解决什么问题以及怎样开始。
-- **让 AI 从 Starter 开始配置：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files、Agent Retrieval Contract 与 Project Provisioning Contract 执行项目组合、采用、低人工 Provisioning、升级、部署和状态恢复。
+- **让 AI 从 Starter 开始配置：** 使用本仓库的 `ecosystem.yaml`、profiles、stack files、Agent Retrieval Contract、Project Provisioning Contract 与 Project Memory / Write-Back Contract 执行项目组合、采用、引导式 Provisioning、升级、部署、状态恢复和 Provider 状态持久交接。
 
 AHICP 负责解释方法和使用方式；Starter 保留精确的机器配置契约，两者互相链接但不互相替代。
 
@@ -73,10 +73,10 @@ AI agent 从任意组件主页或仓库进入时，必须：
 2. 读取 canonical Starter ecosystem 与 AGENT_RETRIEVAL_CONTRACT；
 3. 恢复四个组件的责任和公共入口；
 4. 面对下游项目时读取所选 Starter profile、`project-stack.yaml`、lock，以及存在时的 `project-provisioning.yaml`；
-5. 面对新项目时读取 Project Provisioning Contract 与固定版本 PPF 的每项目 setup contract；只有显式选择高级 Profile 时才读取私人 platform-authorization state；
+5. 面对新项目时读取 Project Provisioning Contract、Project Memory / Write-Back Contract 与固定版本 PPF 的每项目 setup contract；存在时读取 `project-bootstrap-state.yaml` 与 AHICP Working Memory；只有显式选择高级 Profile 时才读取私人 platform-authorization state；
 6. fresh-read 每个 active 上游组件的固定 revision manifest；
 7. 其他私人项目状态仍只在相应访问已获授权后读取；
-8. 始终区分 proposal、authorization、execution、verification 与 durable write-back。
+8. 始终区分 proposal、authorization、execution、verification 与 durable write-back；仓库持久项目状态高于聊天记忆，人类 Provider handoff 前后都必须写回。
 
 沿公共链接调取是一套阅读协议，不构成私人仓库或部署系统访问权限。
 
@@ -90,7 +90,7 @@ AI agent 从任意组件主页或仓库进入时，必须：
 
 ## Continuous Web 与 Cloudflare
 
-新项目编排契约见 [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)。详细 Cloudflare 操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。默认执行路径是文档化的每项目 Workers Builds bootstrap；Browser Agent 与高级自动化 handoff 只作为可选实现辅助。
+新项目编排契约见 [PROJECT_PROVISIONING_CONTRACT.zh-CN.md](PROJECT_PROVISIONING_CONTRACT.zh-CN.md)，项目 / Provider 持久记忆规则见 [PROJECT_MEMORY_WRITEBACK.zh-CN.md](PROJECT_MEMORY_WRITEBACK.zh-CN.md)。详细 Cloudflare 操作契约见 [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)。默认执行路径是文档化的每项目 Workers Builds bootstrap；Browser Agent 与高级自动化 handoff 只作为可选实现辅助。
 
 Starter 只记录 Provisioning 意图与授权边界；真正可执行的 GitHub/Cloudflare Provider 逻辑由 PPF 保持权威。Provider credential 明文绝不能进入语言模型；默认 Workers Builds 路线让 deployment credential 保持 Provider-managed。
 
