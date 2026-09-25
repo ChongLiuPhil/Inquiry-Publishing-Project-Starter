@@ -41,6 +41,16 @@ The public `platform-authorization.yaml` template may remain `unconfigured` for 
 22. Verify Access remained enforced after the second deployment.
 23. Record a rollback/restore point and non-secret provider state.
 
+## Durable write-back during acceptance
+
+Acceptance is also a persistence test.
+
+Before each human-required UI step, the Agent must first mark the matching `project-bootstrap-state.yaml` human step as `waiting-human`, record the operator-guide reference, and mirror the blocker/resume condition in AHICP Task Plan / Current Focus.
+
+After each human action, the Agent verifies the resulting provider state and only then marks the step `completed` or `not-required`. Verified non-secret evidence is written to the bootstrap-state file. Material milestones are appended to the AHICP Work Log.
+
+The project fails acceptance if the provider setup works but the repository memory still says the step is pending, or if completion exists only in chat.
+
 ## Pass criteria
 
 The project passes only when all of these are true:
