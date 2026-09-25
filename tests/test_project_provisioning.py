@@ -85,11 +85,15 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertFalse(seed["deployment"]["secretBroker"])
         self.assertFalse(seed["deployment"]["previewDeployments"])
 
-        self.assertIn("connect-repository-to-cloudflare-workers-builds", plan["human_bootstrap_steps"])
-        self.assertIn(
+        for step in (
+            "reuse-existing-cloudflare-git-account-connection-if-available",
+            "authorize-cloudflare-github-app-repository-access-if-needed",
+            "connect-repository-to-cloudflare-workers-builds",
+            "ensure-worker-application-name-matches-wrangler-jsonc-name",
+            "enable-cloudflare-zero-trust-once-if-needed",
             "verify-second-push-auto-deploys-without-reauthorization",
-            plan["human_bootstrap_steps"],
-        )
+        ):
+            self.assertIn(step, plan["human_bootstrap_steps"])
         self.assertTrue(
             any("second source push" in item for item in plan["completion_evidence"])
         )
