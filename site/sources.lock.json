@@ -4,7 +4,7 @@
   "components": {
     "ahicp": {
       "repository": "ChongLiuPhil/AI-Assisted-Human-Inquiry-and-Creation-Protocol",
-      "revision": "de773a5a9e2f99e918f4375690c3f32dd05010db",
+      "revision": "558fb15d309de1c3c34d27542503b1f61ada1a54",
       "mount": "/ahicp/",
       "files": [
         "docs/index.html",
@@ -26,7 +26,7 @@
     },
     "vault_interface": {
       "repository": "ChongLiuPhil/Vault-interface",
-      "revision": "2b63f248816ca42b603b552b46f313e9db371ead",
+      "revision": "7bcb80075bbbcd45525073018501b2d68e37d514",
       "mount": "/vault-interface/",
       "files": [
         "docs/index.html",
