@@ -17,6 +17,7 @@ PLATFORM_SCHEMA = ROOT / "schema/platform-authorization.schema.json"
 REQUEST_SCHEMA = ROOT / "schema/project-provisioning-request.schema.json"
 BOOTSTRAP_SCHEMA = ROOT / "schema/project-bootstrap-state.schema.json"
 BOOTSTRAP_TEMPLATE = ROOT / "templates/project-bootstrap-state.yaml"
+ROOT_BOOTSTRAP_STATE = ROOT / "project-bootstrap-state.yaml"
 
 
 def load_yaml(path: Path) -> dict[str, Any]:
@@ -414,9 +415,11 @@ def main(argv: list[str] | None = None) -> int:
         platform = load_yaml(args.platform)
         request = load_yaml(args.request)
         bootstrap_template = load_yaml(BOOTSTRAP_TEMPLATE)
+        root_bootstrap_state = load_yaml(ROOT_BOOTSTRAP_STATE)
         validate(platform, PLATFORM_SCHEMA, "platform")
         validate(request, REQUEST_SCHEMA, "request")
         validate(bootstrap_template, BOOTSTRAP_SCHEMA, "bootstrap-template")
+        validate(root_bootstrap_state, BOOTSTRAP_SCHEMA, "project-bootstrap-state")
         if args.command == "validate":
             print("Project provisioning schemas and templates are valid.")
             return 0
