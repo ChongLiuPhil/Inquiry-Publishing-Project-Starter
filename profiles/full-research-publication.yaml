@@ -6,6 +6,7 @@ publishing: true
 recommended_ahicp_profile: research-standard
 recommended_ppf_profile: quarto-book-cloudflare
 recommended_infrastructure_profile: workers-builds-native
+recommended_ci_cost_profile: private-project-quota-saver
 privacy_default: private-source
 web_visibility_default: restricted
 deviations_require_explicit_human_selection: true
