@@ -257,6 +257,15 @@ def main() -> int:
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
         raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
 
+    acceptance_en = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.md").read_text(encoding="utf-8")
+    acceptance_zh = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md").read_text(encoding="utf-8")
+    for required in ("wrangler.jsonc.name", "Zero Trust", "Git-account connection"):
+        if required not in acceptance_en:
+            raise SystemExit(f"English provisioning acceptance is missing current Cloudflare prerequisite: {required}")
+    for required in ("wrangler.jsonc.name", "Zero Trust", "Git account"):
+        if required not in acceptance_zh:
+            raise SystemExit(f"Chinese provisioning acceptance is missing current Cloudflare prerequisite: {required}")
+
     retrieval_en = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.md").read_text(encoding="utf-8")
     retrieval_zh = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
     for required in (

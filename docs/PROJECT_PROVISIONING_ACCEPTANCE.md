@@ -23,21 +23,23 @@ The public `platform-authorization.yaml` template may remain `unconfigured` for 
 4. Confirm the profile is `workers-builds-native`.
 5. In Cloudflare Workers & Pages, import/connect the intended GitHub repository.
 6. If GitHub asks, authorize the Cloudflare Git integration for that repository.
-7. Configure production branch `main`, root `/`, the pinned PPF build command, and deploy command.
+7. Configure the Cloudflare Worker/application name to exactly match `wrangler.jsonc.name`, then configure production branch `main`, root `/`, the pinned PPF build command, and deploy command.
 8. Keep non-production/preview builds disabled.
 9. Save/deploy and record non-secret Worker/repository connection identifiers.
-10. Protect the Worker with Cloudflare Access using **All traffic**, unless verified account-wide Access already protects it.
-11. Verify the GitHub repository is still private.
-12. Verify the first build/deployment succeeds.
-13. Verify the deployed revision matches the intended Git revision.
-14. Verify an anonymous production request is challenged or denied.
-15. Verify an authenticated approved reader can access the publication.
-16. Verify direct asset URLs do not bypass Access.
-17. Make one harmless source change and push it to `main`.
-18. Verify Workers Builds starts automatically and deploys the new revision.
-19. Confirm step 18 required no renewed GitHub repository authorization and no renewed Cloudflare connection.
-20. Verify Access remained enforced after the second deployment.
-21. Record a rollback/restore point and non-secret provider state.
+10. If Cloudflare Zero Trust is not yet enabled on this account, complete the one-time Zero Trust setup; later projects reuse it.
+11. Protect the Worker with Cloudflare Access using **All traffic**, unless verified account-wide Access already protects it. Reuse an already-approved authentication policy when available.
+12. Verify the GitHub repository is still private.
+13. Verify the Cloudflare Worker/application name matches `wrangler.jsonc.name`.
+14. Verify the first build/deployment succeeds.
+15. Verify the deployed revision matches the intended Git revision.
+16. Verify an anonymous production request is challenged or denied.
+17. Verify an authenticated approved reader can access the publication.
+18. Verify direct asset URLs do not bypass Access.
+19. Make one harmless source change and push it to `main`.
+20. Verify Workers Builds starts automatically and deploys the new revision.
+21. Confirm step 20 required no renewed Git-account connection, Cloudflare GitHub App authorization, or repository connection.
+22. Verify Access remained enforced after the second deployment.
+23. Record a rollback/restore point and non-secret provider state.
 
 ## Pass criteria
 
@@ -46,7 +48,9 @@ The project passes only when all of these are true:
 - repository owner is `ChongLiuPhil`;
 - repository visibility is private;
 - Workers Builds is connected to the intended repository;
+- the Cloudflare Worker/application name matches `wrangler.jsonc.name`;
 - production branch is `main`;
+- Zero Trust is enabled when Worker-level Access is used;
 - the first restricted deployment is verified;
 - Worker-scoped Access or explicitly recorded verified account-wide Access is active;
 - anonymous access is denied/challenged;
