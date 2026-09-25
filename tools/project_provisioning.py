@@ -127,6 +127,8 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
     profile = request["infrastructure"]["profile"]
     ci_cost_profile = request["infrastructure"]["ci_cost_profile"]
     guided_native = profile == "workers-builds-native"
+    quota_saver = ci_cost_profile == "private-project-quota-saver"
+    full_validation = ci_cost_profile == "full-validation"
     project = request["project"]
     infra = request["infrastructure"]
     authorization = request["authorization"]
@@ -134,21 +136,65 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
     ready_status = "READY_FOR_PROJECT_BOOTSTRAP" if guided_native else "READY_FOR_PROVISIONER"
     access_mode = infra["cloudflare"]["access_mode"]
 
-    completion_evidence = (
-        [
-            "private GitHub repository exists at intended personal-account identity",
-            "Cloudflare Git repository connection points to the intended repository",
-            "production branch is main and the production trigger is active",
-            "target Worker identity exists",
-            "Worker-scoped Access or an explicitly selected verified account-wide Access policy protects the project",
-            "first restricted deployment serves the intended source revision",
-            "anonymous production access is challenged or denied",
-            "direct assets cannot bypass access control",
-            "a second source push deploys automatically without renewed GitHub or Cloudflare authorization",
+    if quota_saver:
+        ci_execution_policy = {
+            "class": "ordinary-private-quota-saver",
+            "automatic_github_actions": {
+                "content_only_changes": "none",
+                "configuration_pull_request": {"target_branch": "main", "class": "light-contract-check", "timeout_minutes": 5},
+                "main_push": "none",
+            },
+            "heavy_validation": "manual",
+            "artifact_policy": {"automatic_success_upload": False, "manual_publication_retention_days": 1, "diagnostic_retention_days": 1},
+            "retry": "failed-job-or-workflow-only",
+            "production_web_build_provider": "cloudflare-workers-builds",
+        }
+    elif full_validation:
+        ci_execution_policy = {
+            "class": "full-validation",
+            "automatic_github_actions": {"mode": "full-ci"},
+            "heavy_validation": "framework-or-project-defined",
+            "artifact_policy": {"mode": "framework-or-project-defined"},
+            "retry": "failed-job-or-workflow-only",
+            "production_web_build_provider": "cloudflare-workers-builds",
+        }
+    else:
+        ci_execution_policy = {
+            "class": "hardened-external-ci",
+            "automatic_github_actions": {"mode": "hardened-external-ci"},
+            "heavy_validation": "profile-defined",
+            "artifact_policy": {"mode": "profile-defined"},
+            "retry": "failed-job-or-workflow-only",
+            "production_web_build_provider": "github-actions-cloudflare-workers",
+            "trusted_secret_broker": "required",
+        }
+
+    native_completion_evidence = [
+        "private GitHub repository exists at intended personal-account identity",
+        "Cloudflare Git repository connection points to the intended repository",
+        "production branch is main and the production trigger is active",
+        "target Worker identity exists",
+        "Worker-scoped Access or an explicitly selected verified account-wide Access policy protects the project",
+        "first restricted deployment serves the intended source revision",
+        "anonymous production access is challenged or denied",
+        "direct assets cannot bypass access control",
+        "a second source push deploys automatically without renewed GitHub or Cloudflare authorization",
+        "non-secret provider state and rollback point are durably recorded",
+    ]
+    if quota_saver:
+        native_completion_evidence.extend([
             "content-only changes do not trigger automatic GitHub Actions",
+            "configuration pull requests targeting main use only the lightweight contract gate",
             "main pushes do not duplicate the production Web build in GitHub Actions",
-            "non-secret provider state and rollback point are durably recorded",
-        ]
+            "automatic success artifacts are not uploaded and manual publication artifacts retain for one day",
+        ])
+    elif full_validation:
+        native_completion_evidence.append(
+            "the selected full-validation GitHub Actions suite completes according to project or framework policy"
+        )
+
+    completion_evidence = (
+        native_completion_evidence
         if guided_native
         else [
             "private GitHub repository exists at intended identity",
@@ -170,6 +216,7 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
         "stack_profile": request["stack_profile"],
         "infrastructure_profile": profile,
         "ci_cost_profile": ci_cost_profile,
+        "ci_execution_policy": ci_execution_policy,
         "blockers": errors,
         "authorization_source": authorization["restricted_deployment_source"],
         "project_bootstrap": authorization["project_bootstrap"],

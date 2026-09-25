@@ -81,9 +81,16 @@ class PublicSiteTests(unittest.TestCase):
                             "ci_cost_policy": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/CI_COST_POLICY.md",
                             "private_project_github_actions": {
                                 "content_only_changes": "none",
-                                "configuration_pull_request": "light-contract-check",
+                                "configuration_pull_request": {"target_branch": "main", "class": "light-contract-check", "timeout_minutes": 5},
                                 "main_push": "none",
                                 "heavy_validation": "manual",
+                                "artifact_policy": {"automatic_success_upload": False, "manual_publication_retention_days": 1, "diagnostic_retention_days": 1},
+                                "retry": "failed-job-or-workflow-only",
+                            },
+                            "ci_profile_tiers": {
+                                "ordinary_private": {"mode": "quota-saver-native", "infrastructure_profile": "workers-builds-native", "ci_cost_profile": "private-project-quota-saver"},
+                                "hardened_external_ci": {"mode": "hardened-external-ci", "infrastructure_profile": "agent-provisioned-external-ci", "ci_cost_profile": "external-ci-required"},
+                                "public_framework": {"mode": "full-ci", "ci_cost_profile": "full-validation"},
                             },
                         },
                     }).encode()
@@ -101,6 +108,9 @@ class PublicSiteTests(unittest.TestCase):
             self.assertEqual(descriptor["project_provisioning"]["preferred_profile"], "workers-builds-native")
             self.assertEqual(descriptor["project_provisioning"]["default_ci_cost_profile"], "private-project-quota-saver")
             self.assertEqual(descriptor["project_provisioning"]["private_project_github_actions"]["content_only_changes"], "none")
+            self.assertEqual(descriptor["project_provisioning"]["private_project_github_actions"]["configuration_pull_request"]["target_branch"], "main")
+            self.assertEqual(descriptor["project_provisioning"]["private_project_github_actions"]["artifact_policy"]["manual_publication_retention_days"], 1)
+            self.assertEqual(descriptor["project_provisioning"]["ci_profile_tiers"]["public_framework"]["mode"], "full-ci")
             self.assertTrue((out / "PROJECT_PROVISIONING_CONTRACT.md").is_file())
             self.assertTrue((out / "PROJECT_PROVISIONING_ACCEPTANCE.md").is_file())
             start_zh = (out / "start/index.html").read_text(encoding="utf-8")

@@ -94,9 +94,35 @@
     "ci_cost_policy": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/CI_COST_POLICY.md",
     "private_project_github_actions": {
       "content_only_changes": "none",
-      "configuration_pull_request": "light-contract-check",
+      "configuration_pull_request": {
+        "target_branch": "main",
+        "class": "light-contract-check",
+        "timeout_minutes": 5
+      },
       "main_push": "none",
-      "heavy_validation": "manual"
+      "heavy_validation": "manual",
+      "artifact_policy": {
+        "automatic_success_upload": false,
+        "manual_publication_retention_days": 1,
+        "diagnostic_retention_days": 1
+      },
+      "retry": "failed-job-or-workflow-only"
+    },
+    "ci_profile_tiers": {
+      "ordinary_private": {
+        "mode": "quota-saver-native",
+        "infrastructure_profile": "workers-builds-native",
+        "ci_cost_profile": "private-project-quota-saver"
+      },
+      "hardened_external_ci": {
+        "mode": "hardened-external-ci",
+        "infrastructure_profile": "agent-provisioned-external-ci",
+        "ci_cost_profile": "external-ci-required"
+      },
+      "public_framework": {
+        "mode": "full-ci",
+        "ci_cost_profile": "full-validation"
+      }
     }
   }
 }

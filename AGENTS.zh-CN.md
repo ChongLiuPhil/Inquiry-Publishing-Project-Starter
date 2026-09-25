@@ -11,7 +11,7 @@
 7. 需要人类/账户所有者动作时读取 docs/CLOUDFLARE_MINIMAL_HUMAN_HANDOFF.zh-CN.md
 8. 由 Browser Agent / Work 执行 provider UI 时读取 docs/CLOUDFLARE_WORK_AGENT_HANDOFF.zh-CN.md
 
-新项目默认基线是 **完整 AHICP + 完整 PPF + Vault Interface + 项目自身内容**。默认使用 full-research-publication；只有在人类明确选择时才使用精简 profile。普通新项目基础设施默认采用个人 `ChongLiuPhil` 账号下的 `workers-builds-native` + `private-project-quota-saver`，允许每项目一次短人工 GitHub → Cloudflare bootstrap。不得因为项目看起来简单而静默省略组件；项目连接验证完成后，普通 push 不应反复要求授权。Private downstream 的 content-only 改动不启动 GitHub Actions；配置 PR 只跑轻量 contract gate；main 的 Web build/deploy 由 Cloudflare Workers Builds 负责；重型 GitHub workflow 手动运行。
+新项目默认基线是 **完整 AHICP + 完整 PPF + Vault Interface + 项目自身内容**。默认使用 full-research-publication；只有在人类明确选择时才使用精简 profile。普通新项目基础设施默认采用个人 `ChongLiuPhil` 账号下的 `workers-builds-native` + `private-project-quota-saver`，允许每项目一次短人工 GitHub → Cloudflare bootstrap。不得因为项目看起来简单而静默省略组件；项目连接验证完成后，普通 push 不应反复要求授权。Private downstream 的 content-only 改动不启动 GitHub Actions；只有目标分支为 `main` 的配置 PR 自动跑轻量 contract gate；main 的 Web build/deploy 由 Cloudflare Workers Builds 负责；重型 GitHub workflow 手动运行。自动成功 run 不上传 artifact，手动 publication artifact 默认保留 1 天。普通 private `private-project-quota-saver`、高安全 `external-ci-required`、public framework `full-validation` 必须保持为不同 CI / 成本层。
 
 原创未发布内容、凭据、私人工作记忆和私人控制平面状态必须留在公共仓库之外。原创项目的源仓库默认 private。Continuous Web 仍可启用，但未发布或过渡阶段 Web 默认 restricted，并使用 access-policy reference，而不是把秘密写入 Git。
 
