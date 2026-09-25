@@ -76,7 +76,7 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
       <h2>新项目的默认配置</h2>
       <p>新项目默认采用 <strong>完整 AHICP + 完整 PPF + Vault Interface</strong>。只有使用者明确选择时，AI 才使用精简配置。项目“看起来简单”不是自动删掉某个组件的理由。</p>
       <p>原创或未发布源内容默认保持 private（私有）；未正式公开的网页默认 restricted + authenticated（受限并需要认证）。是否公开网页和是否公开源仓库是两个不同决定。</p>
-      <p>普通新项目基础设施首选 <code>workers-builds-native</code>：在个人 <code>ChongLiuPhil</code> GitHub 账号下保持 private repository，每项目完成一次 Cloudflare Git connection，并默认使用 Worker-scoped Access。Preview 在独立保护验收前保持 disabled。高级 <code>agent-provisioned-external-ci</code> 继续保留为可选方案。</p>
+      <p>普通新项目基础设施首选 <code>workers-builds-native</code> + <code>private-project-quota-saver</code>：在个人 <code>ChongLiuPhil</code> GitHub 账号下保持 private repository，每项目完成一次 Cloudflare Git connection，并默认使用 Worker-scoped Access。Content-only 改动不启动 GitHub Actions，配置 PR 只运行一个轻量 contract check，main 的自动 Web build 只由 Cloudflare Workers Builds 执行，重型 GitHub workflow 手动运行。Preview 在独立保护验收前保持 disabled。高级 <code>agent-provisioned-external-ci</code> 继续保留为可选方案。</p>
     </section>
 
     <section class="block">
@@ -88,9 +88,9 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
         <div class="arrow">↓</div>
         <div class="flow-row"><strong>3 · 私人网页保护</strong><div>默认给目标 Worker 启用 Worker-scoped Access，并保持 Preview disabled；如果已有 verified account-wide Access，也可复用。</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>4 · 第一次 + 第二次 Push 验证</strong><div>第一次确认 restricted deployment 与匿名拒绝；然后做第二次 push，确认 Workers Builds 自动部署且无需重新授权。</div></div>
+        <div class="flow-row"><strong>4 · 第一次 + 第二次 Push 验证</strong><div>第一次确认 restricted deployment 与匿名拒绝；然后做第二次 content-only push，确认 Workers Builds 自动部署、无需重新授权，并且没有启动重复的 GitHub Actions production Web build。</div></div>
       </div>
-      <p class="small">默认目标不是账户级零人工，而是：每项目一次配置，随后普通 source push 自动部署。Public release、repository 公开、reader 扩大、domain/DNS、Provider 扩权与付费变化继续由人决定。</p>
+      <p class="small">默认目标不是账户级零人工，而是：每项目一次配置，随后普通 source push 自动部署，同时用 <code>private-project-quota-saver</code> 避免浪费 private Actions 分钟。Public release、repository 公开、reader 扩大、domain/DNS、Provider 扩权，以及开启付费 Actions / billing 变化继续由人决定。</p>
     </section>
 
     <section class="block">
@@ -169,7 +169,7 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
       <h2>Default for new projects</h2>
       <p>New projects default to <strong>full AHICP + full PPF + Vault Interface</strong>. An AI uses a reduced profile only after explicit user selection; a project that looks simple is not permission to silently drop a component.</p>
       <p>Original or unpublished source remains private by default. Unreleased web output remains restricted and authenticated by default. Public website access and public source-code access are separate decisions.</p>
-      <p>The preferred ordinary new-project infrastructure profile is <code>workers-builds-native</code>: keep the repository private under the personal <code>ChongLiuPhil</code> account, complete one project-level Cloudflare Git connection, and use Worker-scoped Access by default. Previews stay disabled until separately accepted as protected. <code>agent-provisioned-external-ci</code> remains an optional advanced profile.</p>
+      <p>The preferred ordinary new-project infrastructure profile is <code>workers-builds-native</code> + <code>private-project-quota-saver</code>: keep the repository private under the personal <code>ChongLiuPhil</code> account, complete one project-level Cloudflare Git connection, and use Worker-scoped Access by default. Content-only changes do not start GitHub Actions, configuration PRs use one lightweight contract check, Cloudflare Workers Builds owns the automatic main-branch Web build, and heavy GitHub workflows are manual. Previews stay disabled until separately accepted as protected. <code>agent-provisioned-external-ci</code> remains an optional advanced profile.</p>
     </section>
 
     <section class="block">
@@ -181,9 +181,9 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
         <div class="arrow">↓</div>
         <div class="flow-row"><strong>3 · Protect the private Web</strong><div>Use Worker-scoped Access by default and keep previews disabled; reuse verified account-wide Access only when it already exists.</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>4 · Verify first and second pushes</strong><div>Verify the first restricted deployment and anonymous denial, then make a second push and confirm automatic deployment without renewed authorization.</div></div>
+        <div class="flow-row"><strong>4 · Verify first and second pushes</strong><div>Verify the first restricted deployment and anonymous denial, then make a second content-only push and confirm automatic Cloudflare deployment without renewed authorization or a duplicate GitHub Actions production Web build.</div></div>
       </div>
-      <p class="small">The default goal is not account-wide zero-touch provisioning. It is one short project setup followed by automatic deployment for ordinary source pushes. Public release, repository publication, reader expansion, domain/DNS changes, provider-scope expansion, and paid-plan changes remain human decisions.</p>
+      <p class="small">The default goal is not account-wide zero-touch provisioning. It is one short project setup followed by automatic deployment for ordinary source pushes, while <code>private-project-quota-saver</code> avoids wasting private Actions minutes. Public release, repository publication, reader expansion, domain/DNS changes, provider-scope expansion, and enabling paid Actions/billing remain human decisions.</p>
     </section>
 
     <section class="block">
