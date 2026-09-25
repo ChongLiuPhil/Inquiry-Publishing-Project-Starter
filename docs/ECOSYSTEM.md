@@ -16,7 +16,7 @@ These components remain logically independent. Cross-linking them creates discov
 The ecosystem intentionally separates two entry roles:
 
 - **Understand the stack through AHICP:** the [AHICP public homepage](https://inquirystack.philohub.workers.dev/) explains what the system is for and how to begin.
-- **Configure through Starter:** an AI uses this repository’s `ecosystem.yaml`, profiles, stack files, Agent Retrieval Contract, and Project Provisioning Contract for project composition, adoption, low-touch provisioning, upgrades, deployment, and reconstruction.
+- **Configure through Starter:** an AI uses this repository’s `ecosystem.yaml`, profiles, stack files, Agent Retrieval Contract, Project Provisioning Contract, and Project Memory / Write-Back Contract for project composition, adoption, guided provisioning, upgrades, deployment, reconstruction, and durable provider-state handoff.
 
 AHICP explains the method and user experience; Starter keeps the precise machine contract. They link to each other without replacing each other.
 
@@ -73,10 +73,10 @@ When an AI agent enters through any component homepage or repository, it must:
 2. read the canonical Starter ecosystem and [AGENT_RETRIEVAL_CONTRACT.md](AGENT_RETRIEVAL_CONTRACT.md);
 3. resolve the roles and public entrypoints of all four components;
 4. for a downstream project, read its selected Starter profile, `project-stack.yaml`, lock file, and `project-provisioning.yaml` when present;
-5. for a new project, read the Project Provisioning Contract and the pinned PPF per-project setup contract; read private platform-authorization state only if the optional advanced profile is explicitly selected;
+5. for a new project, read the Project Provisioning Contract, Project Memory / Write-Back Contract, and the pinned PPF per-project setup contract; read `project-bootstrap-state.yaml` and AHICP Working Memory when present; read private platform-authorization state only if the optional advanced profile is explicitly selected;
 6. fresh-read each active upstream manifest at its pinned revision;
 7. inspect other private project state only after explicit authorization;
-8. preserve the distinction between proposal, authorization, execution, verification, and durable write-back.
+8. preserve the distinction between proposal, authorization, execution, verification, and durable write-back; repository-backed project state outranks chat memory, and human provider handoffs must be written before/after execution.
 
 Following public links is a retrieval protocol, not permission to access private repositories or private deployment systems.
 
@@ -90,7 +90,7 @@ Future domain or visibility changes remain separate decisions with verification 
 
 ## Continuous Web and Cloudflare
 
-The new-project orchestration contract is [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md). The detailed Cloudflare operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The default execution path is the documented per-project Workers Builds bootstrap; browser-agent and advanced automation handoffs remain optional implementation aids.
+The new-project orchestration contract is [PROJECT_PROVISIONING_CONTRACT.md](PROJECT_PROVISIONING_CONTRACT.md), and durable project/provider memory is governed by [PROJECT_MEMORY_WRITEBACK.md](PROJECT_MEMORY_WRITEBACK.md). The detailed Cloudflare operational contract is [CONTINUOUS_WEB_CLOUDFLARE.md](CONTINUOUS_WEB_CLOUDFLARE.md), with a Chinese mirror at [CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md](CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md). The default execution path is the documented per-project Workers Builds bootstrap; browser-agent and advanced automation handoffs remain optional implementation aids.
 
 Starter records provisioning intent and authorization boundaries; PPF remains authoritative for executable GitHub/Cloudflare provider logic. Provider credential plaintext must never enter the language model. The default Workers Builds path keeps its deployment credential provider-managed.
 
