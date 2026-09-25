@@ -257,14 +257,19 @@ def main() -> int:
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:
         raise SystemExit("machine entry must prohibit deployment-token plaintext in model context")
 
+    contract_en = (ROOT / "docs/PROJECT_PROVISIONING_CONTRACT.md").read_text(encoding="utf-8")
+    contract_zh = (ROOT / "docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
     acceptance_en = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.md").read_text(encoding="utf-8")
     acceptance_zh = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md").read_text(encoding="utf-8")
-    for required in ("wrangler.jsonc.name", "Zero Trust", "Git-account connection"):
-        if required not in acceptance_en:
-            raise SystemExit(f"English provisioning acceptance is missing current Cloudflare prerequisite: {required}")
-    for required in ("wrangler.jsonc.name", "Zero Trust", "Git account"):
-        if required not in acceptance_zh:
-            raise SystemExit(f"Chinese provisioning acceptance is missing current Cloudflare prerequisite: {required}")
+    for label, text_value, required_values in (
+        ("English provisioning contract", contract_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection")),
+        ("English provisioning acceptance", acceptance_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection")),
+        ("Chinese provisioning contract", contract_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account")),
+        ("Chinese provisioning acceptance", acceptance_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account")),
+    ):
+        for required in required_values:
+            if required not in text_value:
+                raise SystemExit(f"{label} is missing current Cloudflare prerequisite: {required}")
 
     retrieval_en = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.md").read_text(encoding="utf-8")
     retrieval_zh = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
