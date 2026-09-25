@@ -253,8 +253,11 @@ def build_plan(platform: dict[str, Any], request: dict[str, Any]) -> dict[str, A
         "human_bootstrap_steps": (
             [
                 "create-or-confirm-private-personal-github-repository",
+                "reuse-existing-cloudflare-git-account-connection-if-available",
+                "authorize-cloudflare-github-app-repository-access-if-needed",
                 "connect-repository-to-cloudflare-workers-builds",
-                "authorize-cloudflare-git-access-to-target-repository-if-prompted",
+                "ensure-worker-application-name-matches-wrangler-jsonc-name",
+                "enable-cloudflare-zero-trust-once-if-needed",
                 "protect-target-worker-with-cloudflare-access",
                 "verify-first-restricted-deployment",
                 "verify-second-push-auto-deploys-without-reauthorization",
