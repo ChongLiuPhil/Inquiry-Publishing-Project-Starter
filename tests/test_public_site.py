@@ -77,6 +77,12 @@ class PublicSiteTests(unittest.TestCase):
                             "secret_broker_required_for_default": False,
                             "status": "guided-per-project-default",
                             "per_project_setup_contract": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md",
+                            "durable_bootstrap_state": "project-bootstrap-state.yaml",
+                            "memory_writeback_contract": "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md",
+                            "repository_memory_is_authoritative": True,
+                            "chat_memory_is_authoritative": False,
+                            "write_before_human_handoff": True,
+                            "verify_then_write_after_human_action": True,
                         },
                     }).encode()
                 return b'Public fixture text\n'
@@ -93,6 +99,8 @@ class PublicSiteTests(unittest.TestCase):
             self.assertEqual(descriptor["project_provisioning"]["preferred_profile"], "workers-builds-native")
             self.assertTrue((out / "PROJECT_PROVISIONING_CONTRACT.md").is_file())
             self.assertTrue((out / "PROJECT_PROVISIONING_ACCEPTANCE.md").is_file())
+            self.assertTrue((out / "PROJECT_MEMORY_WRITEBACK.md").is_file())
+            self.assertTrue((out / "PROJECT_MEMORY_WRITEBACK.zh-CN.md").is_file())
             start_zh = (out / "start/index.html").read_text(encoding="utf-8")
             start_en = (out / "start/index.en.html").read_text(encoding="utf-8")
             self.assertIn("workers-builds-native", start_zh)
