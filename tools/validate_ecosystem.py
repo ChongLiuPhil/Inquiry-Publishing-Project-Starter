@@ -143,6 +143,28 @@ def main() -> int:
     if not required_reserved.issubset(reserved):
         raise SystemExit("Starter ecosystem is missing one or more human-reserved provisioning gates")
 
+    access_plan_path = ROOT / "templates/cloudflare-access-plan.yaml"
+    if not access_plan_path.exists():
+        raise SystemExit("missing Cloudflare access plan")
+    access_plan = yaml.safe_load(access_plan_path.read_text(encoding="utf-8"))
+    if access_plan.get("default_access_mode") != "worker-scoped-access":
+        raise SystemExit("Cloudflare access plan must default to Worker-scoped Access")
+    project_bootstrap = access_plan.get("project_bootstrap", {})
+    if project_bootstrap.get("mode") != "human-assisted-once-per-project":
+        raise SystemExit("Cloudflare access plan must use guided per-project bootstrap")
+    if project_bootstrap.get("default_path") != "cloudflare-dashboard":
+        raise SystemExit("Cloudflare access plan must default to the Dashboard connection path")
+    if project_bootstrap.get("requires_api_token") is not False:
+        raise SystemExit("default Cloudflare project bootstrap must not require an API token")
+    reservations = set(access_plan.get("human_reservations") or [])
+    if "first-api-token-creation" in reservations:
+        raise SystemExit("Cloudflare access plan must not require API-token creation by default")
+    if "api-token-creation-only-if-api-automation-selected" not in reservations:
+        raise SystemExit("Cloudflare access plan must make API-token creation conditional on API automation")
+    verification = set(access_plan.get("verification") or [])
+    if "second-push-auto-deploys-without-reauthorization" not in verification:
+        raise SystemExit("Cloudflare access plan must verify second-push automatic deployment")
+
     migration_plan_path = ROOT / "templates/cloudflare-public-delivery.yaml"
     migration_guide_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md"
     migration_guide_zh_path = ROOT / "docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.zh-CN.md"
