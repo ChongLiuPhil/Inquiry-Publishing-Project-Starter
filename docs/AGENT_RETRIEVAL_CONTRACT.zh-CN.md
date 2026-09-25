@@ -33,11 +33,11 @@ Agent 可能从以下任意入口进入：
    - PPF：以源文件为中心的出版生命周期与 Continuous Web；
    - Vault Interface：与平台无关的公共元数据接口；
    - Starter：组合、采用、配置方案与升级层。
-5. 如果面对下游项目，读取 `project-stack.yaml`、所选 profile、lock 文件，以及存在时的 `project-provisioning.yaml`。
-6. 面对**新项目**时，读取权威 Project Provisioning Contract；如果 Request 依赖 platform standing authorization，只有在该 control-plane access 已获授权后才读取私人 platform-authorization state。
+5. 如果面对下游项目，读取 `project-stack.yaml`、所选 profile、lock 文件、`project-provisioning.yaml`，以及存在时的 `project-bootstrap-state.yaml`；再读取 AHICP Current Focus / Task Plan 恢复当前续接点。
+6. 面对**新项目**时，读取权威 Project Provisioning Contract 与 Project Memory / Write-Back Contract；如果 Request 依赖 platform standing authorization，只有在该 control-plane access 已获授权后才读取私人 platform-authorization state。
 7. 对每个 active 的 AHICP 或 PPF 组件，在配置或升级前 fresh-read 固定 revision 对应的上游 manifest / template manifest。
 8. 其他私人项目状态仍只在人类明确授权后读取。
-9. 在写入外部状态前，明确区分 proposal、authorization、execution、verification 与 durable write-back。
+9. 在写入外部状态前，明确区分 proposal、authorization、execution、verification 与 durable write-back。把人类交给 Provider UI 前先持久化 pending step；人类返回后先验证 actual state，再写回完成状态。
 10. 涉及 Cloudflare 时，读取共享 Continuous Web / Cloudflare 指南，以及所选 deployment profile 对应的 PPF Provider contract。
 
 沿公共链接阅读只是一项调取指令，不构成私人仓库、私人 Vault、提供商账户、凭据、未发布源文件或部署控制平面的访问授权。
@@ -83,7 +83,8 @@ Agent 可能从以下任意入口进入：
 - 源仓库隐私与 Web 可见性；
 - 当前发布授权状态；
 - Cloudflare deployment profile 与 access policy；
-- 适用时的 project provisioning profile、bootstrap mode 与 `project-provisioning.yaml` 状态；
+- 适用时的 project provisioning profile、bootstrap mode、`project-provisioning.yaml` 与 `project-bootstrap-state.yaml` 实际运行状态；
+- AHICP Working Memory 中当前 blocker / next action；聊天记忆不得作为权威状态；
 - 对默认 Native Profile：repository owner / visibility、Workers Builds repository connection、实际 Access mode、第一次 restricted deployment 验证、第二次 push 无需重新授权验证；
 - 只有高级可选 External-CI Profile 才报告：platform standing authorization 是否覆盖当前 GitHub owner / Cloudflare scope，以及 trusted Secret Broker 与隔离 token-minting boundary 是否 verified；
 - 哪些操作已经授权、哪些仍由人保留；
