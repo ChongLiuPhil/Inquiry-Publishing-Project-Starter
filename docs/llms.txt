@@ -17,6 +17,8 @@ Machine-readable ecosystem: https://github.com/ChongLiuPhil/Inquiry-Publishing-P
 Agent retrieval contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/AGENT_RETRIEVAL_CONTRACT.md
 Project provisioning contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_CONTRACT.md
 Project provisioning acceptance: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_PROVISIONING_ACCEPTANCE.md
+Project memory/write-back contract: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/PROJECT_MEMORY_WRITEBACK.md
+Durable bootstrap state schema: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/schema/project-bootstrap-state.schema.json
 Cloudflare public-delivery migration: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
 Cloudflare migration state: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml
 Cloudflare operational guide: https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/docs/CONTINUOUS_WEB_CLOUDFLARE.md
@@ -42,7 +44,7 @@ Privacy default:
 original or unpublished project source is private. Continuous Web may be enabled with restricted reader access. Do not retrieve private state without explicit human authorization. Never request or store passwords, API tokens, private keys, recovery codes, or other secrets in chat or Git.
 
 Agent instruction:
-From any component entrypoint, reconstruct the full ecosystem before cross-component configuration. Fresh-read the downstream stack and pinned upstream manifests. For Cloudflare actions, provide numbered operator steps, verification criteria, and rollback instructions.
+From any component entrypoint, reconstruct the full ecosystem before cross-component configuration. Fresh-read the downstream stack, `project-provisioning.yaml`, `project-bootstrap-state.yaml` when present, AHICP Working Memory, and pinned upstream manifests. Before human provider-UI handoff, persist the pending step; after the human returns, verify actual provider state and write the result back. Repository-backed state outranks chat memory. For Cloudflare actions, provide numbered operator steps, verification criteria, and rollback instructions.
 
 Public delivery policy:
 The owner approved the unified public Worker at https://inquirystack.philohub.workers.dev/ as the canonical site. GitHub remains canonical source. Former framework GitHub Pages sites have been retired; use the previous verified Worker version for rollback; previews remain disabled pending separate Access acceptance.
