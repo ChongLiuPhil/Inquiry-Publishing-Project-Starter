@@ -63,12 +63,15 @@ workers-builds-native
 参考配置：
 
 ```text
+Worker / application name: 必须与 wrangler.jsonc.name 完全一致
 production branch: main
 root directory: /
 build command: bash scripts/cloudflare_build.sh
 deploy command: npx wrangler deploy
 preview / non-production builds: 默认关闭
 ```
+
+如果 Git account 已经连接到 Cloudflare，直接复用该 account connection；不能仅因为新建了项目就机械地重新 OAuth。如果 private repository 不可见，条件允许时只为目标 repository 批准或扩大 Cloudflare GitHub App 的 repository access。
 
 Provider UI 可能变化。Agent 必须根据当前 Provider state 与固定版本 PPF setup contract 行动，不得照旧截图猜字段。
 
@@ -77,11 +80,13 @@ Provider UI 可能变化。Agent 必须根据当前 Provider state 与固定版�
 正常情况下，人类可能需要完成：
 
 1. 创建或确认个人账号下的 private GitHub repository；
-2. GitHub 提示时，为当前 repository 授权 Cloudflare Git integration；
-3. 把 repository 连接到 Workers Builds；
-4. 确认 production branch / build 配置；
-5. 给目标 Worker 启用 Cloudflare Access；
-6. 确认第一次 restricted deployment。
+2. 如果已有正常工作的 Cloudflare Git-account connection，直接复用；
+3. 如果目标 private repository 不可见，只为该 repository 批准或扩大 Cloudflare GitHub App 的 repository access；
+4. 把 repository 连接到 Workers Builds，并让 Worker / application name 与 `wrangler.jsonc.name` 完全一致；
+5. 确认 production branch / build 配置；
+6. 如果该 Cloudflare account 从未启用 Zero Trust，先完成这一次账户级前置 setup；之后项目直接复用；
+7. 给目标 Worker 启用 Cloudflare Access，已有批准的 authentication policy 时优先复用；
+8. 确认第一次 restricted deployment。
 
 这些属于允许存在的项目级授权，不代表体系失败。
 
