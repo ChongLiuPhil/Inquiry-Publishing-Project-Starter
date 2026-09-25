@@ -32,3 +32,7 @@ starter:
     profile: workers-builds-native
     request_ref: project-provisioning.yaml
     platform_authorization_ref: optional-advanced-platform-state
+    bootstrap_state_ref: project-bootstrap-state.yaml
+    working_memory_current_focus_ref: docs/working-memory/current-focus.zh-CN.md
+    working_memory_task_plan_ref: docs/working-memory/task-plan.zh-CN.md
+    working_memory_work_log_ref: docs/working-memory/work-log.zh-CN.md
