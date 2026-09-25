@@ -122,6 +122,17 @@ def main() -> int:
         raise SystemExit("Starter ecosystem must default to Worker-scoped Access")
     if provisioning.get("status") != "guided-per-project-default":
         raise SystemExit("Starter provisioning status must identify the guided per-project default")
+    expected_bootstrap_steps = {
+        "reuse-existing-cloudflare-git-account-connection-if-available",
+        "authorize-cloudflare-github-app-repository-access-if-needed",
+        "connect-workers-builds",
+        "ensure-worker-application-name-matches-wrangler-jsonc-name",
+        "enable-cloudflare-zero-trust-once-if-needed",
+        "protect-target-worker-with-access",
+        "verify-second-push-auto-deploy-without-reauthorization",
+    }
+    if not expected_bootstrap_steps.issubset(set(provisioning.get("ordinary_project_human_bootstrap") or [])):
+        raise SystemExit("Starter ecosystem is missing current guided-bootstrap prerequisites")
     if provisioning.get("secret_rule") != "provider-credentials-never-enter-model-context":
         raise SystemExit("Starter ecosystem is missing the provider credential secret boundary")
     if provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
@@ -233,6 +244,8 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must expose Worker-scoped Access")
     if descriptor_provisioning.get("status") != "guided-per-project-default":
         raise SystemExit("agent entry descriptor must identify the guided per-project default")
+    if not expected_bootstrap_steps.issubset(set(descriptor_provisioning.get("ordinary_project_human_bootstrap") or [])):
+        raise SystemExit("agent entry descriptor is missing current guided-bootstrap prerequisites")
     if descriptor_provisioning.get("secret_broker_required_for_default") is not False:
         raise SystemExit("native default must not require the trusted Secret Broker")
     if descriptor_provisioning.get("secret_broker_orchestration") != "optional-advanced-ppf-implemented":
