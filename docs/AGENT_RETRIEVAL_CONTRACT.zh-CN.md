@@ -55,7 +55,7 @@ Agent 可能从以下任意入口进入：
 
 精简 profile 仍然可用，但必须由使用者明确选择。Agent 不得因为项目“看起来简单”就自动省略 AHICP 或 PPF。
 
-普通新建完整 Stack 项目首选 infrastructure profile 为 `workers-builds-native` + `private-project-quota-saver`：使用个人 `ChongLiuPhil` GitHub 账号、repository 保持 private，以 `human-assisted-once-per-project` 完成 GitHub → Cloudflare 连接，默认采用 `worker-scoped-access`，Preview 在独立验收前保持 disabled，并要求第二次 push 能在无需重新授权的情况下自动部署。在 quota-saver Profile 中，content-only 改动不启动 GitHub Actions，配置 Pull Request 只运行一个轻量 contract job，`main` 不触发重复的 GitHub Web build，heavy GitHub workflow 手动运行，Cloudflare Workers Builds 负责唯一自动 production Web build。`agent-provisioned-external-ci` 继续作为高级可选 Profile；只有这个高级 Profile 才要求 reusable platform standing authorization、作为 Provisioning 前置条件的 account-wide Access，以及 trusted Secret Broker。
+普通新建完整 Stack 项目首选 infrastructure profile 为 `workers-builds-native` + `private-project-quota-saver`：使用个人 `ChongLiuPhil` GitHub 账号、repository 保持 private，以 `human-assisted-once-per-project` 完成 GitHub → Cloudflare 连接，默认采用 `worker-scoped-access`，Preview 在独立验收前保持 disabled，并要求第二次 content-only push 能在无需重新授权的情况下自动部署。在 quota-saver Profile 中，content-only 改动不启动 GitHub Actions，配置 Pull Request 只运行一个轻量 contract job，`main` 不触发重复的 GitHub Web build，heavy GitHub workflow 手动运行，Cloudflare Workers Builds 负责唯一自动 production Web build。`agent-provisioned-external-ci` 继续作为高级可选 Profile；只有这个高级 Profile 才要求 reusable platform standing authorization、作为 Provisioning 前置条件的 account-wide Access，以及 trusted Secret Broker。
 
 ## 4. 默认隐私与发布姿态
 
