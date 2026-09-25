@@ -107,6 +107,21 @@ def main() -> int:
         if bootstrap_state.get("status") != "not-started":
             raise SystemExit(f"{label} must begin at not-started")
 
+    for label, bootstrap_state in (
+        ("project bootstrap template", bootstrap_template),
+        ("root project bootstrap state", project_bootstrap_state),
+    ):
+        if bootstrap_state.get("profile") != request_template["infrastructure"]["profile"]:
+            raise SystemExit(f"{label} profile disagrees with the default provisioning request")
+        if bootstrap_state.get("source", {}).get("owner") != request_template["infrastructure"]["github"]["owner"]:
+            raise SystemExit(f"{label} GitHub owner disagrees with the default provisioning request")
+        if bootstrap_state.get("source", {}).get("repository") != request_template["infrastructure"]["github"]["repository"]:
+            raise SystemExit(f"{label} repository disagrees with the default provisioning request")
+        if bootstrap_state.get("cloudflare", {}).get("worker") != request_template["infrastructure"]["cloudflare"]["worker"]:
+            raise SystemExit(f"{label} Worker disagrees with the default provisioning request")
+        if bootstrap_state.get("cloudflare", {}).get("access_mode") != request_template["infrastructure"]["cloudflare"]["access_mode"]:
+            raise SystemExit(f"{label} Access mode disagrees with the default provisioning request")
+
     if platform_template.get("status") != "unconfigured":
         raise SystemExit("public platform-authorization template must not claim live provider authorization")
     standing = platform_template.get("standing_authorizations", {})
