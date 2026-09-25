@@ -55,7 +55,7 @@ Agent 可能从以下任意入口进入：
 
 精简 profile 仍然可用，但必须由使用者明确选择。Agent 不得因为项目“看起来简单”就自动省略 AHICP 或 PPF。
 
-普通新建完整 Stack 项目首选 infrastructure profile 为 `workers-builds-native`：使用个人 `ChongLiuPhil` GitHub 账号、repository 保持 private，以 `human-assisted-once-per-project` 完成 GitHub → Cloudflare 连接，默认采用 `worker-scoped-access`，Preview 在独立验收前保持 disabled，并要求第二次 push 能在无需重新授权的情况下自动部署。`agent-provisioned-external-ci` 继续作为高级可选 Profile；只有这个高级 Profile 才要求 reusable platform standing authorization、作为 Provisioning 前置条件的 account-wide Access，以及 trusted Secret Broker。
+普通新建完整 Stack 项目首选 infrastructure profile 为 `workers-builds-native` + `private-project-quota-saver`：使用个人 `ChongLiuPhil` GitHub 账号、repository 保持 private，以 `human-assisted-once-per-project` 完成 GitHub → Cloudflare 连接，默认采用 `worker-scoped-access`，Preview 在独立验收前保持 disabled，并要求第二次 push 能在无需重新授权的情况下自动部署。在 quota-saver Profile 中，content-only 改动不启动 GitHub Actions，配置 Pull Request 只运行一个轻量 contract job，`main` 不触发重复的 GitHub Web build，heavy GitHub workflow 手动运行，Cloudflare Workers Builds 负责唯一自动 production Web build。`agent-provisioned-external-ci` 继续作为高级可选 Profile；只有这个高级 Profile 才要求 reusable platform standing authorization、作为 Provisioning 前置条件的 account-wide Access，以及 trusted Secret Broker。
 
 ## 4. 默认隐私与发布姿态
 
@@ -83,13 +83,15 @@ Agent 可能从以下任意入口进入：
 - 源仓库隐私与 Web 可见性；
 - 当前发布授权状态；
 - Cloudflare deployment profile 与 access policy；
-- 适用时的 project provisioning profile、bootstrap mode 与 `project-provisioning.yaml` 状态；
-- 对默认 Native Profile：repository owner / visibility、Workers Builds repository connection、实际 Access mode、第一次 restricted deployment 验证、第二次 push 无需重新授权验证；
+- 适用时的 project provisioning profile、CI cost profile、bootstrap mode 与 `project-provisioning.yaml` 状态；
+- 对默认 Native Profile：repository owner / visibility、Workers Builds repository connection、实际 Access mode、`private-project-quota-saver` 行为、第一次 restricted deployment 验证、第二次 push 无需重新授权验证；
 - 只有高级可选 External-CI Profile 才报告：platform standing authorization 是否覆盖当前 GitHub owner / Cloudflare scope，以及 trusted Secret Broker 与隔离 token-minting boundary 是否 verified；
 - 哪些操作已经授权、哪些仍由人保留；
 - 哪些 Provider actual state 仍需验证。
 
 如果无法恢复这些事实，应把它视为配置缺陷，而不是自行猜测。
+
+Private downstream 项目不能把 GitHub Actions 当作迭代调试环境。Agent 应批量完成相关编辑、运行可用 preflight、检查完整 diff，再只触发预定的薄 CI。Run 失败时先读完整 failure set、批量修复并尽量只 rerun failed work。不得为 content-only 改动制造 Actions run，也不得在没有人类明确授权时开启付费 Actions usage。
 
 ## 6. 公共网页迁移规则
 
