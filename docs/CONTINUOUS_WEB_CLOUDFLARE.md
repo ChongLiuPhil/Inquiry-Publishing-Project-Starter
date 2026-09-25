@@ -69,7 +69,7 @@ policy_ref identifies the intended policy. It is not a place to store credential
 
 Choose and record one profile before deployment:
 
-- **Workers Builds Native — default for ordinary new projects.** The user may complete one short project-level GitHub ↔ Cloudflare connection. Cloudflare then owns the Git-triggered build/deploy connection and provider-managed build credential.
+- **Workers Builds Native + private-project-quota-saver — default for ordinary new projects.** The user may complete one short project-level GitHub ↔ Cloudflare connection. Cloudflare then owns the Git-triggered production build/deploy connection and provider-managed build credential. Content-only changes do not start GitHub Actions, configuration PRs use one lightweight contract check, main pushes do not duplicate the Web build in GitHub Actions, and heavy GitHub validation is manual.
 - **Agent-provisioned external CI — optional advanced profile.** Use when the project explicitly needs an account-owned individual-Worker `Editor` deployment credential, reusable platform authorization, and the Trusted Secret Broker.
 - **Future/provider-specific profile** — use only after current provider documentation and a real test confirm its capability.
 
@@ -81,7 +81,7 @@ For an ordinary new project:
 
 1. Identify the exact personal GitHub repository, output directory, Cloudflare account, and target Worker/project.
 2. Confirm the source repository is private.
-3. Use `workers-builds-native` unless the human explicitly selected the advanced profile.
+3. Use `workers-builds-native` + `private-project-quota-saver` unless the human explicitly selected the advanced profile.
 4. Create or confirm the private repository under `ChongLiuPhil`.
 5. In Cloudflare Workers & Pages, import/connect that repository.
 6. If GitHub asks, authorize the Cloudflare Git integration for the target repository.
@@ -90,8 +90,8 @@ For an ordinary new project:
 9. Run the first deployment.
 10. Protect the Worker with Worker-scoped Cloudflare Access using **All traffic**, unless a verified account-wide Access policy already covers it.
 11. Verify the deployed revision, anonymous denial/challenge, authenticated reader access, and representative direct assets.
-12. Make one harmless source change and push to `main`.
-13. Verify Workers Builds automatically deploys the new revision without renewed GitHub or Cloudflare authorization.
+12. Make one harmless content-only source change and push to `main`.
+13. Verify Workers Builds automatically deploys the new revision without renewed GitHub or Cloudflare authorization and without a duplicate GitHub Actions production Web build.
 14. Configure a custom domain only after separate domain/DNS authorization.
 15. Record verified non-secret provider state and rollback evidence.
 
@@ -119,6 +119,7 @@ For the default route, per-project Cloudflare Git authorization is allowed and e
 Read the current pinned PPF runbooks:
 
 - `docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md` — default per-project operator flow;
+- `docs/CI_COST_POLICY.md` — private-repository GitHub Actions / build-minute policy;
 - `docs/CLOUDFLARE_GITHUB_AUTHORIZATION.md` — Native default plus optional advanced authorization model;
 - `docs/CLOUDFLARE_SECURITY_PROFILES.md` — deployment-credential trade-offs;
 - `docs/CLOUDFLARE_ACCESS_PROFILE.md` — publication visibility to reader-access mapping;

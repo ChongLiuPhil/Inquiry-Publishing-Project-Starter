@@ -25,7 +25,8 @@
     "infrastructure_profile": "workers-builds-native",
     "preview": "disabled-until-protected-preview-acceptance",
     "project_bootstrap": "human-assisted-once-per-project",
-    "default_project_access": "worker-scoped-access"
+    "default_project_access": "worker-scoped-access",
+    "ci_cost_profile": "private-project-quota-saver"
   },
   "authorization": {
     "public_links_grant_private_access": false,
@@ -88,6 +89,14 @@
     ],
     "public_contract_en": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.md",
     "public_contract_zh_cn": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
-    "public_acceptance": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_ACCEPTANCE.md"
+    "public_acceptance": "https://inquirystack.philohub.workers.dev/PROJECT_PROVISIONING_ACCEPTANCE.md",
+    "default_ci_cost_profile": "private-project-quota-saver",
+    "ci_cost_policy": "https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/CI_COST_POLICY.md",
+    "private_project_github_actions": {
+      "content_only_changes": "none",
+      "configuration_pull_request": "light-contract-check",
+      "main_push": "none",
+      "heavy_validation": "manual"
+    }
   }
 }

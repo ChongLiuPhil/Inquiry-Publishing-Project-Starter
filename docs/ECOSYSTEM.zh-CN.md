@@ -35,7 +35,7 @@ AHICP（完整）
 
 `full-research-publication` 是新项目默认 profile。精简 profile 仍然保留，但 AI Agent 只有在使用者明确选择时才能使用；不能因为项目看起来简单就自动省略 AHICP 或 PPF。
 
-普通新项目首选 infrastructure profile 是 `workers-builds-native`：在个人 `ChongLiuPhil` GitHub 账号下保持 private repository，每项目完成一次短人工 Cloudflare Git connection，默认使用 Worker-scoped Access，并在 Preview 独立保护验收前保持 disabled。第一次 restricted deployment 后，还必须验证第二次 push 无需重新授权即可自动部署，才能把连接标记为 operationally verified。Public release、repository 公开、reader expansion、domain/DNS authority、Provider scope 扩大与 paid-plan change 仍由人保留。
+普通新项目首选 infrastructure profile 是 `workers-builds-native` + `private-project-quota-saver`：在个人 `ChongLiuPhil` GitHub 账号下保持 private repository，每项目完成一次短人工 Cloudflare Git connection，默认使用 Worker-scoped Access，并在 Preview 独立保护验收前保持 disabled。Content-only 改动不启动 GitHub Actions；配置 PR 只运行一个轻量 contract gate；`main` 不运行重复 GitHub Web build；heavy GitHub workflow 手动；Cloudflare Workers Builds 负责唯一自动 production Web build。第一次 restricted deployment 后，还必须验证第二次 content-only push 无需重新授权、且没有重复 GitHub Actions production build，才能把连接标记为 operationally verified。Public release、repository 公开、reader expansion、domain/DNS authority、Provider scope 扩大、付费 Actions usage 与 billing change 仍由人保留。
 
 `agent-provisioned-external-ci` 继续作为高级可选 Profile；只有项目明确需要 one-Worker deployment credential 隔离并愿意维护额外 Platform Authorization / Trusted Secret Broker 时才采用。
 
@@ -73,7 +73,7 @@ AI agent 从任意组件主页或仓库进入时，必须：
 2. 读取 canonical Starter ecosystem 与 AGENT_RETRIEVAL_CONTRACT；
 3. 恢复四个组件的责任和公共入口；
 4. 面对下游项目时读取所选 Starter profile、`project-stack.yaml`、lock，以及存在时的 `project-provisioning.yaml`；
-5. 面对新项目时读取 Project Provisioning Contract 与固定版本 PPF 的每项目 setup contract；只有显式选择高级 Profile 时才读取私人 platform-authorization state；
+5. 面对新项目时读取 Project Provisioning Contract、固定版本 PPF 的每项目 setup contract 与 PPF CI Cost Policy；只有显式选择高级 Profile 时才读取私人 platform-authorization state；
 6. fresh-read 每个 active 上游组件的固定 revision manifest；
 7. 其他私人项目状态仍只在相应访问已获授权后读取；
 8. 始终区分 proposal、authorization、execution、verification 与 durable write-back。

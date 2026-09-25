@@ -51,7 +51,8 @@
       "required": [
         "profile",
         "github",
-        "cloudflare"
+        "cloudflare",
+        "ci_cost_profile"
       ],
       "properties": {
         "profile": {
@@ -124,6 +125,13 @@
               ]
             }
           }
+        },
+        "ci_cost_profile": {
+          "enum": [
+            "private-project-quota-saver",
+            "full-validation",
+            "external-ci-required"
+          ]
         }
       }
     },
@@ -153,5 +161,64 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "infrastructure": {
+            "properties": {
+              "profile": {
+                "const": "workers-builds-native"
+              }
+            },
+            "required": [
+              "profile"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "infrastructure": {
+            "properties": {
+              "ci_cost_profile": {
+                "enum": [
+                  "private-project-quota-saver",
+                  "full-validation"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "infrastructure": {
+            "properties": {
+              "profile": {
+                "const": "agent-provisioned-external-ci"
+              }
+            },
+            "required": [
+              "profile"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "infrastructure": {
+            "properties": {
+              "ci_cost_profile": {
+                "const": "external-ci-required"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

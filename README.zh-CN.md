@@ -12,7 +12,7 @@ Starter 主要面向 AI 和配置工作；第一次了解体系时，不需要�
 
 **体系与 AI 配置入口：** [`docs/ECOSYSTEM.zh-CN.md`](docs/ECOSYSTEM.zh-CN.md) · [`ecosystem.yaml`](ecosystem.yaml) · [`Agent 调取契约`](docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md) · [`项目自动配置契约`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) · [`llms.txt`](docs/llms.txt) · [`Cloudflare 操作指南`](docs/CONTINUOUS_WEB_CLOUDFLARE.zh-CN.md)
 
-**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。Downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号下，使用 `owner_type: user` 与 `visibility: private`；原创或未发布源文件继续保持 private。默认 infrastructure profile 为 `workers-builds-native`：允许每个项目一次短而明确的人类 GitHub → Cloudflare bootstrap，给 Worker 配置 Access，然后验证第二次 push 无需重新授权即可自动部署。`agent-provisioned-external-ci` 继续作为高级可选 Profile。Public release 仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
+**新项目默认配置：** 完整 AHICP + 完整 PPF + Vault Interface。Downstream repository 默认创建在个人 `ChongLiuPhil` GitHub 账号下，使用 `owner_type: user` 与 `visibility: private`；原创或未发布源文件继续保持 private。默认 infrastructure profile 为 `workers-builds-native` + `private-project-quota-saver`：允许每个项目一次短而明确的人类 GitHub → Cloudflare bootstrap，给 Worker 配置 Access；自动 main Web build 交给 Cloudflare Workers Builds；content-only 改动不启动 GitHub Actions；配置 PR 只跑一个轻量 gate；heavy GitHub workflow 手动执行。然后验证第二次 push 无需重新授权即可自动部署。`agent-provisioned-external-ci` 继续作为高级可选 Profile。Public release 与任何付费 Actions / billing 变化仍是独立的人类决定。精简 Stack Profile 必须由使用者明确选择。
 
 ## 权威边界
 
@@ -55,14 +55,14 @@ make provisioning-contract-check
 
 ## 项目自动配置
 
-新的 downstream 项目还记录 `project-provisioning.yaml`。公共 Schema / Template 只描述非秘密意图。默认 `workers-builds-native` 路线不要求 platform standing authorization；只有显式选择依赖它的高级 Profile 时，才读取 private platform-authorization state。
+新的 downstream 项目还记录 `project-provisioning.yaml`。公共 Schema / Template 只描述非秘密意图。默认 `workers-builds-native` 路线同时记录 `ci_cost_profile: private-project-quota-saver`，不要求 platform standing authorization；只有显式选择依赖它的高级 Profile 时，才读取 private platform-authorization state。
 
 ```bash
 python tools/project_provisioning.py validate
 python tools/project_provisioning.py plan --request project-provisioning.yaml --json
 ```
 
-默认 `workers-builds-native` Profile 即使没有账户级 Platform Authorization，也会生成 `READY_FOR_PROJECT_BOOTSTRAP`。随后按照固定版本 PPF 的每项目配置指南，把 private repository 连接到 Workers Builds、给 Worker 配置 Access、验证第一次 restricted deployment，再验证第二次 push 无需重新授权即可部署。Trusted Secret Broker 只属于高级可选 External-CI Profile。
+默认 `workers-builds-native` Profile 即使没有账户级 Platform Authorization，也会生成 `READY_FOR_PROJECT_BOOTSTRAP`，并把 `ciCostProfile: private-project-quota-saver` 交给 PPF。随后按照固定版本 PPF 的每项目配置指南，把 private repository 连接到 Workers Builds、给 Worker 配置 Access、验证第一次 restricted deployment，再验证第二次 push 无需重新授权即可部署。Content-only 改动不应消耗 GitHub Actions 分钟；配置 PR 使用薄 contract gate；重型 Actions validation 手动执行。Trusted Secret Broker 只属于高级可选 External-CI Profile。
 
 详见 [`docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md`](docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md) 与 [`docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md)。
 

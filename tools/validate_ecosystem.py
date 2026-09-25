@@ -90,6 +90,8 @@ def main() -> int:
     infra = request_template.get("infrastructure", {})
     if infra.get("profile") != "workers-builds-native":
         raise SystemExit("new-project provisioning template must prefer workers-builds-native")
+    if infra.get("ci_cost_profile") != "private-project-quota-saver":
+        raise SystemExit("new-project provisioning template must prefer private-project-quota-saver")
     github_request = infra.get("github", {})
     if github_request.get("owner") != "ChongLiuPhil" or github_request.get("owner_type") != "user":
         raise SystemExit("new-project provisioning template must default to the ChongLiuPhil personal account")
@@ -120,6 +122,8 @@ def main() -> int:
         raise SystemExit("Starter ecosystem must default to guided per-project bootstrap")
     if provisioning.get("default_access_mode") != "worker-scoped-access":
         raise SystemExit("Starter ecosystem must default to Worker-scoped Access")
+    if provisioning.get("default_ci_cost_profile") != "private-project-quota-saver":
+        raise SystemExit("Starter ecosystem must default private projects to quota-saver CI")
     if provisioning.get("status") != "guided-per-project-default":
         raise SystemExit("Starter provisioning status must identify the guided per-project default")
     expected_bootstrap_steps = {
@@ -242,6 +246,19 @@ def main() -> int:
         raise SystemExit("agent entry descriptor must expose guided per-project bootstrap")
     if descriptor_provisioning.get("default_access_mode") != "worker-scoped-access":
         raise SystemExit("agent entry descriptor must expose Worker-scoped Access")
+    if descriptor_provisioning.get("default_ci_cost_profile") != "private-project-quota-saver":
+        raise SystemExit("agent entry descriptor must expose private-project-quota-saver")
+    action_policy = descriptor_provisioning.get("private_project_github_actions") or {}
+    expected_action_policy = {
+        "content_only_changes": "none",
+        "configuration_pull_request": "light-contract-check",
+        "main_push": "none",
+        "heavy_validation": "manual",
+    }
+    if action_policy != expected_action_policy:
+        raise SystemExit("agent entry descriptor has the wrong private-project GitHub Actions policy")
+    if not str(descriptor_provisioning.get("ci_cost_policy", "")).endswith("/docs/CI_COST_POLICY.md"):
+        raise SystemExit("agent entry descriptor is missing the PPF CI cost policy")
     if descriptor_provisioning.get("status") != "guided-per-project-default":
         raise SystemExit("agent entry descriptor must identify the guided per-project default")
     if not expected_bootstrap_steps.issubset(set(descriptor_provisioning.get("ordinary_project_human_bootstrap") or [])):
@@ -275,10 +292,10 @@ def main() -> int:
     acceptance_en = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.md").read_text(encoding="utf-8")
     acceptance_zh = (ROOT / "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md").read_text(encoding="utf-8")
     for label, text_value, required_values in (
-        ("English provisioning contract", contract_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection")),
-        ("English provisioning acceptance", acceptance_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection")),
-        ("Chinese provisioning contract", contract_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account")),
-        ("Chinese provisioning acceptance", acceptance_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account")),
+        ("English provisioning contract", contract_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection", "private-project-quota-saver", "content-only", "Cloudflare Workers Builds")),
+        ("English provisioning acceptance", acceptance_en, ("wrangler.jsonc.name", "Zero Trust", "Git-account connection", "private-project-quota-saver", "content-only", "production Web build")),
+        ("Chinese provisioning contract", contract_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account", "private-project-quota-saver", "content-only", "Cloudflare Workers Builds")),
+        ("Chinese provisioning acceptance", acceptance_zh, ("wrangler.jsonc.name", "Zero Trust", "Git account", "private-project-quota-saver", "content-only", "production Web build")),
     ):
         for required in required_values:
             if required not in text_value:
@@ -288,6 +305,8 @@ def main() -> int:
     retrieval_zh = (ROOT / "docs/AGENT_RETRIEVAL_CONTRACT.zh-CN.md").read_text(encoding="utf-8")
     for required in (
         "workers-builds-native",
+        "private-project-quota-saver",
+        "content-only",
         "human-assisted-once-per-project",
         "worker-scoped-access",
         "second push",
@@ -297,9 +316,11 @@ def main() -> int:
             raise SystemExit(f"English Agent Retrieval Contract is missing guided-default marker: {required}")
     for required in (
         "workers-builds-native",
+        "private-project-quota-saver",
+        "content-only",
         "human-assisted-once-per-project",
         "worker-scoped-access",
-        "第二次 push",
+        "第二次 content-only push",
         "高级可选 Profile",
     ):
         if required not in retrieval_zh:
@@ -310,7 +331,7 @@ def main() -> int:
         raise SystemExit("Chinese Agent Retrieval Contract still prefers external CI by default")
 
     agent_page = (ROOT / "docs/agent/index.html").read_text(encoding="utf-8")
-    for marker in ("Agent Retrieval Contract", "Project Provisioning", "workers-builds-native", "human-assisted-once-per-project", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
+    for marker in ("Agent Retrieval Contract", "Project Provisioning", "workers-builds-native", "private-project-quota-saver", "human-assisted-once-per-project", "ecosystem.yaml", "bootstrap.txt", HUMAN_ENTRY):
         if marker not in agent_page:
             raise SystemExit(f"machine-entry page is missing {marker}")
 
@@ -324,6 +345,8 @@ def main() -> int:
         "project_adopted_commit",
         "adoption_state",
         "workers-builds-native",
+        "private-project-quota-saver",
+        "GitHub Actions production Web build",
         "每项目一次配置",
         "第二次 push",
         "为什么它不是第四套规范",

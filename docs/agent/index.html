@@ -61,6 +61,7 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 <div class="resource"><strong>Cloudflare public delivery</strong><a href="../CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md">migration and cutover guide</a></div>
 <div class="resource"><strong>Cloudflare migration state</strong><a href="https://github.com/ChongLiuPhil/Inquiry-Publishing-Project-Starter/blob/main/templates/cloudflare-public-delivery.yaml">machine-readable plan</a></div>
 <div class="resource"><strong>Cloudflare operations</strong><a href="../CONTINUOUS_WEB_CLOUDFLARE.md">operational guide</a></div>
+<div class="resource"><strong>Private-project CI cost</strong><a href="https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/CI_COST_POLICY.md">quota-saver policy</a></div>
 </section>
 
 <section class="block">
@@ -73,6 +74,7 @@ a{color:#176786;font-weight:700}.badge{display:inline-block;border-radius:999px;
 source repository: private by default
 unpublished/transitional Web: restricted + authenticated
 infrastructure profile: workers-builds-native
+CI cost profile: private-project-quota-saver
 project bootstrap: human-assisted-once-per-project
 GitHub owner: ChongLiuPhil (user)
 project Access: worker-scoped-access by default
@@ -83,7 +85,7 @@ public cutover: explicit human authorization required</pre>
 <section class="block">
 <h2>Authorization boundary</h2>
 <div class="warn">Public links are retrieval instructions only. The default project path permits one short human-assisted bootstrap for the private GitHub repository, Cloudflare Git connection, and Worker Access. That project-level consent never authorizes public release.</div>
-<p>Never request passwords, API tokens, private keys, recovery codes, or other secrets in chat. The default Workers Builds profile uses provider-managed credentials. If the optional advanced external-CI profile is selected, its Trusted Secret Broker keeps token plaintext outside model context. When a human must act in a provider UI, give exact numbered steps, the secret boundary, completion evidence, verification, and rollback.</p>
+<p>Never request passwords, API tokens, private keys, recovery codes, or other secrets in chat. The default Workers Builds profile uses provider-managed credentials. Private downstream projects also use <code>private-project-quota-saver</code>: content-only changes do not start GitHub Actions, configuration PRs use one lightweight contract check, main pushes do not duplicate the production Web build in GitHub Actions, and heavy workflows are manual. Do not use Actions as an iterative debugging loop or enable paid usage without human approval. If the optional advanced external-CI profile is selected, its Trusted Secret Broker keeps token plaintext outside model context. When a human must act in a provider UI, give exact numbered steps, the secret boundary, completion evidence, verification, and rollback.</p>
 </section>
 
 <section class="block">

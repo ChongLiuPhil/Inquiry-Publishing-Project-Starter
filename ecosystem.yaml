@@ -49,6 +49,7 @@ ecosystem:
     web_visibility: restricted-by-default-for-unpublished-work
     cloudflare_access: required-for-private-or-transitional-publications
     infrastructure_profile: workers-builds-native
+    ci_cost_profile: private-project-quota-saver
     platform_authorization: optional-for-advanced-external-ci
     secret_broker: optional-advanced-external-ci-only
     live_new_project_acceptance: per-project-verification-required
@@ -82,6 +83,7 @@ ecosystem:
     preferred_infrastructure_profile: workers-builds-native
     default_setup_mode: human-assisted-once-per-project
     default_access_mode: worker-scoped-access
+    default_ci_cost_profile: private-project-quota-saver
     contract_en: docs/PROJECT_PROVISIONING_CONTRACT.md
     contract_zh_cn: docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md
     acceptance_en: docs/PROJECT_PROVISIONING_ACCEPTANCE.md
@@ -144,6 +146,7 @@ ecosystem:
     advanced_profile: agent-provisioned-external-ci
     default_project_access: worker-scoped-access
     per_project_setup_guide: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md
+    private_project_ci_cost_policy: https://github.com/ChongLiuPhil/Personal-Publishing-Framework/blob/main/docs/CI_COST_POLICY.md
     public_delivery_migration: docs/CLOUDFLARE_PUBLIC_DELIVERY_MIGRATION.md
     public_delivery_plan: templates/cloudflare-public-delivery.yaml
     operational_guide: docs/CONTINUOUS_WEB_CLOUDFLARE.md

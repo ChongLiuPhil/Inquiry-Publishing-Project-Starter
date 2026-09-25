@@ -6,6 +6,7 @@ project:
 stack_profile: full-research-publication
 infrastructure:
   profile: workers-builds-native
+  ci_cost_profile: private-project-quota-saver
   github:
     owner: ChongLiuPhil
     owner_type: user

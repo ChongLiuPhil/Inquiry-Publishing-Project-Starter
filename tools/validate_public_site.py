@@ -67,11 +67,22 @@ def validate(output: Path) -> None:
         provisioning.get("preferred_profile") != "workers-builds-native"
         or provisioning.get("default_setup_mode") != "human-assisted-once-per-project"
         or provisioning.get("default_access_mode") != "worker-scoped-access"
+        or provisioning.get("default_ci_cost_profile") != "private-project-quota-saver"
         or provisioning.get("secret_broker_required_for_default") is not False
     ):
         raise ValueError("Machine entry does not expose the guided per-project provisioning contract")
     if provisioning.get("status") != "guided-per-project-default":
         raise ValueError("Machine entry lost the guided per-project provisioning status")
+    expected_actions = {
+        "content_only_changes": "none",
+        "configuration_pull_request": "light-contract-check",
+        "main_push": "none",
+        "heavy_validation": "manual",
+    }
+    if provisioning.get("private_project_github_actions") != expected_actions:
+        raise ValueError("Machine entry lost the private-project GitHub Actions quota policy")
+    if not str(provisioning.get("ci_cost_policy", "")).endswith("/docs/CI_COST_POLICY.md"):
+        raise ValueError("Machine entry does not expose the PPF CI cost policy")
     if not str(provisioning.get("per_project_setup_contract", "")).endswith("/docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.md"):
         raise ValueError("Machine entry does not expose the PPF per-project setup contract")
     if descriptor.get("authorization", {}).get("deployment_token_plaintext_in_model_context") is not False:

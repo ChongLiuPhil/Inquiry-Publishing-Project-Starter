@@ -2,7 +2,8 @@
 
 **状态：** Starter 新项目编排的权威契约  
 **默认基础设施 Profile：** `workers-builds-native`  
-**默认配置模式：** `human-assisted-once-per-project`
+**默认配置模式：** `human-assisted-once-per-project`  
+**默认 CI 成本 Profile：** `private-project-quota-saver`
 
 本契约定义 Inquiry Publishing Stack 当前实际采用的新项目路径。
 
@@ -52,10 +53,11 @@ github:
 
 ## 3. 默认 Cloudflare 拓扑
 
-默认 PPF infrastructure profile：
+默认 PPF infrastructure profile 与 CI cost profile：
 
 ```text
 workers-builds-native
+private-project-quota-saver
 ```
 
 项目把 private GitHub repository 连接到 Cloudflare Workers Builds。之后 Git-triggered build/deploy connection 与 build credential 由 Cloudflare 管理。
@@ -74,6 +76,19 @@ preview / non-production builds: 默认关闭
 如果 Git account 已经连接到 Cloudflare，直接复用该 account connection；不能仅因为新建了项目就机械地重新 OAuth。如果 private repository 不可见，条件允许时只为目标 repository 批准或扩大 Cloudflare GitHub App 的 repository access。
 
 Provider UI 可能变化。Agent 必须根据当前 Provider state 与固定版本 PPF setup contract 行动，不得照旧截图猜字段。
+
+### Private 项目 CI 成本默认
+
+固定版本 PPF 的 `private-project-quota-saver` 是默认项目状态的一部分：
+
+- content-only 改动不启动 GitHub Actions；
+- 配置/基础设施 Pull Request 只运行一个轻量 contract check；
+- push 到 `main` 不再运行重复的 GitHub Actions Web build；
+- full Web validation、Cloudflare contract validation、publication artifact 与高级 External-CI deployment 都改为手动；
+- Cloudflare Workers Builds 是唯一自动 production Web build；
+- Cloudflare non-production build 与 Preview 默认关闭。
+
+Agent 必须先批量完成相关编辑、运行所有可用 Agent-side preflight、检查完整 diff，然后只触发预定的薄 CI。不得把 GitHub Actions 当作迭代调试循环。Private repository Actions quota 已耗尽时，可选/手动 GitHub heavy validation 延后；除非人类明确授权，不得通过开启付费 usage 来绕过 quota。
 
 ## 4. 每项目一次人工 Bootstrap
 
@@ -131,6 +146,7 @@ Preview 默认关闭，直到 Preview protection 独立通过验证。
 - `owner_type: user`；
 - private repository；
 - `workers-builds-native`；
+- `ci_cost_profile: private-project-quota-saver`；
 - `access_mode: worker-scoped-access`；
 - restricted Web；
 - Preview disabled；
@@ -158,6 +174,7 @@ provider: cloudflare-workers-builds
 securityProfile: workers-builds-native
 credentialStrategy: provider-managed-user-token
 secretBroker: false
+ciCostProfile: private-project-quota-saver
 accessMode: worker-scoped-access
 previewDeployments: false
 ```
@@ -194,6 +211,7 @@ push
 -> build 成功
 -> 新 revision 成为 production
 -> Access 继续生效
+-> 不启动重复的 GitHub Actions production Web build
 -> 不需要重新授权 GitHub 或 Cloudflare
 ```
 
@@ -208,7 +226,8 @@ push
 - reader audience 扩大；
 - Custom Domain / DNS 变化；
 - Provider permission scope 扩大；
-- paid plan / billing 变化。
+- paid plan / billing 变化；
+- 为绕过 quota 而开启付费 GitHub Actions usage、提高 Actions budget 或修改 billing。
 
 这些仍由人明确决定。
 
@@ -251,6 +270,7 @@ agent-provisioned-external-ci
 ```text
 github_repository: private
 infrastructure_profile: workers-builds-native
+ci_cost_profile: private-project-quota-saver
 cloudflare_git_connection: verified
 worker_access: verified-private
 first_restricted_deployment: verified

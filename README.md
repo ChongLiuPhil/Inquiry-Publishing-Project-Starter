@@ -24,7 +24,7 @@ This repository is the **composition, adoption, upgrade, and project-provisionin
 
 Starter is **not a fourth framework**. AHICP, PPF, and Vault Interface remain authoritative for their own specifications; Starter records how a project composes and adopts them, and when an authorized Agent may invoke the pinned PPF infrastructure provisioner.
 
-**Default for new projects:** full AHICP + full PPF + Vault Interface. Downstream repositories default to the personal `ChongLiuPhil` GitHub account with `owner_type: user` and `visibility: private`; original or unpublished source remains private. The default infrastructure profile is `workers-builds-native`: allow one short human-assisted GitHub → Cloudflare bootstrap for the project, protect the Worker with Access, then verify that a second push deploys automatically without renewed authorization. `agent-provisioned-external-ci` remains an optional advanced profile. Public release remains a separate human decision. Reduced stack profiles require explicit human selection.
+**Default for new projects:** full AHICP + full PPF + Vault Interface. Downstream repositories default to the personal `ChongLiuPhil` GitHub account with `owner_type: user` and `visibility: private`; original or unpublished source remains private. The default infrastructure profile is `workers-builds-native` with `private-project-quota-saver`: allow one short human-assisted GitHub → Cloudflare bootstrap, protect the Worker with Access, let Cloudflare Workers Builds own the automatic main-branch Web build, keep content-only changes out of GitHub Actions, use only one lightweight configuration-PR check, and run heavy GitHub workflows manually. Then verify that a second push deploys automatically without renewed authorization. `agent-provisioned-external-ci` remains an optional advanced profile. Public release and any paid Actions/billing change remain separate human decisions. Reduced stack profiles require explicit human selection.
 
 
 ## Stack v2
@@ -78,14 +78,14 @@ The adoption plan reports active/deferred component state, authoritative reposit
 
 ## Project provisioning
 
-New downstream projects also carry `project-provisioning.yaml`. The public schemas/templates define only non-secret intent. The default `workers-builds-native` path does not require platform standing authorization; private platform-authorization state is consulted only when an optional advanced profile relies on it.
+New downstream projects also carry `project-provisioning.yaml`. The public schemas/templates define only non-secret intent. The default `workers-builds-native` path uses `ci_cost_profile: private-project-quota-saver` and does not require platform standing authorization; private platform-authorization state is consulted only when an optional advanced profile relies on it.
 
 ```bash
 python tools/project_provisioning.py validate
 python tools/project_provisioning.py plan --request project-provisioning.yaml --json
 ```
 
-For the default `workers-builds-native` profile, the plan returns `READY_FOR_PROJECT_BOOTSTRAP` without requiring account-wide platform authorization. Follow the pinned PPF per-project setup guide to connect the private repository to Workers Builds, protect the Worker with Access, verify the first restricted deployment, and then verify a second push without reauthorization. The Secret Broker is required only by the optional advanced external-CI profile.
+For the default `workers-builds-native` profile, the plan returns `READY_FOR_PROJECT_BOOTSTRAP` without requiring account-wide platform authorization and carries `ciCostProfile: private-project-quota-saver` into PPF. Follow the pinned PPF per-project setup guide to connect the private repository to Workers Builds, protect the Worker with Access, verify the first restricted deployment, and then verify a second push without reauthorization. Content-only changes should not consume GitHub Actions minutes; configuration PRs get the thin contract gate; heavy Actions validation is manual. The Secret Broker is required only by the optional advanced external-CI profile.
 
 See [`docs/PROJECT_PROVISIONING_CONTRACT.md`](docs/PROJECT_PROVISIONING_CONTRACT.md) and [`docs/PROJECT_PROVISIONING_ACCEPTANCE.md`](docs/PROJECT_PROVISIONING_ACCEPTANCE.md).
 

@@ -26,6 +26,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
     def advanced_request(self):
         request = copy.deepcopy(self.request)
         request["infrastructure"]["profile"] = "agent-provisioned-external-ci"
+        request["infrastructure"]["ci_cost_profile"] = "external-ci-required"
         request["infrastructure"]["cloudflare"]["access_mode"] = "account-wide-access"
         request["authorization"]["restricted_deployment_source"] = "platform-standing-authorization"
         request["authorization"]["project_bootstrap"] = "platform-automated"
@@ -71,6 +72,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertEqual(plan["status"], "READY_FOR_PROJECT_BOOTSTRAP")
         self.assertEqual(plan["infrastructure_profile"], "workers-builds-native")
         self.assertEqual(plan["project_bootstrap"], "human-assisted-once-per-project")
+        self.assertEqual(plan["ci_cost_profile"], "private-project-quota-saver")
 
         seed = plan["ppf_handoff"]["desired_state_seed"]
         self.assertEqual(seed["schemaVersion"], 2)
@@ -84,6 +86,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertEqual(seed["deployment"]["credentialStrategy"], "provider-managed-user-token")
         self.assertFalse(seed["deployment"]["secretBroker"])
         self.assertFalse(seed["deployment"]["previewDeployments"])
+        self.assertEqual(seed["deployment"]["ciCostProfile"], "private-project-quota-saver")
 
         for step in (
             "reuse-existing-cloudflare-git-account-connection-if-available",
@@ -134,6 +137,7 @@ class ProjectProvisioningContractTests(unittest.TestCase):
         self.assertEqual(seed["deployment"]["provider"], "github-actions-cloudflare-workers")
         self.assertEqual(seed["deployment"]["credentialStrategy"], "project-scoped-account-token")
         self.assertTrue(seed["deployment"]["secretBroker"])
+        self.assertEqual(seed["deployment"]["ciCostProfile"], "external-ci-required")
 
     def test_broker_minting_authority_must_be_isolated_for_advanced_profile(self):
         request = self.advanced_request()
