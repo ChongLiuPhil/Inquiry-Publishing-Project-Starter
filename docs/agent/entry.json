@@ -68,8 +68,11 @@
     "cloudflare_granular_token_issuer": "optional-advanced-live-acceptance-pending",
     "ordinary_project_human_bootstrap": [
       "create-or-confirm-private-personal-repository",
-      "authorize-cloudflare-git-for-target-repository-if-required",
+      "reuse-existing-cloudflare-git-account-connection-if-available",
+      "authorize-cloudflare-github-app-repository-access-if-needed",
       "connect-workers-builds",
+      "ensure-worker-application-name-matches-wrangler-jsonc-name",
+      "enable-cloudflare-zero-trust-once-if-needed",
       "protect-target-worker-with-access",
       "verify-first-restricted-deployment",
       "verify-second-push-auto-deploy-without-reauthorization"
