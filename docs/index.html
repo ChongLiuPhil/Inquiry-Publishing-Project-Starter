@@ -88,7 +88,7 @@ footer{padding:22px 4px;color:#68757a;font-size:.9rem}
         <div class="arrow">↓</div>
         <div class="flow-row"><strong>3 · 私人网页保护</strong><div>默认给目标 Worker 启用 Worker-scoped Access，并保持 Preview disabled；如果已有 verified account-wide Access，也可复用。</div></div>
         <div class="arrow">↓</div>
-        <div class="flow-row"><strong>4 · 第一次 + 第二次 Push 验证</strong><div>第一次确认 restricted deployment 与匿名拒绝；然后做第二次 content-only push，确认 Workers Builds 自动部署、无需重新授权，并且没有启动重复的 GitHub Actions production Web build。</div></div>
+        <div class="flow-row"><strong>4 · 第一次 + 第二次 Push 验证</strong><div>第一次确认 restricted deployment 与匿名拒绝；然后做第二次 push（content-only），确认 Workers Builds 自动部署、无需重新授权，并且没有启动重复的 GitHub Actions production Web build。</div></div>
       </div>
       <p class="small">默认目标不是账户级零人工，而是：每项目一次配置，随后普通 source push 自动部署，同时用 <code>private-project-quota-saver</code> 避免浪费 private Actions 分钟。Public release、repository 公开、reader 扩大、domain/DNS、Provider 扩权，以及开启付费 Actions / billing 变化继续由人决定。</p>
     </section>
