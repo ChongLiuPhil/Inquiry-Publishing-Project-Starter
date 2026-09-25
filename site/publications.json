@@ -62,7 +62,9 @@
         "docs/PROJECT_PROVISIONING_CONTRACT.md",
         "docs/PROJECT_PROVISIONING_CONTRACT.zh-CN.md",
         "docs/PROJECT_PROVISIONING_ACCEPTANCE.md",
-        "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md"
+        "docs/PROJECT_PROVISIONING_ACCEPTANCE.zh-CN.md",
+        "docs/PROJECT_MEMORY_WRITEBACK.md",
+        "docs/PROJECT_MEMORY_WRITEBACK.zh-CN.md"
       ]
     }
   },
