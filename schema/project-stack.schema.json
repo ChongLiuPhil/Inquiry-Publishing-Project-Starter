@@ -215,7 +215,11 @@
           "required": [
             "profile",
             "request_ref",
-            "platform_authorization_ref"
+            "platform_authorization_ref",
+            "bootstrap_state_ref",
+            "working_memory_current_focus_ref",
+            "working_memory_task_plan_ref",
+            "working_memory_work_log_ref"
           ],
           "properties": {
             "profile": {
@@ -234,6 +238,22 @@
                 "optional-advanced-platform-state",
                 "private-platform-state"
               ]
+            },
+            "bootstrap_state_ref": {
+              "type": "string",
+              "const": "project-bootstrap-state.yaml"
+            },
+            "working_memory_current_focus_ref": {
+              "type": "string",
+              "const": "docs/working-memory/current-focus.zh-CN.md"
+            },
+            "working_memory_task_plan_ref": {
+              "type": "string",
+              "const": "docs/working-memory/task-plan.zh-CN.md"
+            },
+            "working_memory_work_log_ref": {
+              "type": "string",
+              "const": "docs/working-memory/work-log.zh-CN.md"
             }
           }
         }
