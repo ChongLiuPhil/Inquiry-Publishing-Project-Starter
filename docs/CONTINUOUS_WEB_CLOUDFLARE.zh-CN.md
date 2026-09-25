@@ -69,7 +69,7 @@ policy_ref 只用于标识预期策略，绝不能用来存放真实凭据。
 
 部署前必须选择并记录一种 Profile：
 
-- **Workers Builds Native — 普通新项目默认。** 允许使用者每项目完成一次短 GitHub ↔ Cloudflare connection；之后 Git-triggered build/deploy 与 Provider-managed build credential 由 Cloudflare 负责。
+- **Workers Builds Native + private-project-quota-saver — 普通新项目默认。** 允许使用者每项目完成一次短 GitHub ↔ Cloudflare connection；之后 Git-triggered production build/deploy 与 Provider-managed build credential 由 Cloudflare 负责。Content-only 改动不启动 GitHub Actions，配置 PR 只运行一个轻量 contract check，main push 不在 GitHub Actions 重复 Web build，heavy GitHub validation 手动运行。
 - **Agent-Provisioned External CI — 高级可选 Profile。** 只有项目明确需要 account-owned individual-Worker `Editor` deployment credential、可复用 Platform Authorization 与 Trusted Secret Broker 时采用。
 - **未来 / Provider-specific Profile** — 只有当前官方文档和真实测试确认支持后才能采用。
 
@@ -81,7 +81,7 @@ policy_ref 只用于标识预期策略，绝不能用来存放真实凭据。
 
 1. 确认准确的个人 GitHub repository、output directory、Cloudflare account 与目标 Worker/project。
 2. 确认 source repository 为 private。
-3. 除非人类明确选择高级 Profile，否则使用 `workers-builds-native`。
+3. 除非人类明确选择高级 Profile，否则使用 `workers-builds-native` + `private-project-quota-saver`。
 4. 在 `ChongLiuPhil` 下创建或确认 private repository。
 5. 在 Cloudflare Workers & Pages 中 Import / Connect 该 repository。
 6. 如果 GitHub 提示，为目标 repository 授权 Cloudflare Git integration。
@@ -90,8 +90,8 @@ policy_ref 只用于标识预期策略，绝不能用来存放真实凭据。
 9. 完成第一次 deployment。
 10. 给 Worker 启用 Worker-scoped Cloudflare Access，选择 **All traffic**；如果已有 verified account-wide Access 覆盖，则记录并复用。
 11. 验证 deployed revision、匿名 challenge / deny、已授权 reader 与代表性 direct asset。
-12. 对 source 做一次无害修改并 push 到 `main`。
-13. 确认 Workers Builds 自动部署新 revision，且不需要重新 GitHub / Cloudflare authorization。
+12. 对 source 做一次无害的 content-only 修改并 push 到 `main`。
+13. 确认 Workers Builds 自动部署新 revision，不需要重新 GitHub / Cloudflare authorization，而且没有启动重复的 GitHub Actions production Web build。
 14. Custom Domain 只有另行获得 domain/DNS authorization 后才配置。
 15. 记录已验证的非秘密 Provider state 与 rollback evidence。
 
@@ -119,6 +119,7 @@ policy_ref 只用于标识预期策略，绝不能用来存放真实凭据。
 读取固定版本 PPF runbook：
 
 - `docs/PER_PROJECT_GITHUB_CLOUDFLARE_SETUP.zh-CN.md`：默认每项目操作流程；
+- `docs/CI_COST_POLICY.zh-CN.md`：private repository GitHub Actions / build-minute 策略；
 - `docs/CLOUDFLARE_GITHUB_AUTHORIZATION.zh-CN.md`：Native 默认与高级可选授权模型；
 - `docs/CLOUDFLARE_SECURITY_PROFILES.zh-CN.md`：deployment credential 权衡；
 - `docs/CLOUDFLARE_ACCESS_PROFILE.zh-CN.md`：publication visibility → reader access；
