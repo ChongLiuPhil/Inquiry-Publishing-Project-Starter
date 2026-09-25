@@ -1,6 +1,7 @@
 schema: starter/cloudflare-access-plan/v1
 policy_ref: shared-reader-access
 purpose: restricted-reader-access-for-original-or-unpublished-web
+default_access_mode: worker-scoped-access
 
 policy:
   name: shared-reader-access
@@ -23,22 +24,38 @@ authentication:
 
 application:
   type: self-hosted
+  scope: target-worker
   hostname: null
   protect_entire_hostname: true
   session_duration: 24h
   attach_policy_ref: shared-reader-access
 
+project_bootstrap:
+  mode: human-assisted-once-per-project
+  default_path: cloudflare-dashboard
+  requires_api_token: false
+  repository_authorization: target-repository-if-required
+  completion_requires:
+    - first-restricted-deployment-verified
+    - second-push-auto-deploys-without-reauthorization
+
 automation:
   access_api:
+    status: optional
     supported: true
+    requires_api_token_if_selected: true
     token_permissions:
       - "Access: Apps and Policies Write"
   identity_provider_api:
+    status: optional
     needed_only_if_otp_or_idp_must_be-created: true
+    requires_api_token_if_selected: true
     token_permissions:
       - "Access: Organizations, Identity Providers, and Groups Write"
   workers_builds_api:
+    status: optional-automation
     supported_after-one-time-github-app-authorization: true
+    requires_api_token_if_selected: true
     token_type: user-scoped
     token_permissions:
       - "Workers Builds Configuration: Edit"
@@ -46,9 +63,9 @@ automation:
 
 human_reservations:
   - sign-in-and-mfa
-  - first-cloudflare-github-app-authorization
-  - first-api-token-creation
+  - cloudflare-github-app-repository-authorization-if-needed
   - reader-identity-selection
+  - api-token-creation-only-if-api-automation-selected
   - enter-any-legacy-shared-secret-directly-in-provider-ui
   - final-public-release-authorization
 
@@ -59,8 +76,10 @@ secret_rules:
   verify_only-non-secret-result-state: true
 
 verification:
+  - repository-remains-private-unless-explicitly-authorized
+  - workers-builds-targets-intended-repository-and-main
   - unauthenticated-request-is-challenged-or-denied
   - authorized-reader-can-open-site
   - direct-asset-and-feed-urls-do-not-bypass-access
   - preview-and-production-hostnames-match-intended-policy
-  - repository-remains-private-unless-explicitly-authorized
+  - second-push-auto-deploys-without-reauthorization
